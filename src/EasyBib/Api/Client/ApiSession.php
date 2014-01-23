@@ -43,6 +43,8 @@ class ApiSession
 
     /**
      * This bootstraps the session by returning the user's "root" Resource
+     *
+     * @return Resource
      */
     public function getUser()
     {
@@ -68,6 +70,10 @@ class ApiSession
         return $response;
     }
 
+    /**
+     * @param Response $response
+     * @return bool
+     */
     private function isTokenExpired(Response $response)
     {
         if ($response->getStatusCode() != 400) {
