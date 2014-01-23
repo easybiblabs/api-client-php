@@ -11,6 +11,11 @@ class ApiSession
      */
     private $httpClient;
 
+    public function __construct(ClientInterface $httpClient)
+    {
+        $this->httpClient = $httpClient;
+    }
+
     public function authenticate()
     {
     }
@@ -22,13 +27,5 @@ class ApiSession
     public function get($url)
     {
         return $this->httpClient->get($url)->send();
-    }
-
-    /**
-     * @param ClientInterface $httpClient
-     */
-    public function setHttpClient(ClientInterface $httpClient)
-    {
-        $this->httpClient = $httpClient;
     }
 }

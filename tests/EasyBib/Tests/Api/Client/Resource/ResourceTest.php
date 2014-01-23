@@ -3,14 +3,12 @@
 namespace EasyBib\Tests\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiSession;
-use EasyBib\Api\Client\Resource\LinkSourceInterface;
 use EasyBib\Api\Client\Resource\ResourceLink;
 use EasyBib\Api\Client\ResponseDataContainer;
 use EasyBib\Api\Client\Resource\Resource;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\Request;
 use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\Mock\MockPlugin;
 
 class ResourceTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,11 +18,17 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $resource->foo);
     }
 
+    public function testMagicIsset()
+    {
+        $resource = $this->getResource('{"data":{"foo":"bar"}}');
+        $this->assertTrue(isset($resource->foo));
+        $this->assertFalse(isset($resource->baz));
+    }
+
     public function testGet()
     {
         $resource = $this->getResource();
 
-        $this->assertInstanceOf(LinkSourceInterface::class, $resource->get('foo ref'));
         $this->assertInstanceOf(Resource::class, $resource->get('foo ref'));
         $this->assertEquals('bar', $resource->get('foo ref')->foo);
         $this->assertNull($resource->get('no such ref'));
@@ -64,8 +68,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ->method('send')
             ->will($this->returnValue($response));
 
-        $apiSession = new ApiSession();
-        $apiSession->setHttpClient($fakeHttpClient);
+        $apiSession = new ApiSession($fakeHttpClient);
 
         $response = new Response(200);
         $response->setBody($body);

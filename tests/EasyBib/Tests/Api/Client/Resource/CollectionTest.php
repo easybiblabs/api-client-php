@@ -4,28 +4,52 @@ namespace EasyBib\Tests\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiSession;
 use EasyBib\Api\Client\Resource\Collection;
-use EasyBib\Api\Client\Resource\LinkSourceInterface;
-use EasyBib\Api\Client\Resource\ResourceLink;
+use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Api\Client\ResponseDataContainer;
+use Guzzle\Http\Client;
 use Guzzle\Http\Message\Response;
 
 class CollectionTest extends \PHPUnit_Framework_TestCase
 {
-    public function testOffsetExists()
+    public function dataProvider()
     {
-        $body = '{"data":[{"links":[{"title":"James","type":"text/html",
-            "href":"http://api.example.org/foo/","ref":"foo resource"}]}]}';
-        $resourceList = $this->getResourceList($body);
+        return [
+            [[
+                'data' => [
+                    [
+                        'links' => [
+                            0 => [
+                                'title' => 'James',
+                                'type' => 'text/html',
+                                'href' => 'http://api.example.org/foo/',
+                                'ref' => 'foo resource',
+                            ],
+                        ],
+                    ],
+                ],
+            ]],
+        ];
+    }
+
+    /**
+     * @dataProvider dataProvider
+     * @param array $payload
+     */
+    public function testOffsetExists(array $payload)
+    {
+        $resourceList = $this->getResourceList(json_encode($payload));
         $this->assertTrue(isset($resourceList[0]));
         $this->assertFalse(isset($resourceList[1]));
     }
 
-    public function testOffsetGet()
+    /**
+     * @dataProvider dataProvider
+     * @param array $payload
+     */
+    public function testOffsetGet(array $payload)
     {
-        $body = '{"data":[{"links":[{"title":"James","type":"text/html",
-            "href":"http://api.example.org/foo/","ref":"foo resource"}]}]}';
-        $resourceList = $this->getResourceList($body);
-        $this->assertInstanceOf(LinkSourceInterface::class, $resourceList[0]);
+        $resourceList = $this->getResourceList(json_encode($payload));
+        $this->assertInstanceOf(Resource::class, $resourceList[0]);
     }
 
     /**
@@ -58,7 +82,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $response->setBody($body);
 
         $container = ResponseDataContainer::fromResponse($response);
-        $apiSession = new ApiSession();
+        $apiSession = new ApiSession(new Client());
         $resourceList = new Collection($container, $apiSession);
 
         return $resourceList;

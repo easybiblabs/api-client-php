@@ -5,8 +5,10 @@ namespace EasyBib\Api\Client\Resource;
 use EasyBib\Api\Client\ApiSession;
 use EasyBib\Api\Client\ResponseDataContainer;
 
-class Collection implements LinkSourceInterface, \ArrayAccess
+class Collection implements \ArrayAccess
 {
+    use HasRestfulLinks;
+
     /**
      * @var ResponseDataContainer
      */
@@ -21,22 +23,6 @@ class Collection implements LinkSourceInterface, \ArrayAccess
     {
         $this->container = $container;
         $this->apiSession = $apiSession;
-    }
-
-    /**
-     * @param string $ref
-     * @return Resource
-     */
-    public function get($ref)
-    {
-    }
-
-    /**
-     * @param string $ref
-     * @return ResourceLink
-     */
-    public function findLink($ref)
-    {
     }
 
     /**

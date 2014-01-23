@@ -7,7 +7,7 @@ HTTP calls.
 ## Sample code
 
 ```php
-$api = new ApiSession($credentials, $baseUrl);
+$api = new ApiSession($guzzleClient, $credentials);
 $api->authenticate();
 
 $user = $api->getUser();  // returns Resource for /user/
