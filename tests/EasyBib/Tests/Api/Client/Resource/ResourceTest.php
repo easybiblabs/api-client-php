@@ -37,6 +37,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     public function testFindLink()
     {
         $resource = $this->getResource();
+
         $this->assertInstanceOf(ResourceLink::class, $resource->findLink('foo ref'));
         $this->assertEquals('http://foo/', $resource->findLink('foo ref')->getHref());
         $this->assertNull($resource->findLink('no such ref'));

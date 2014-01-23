@@ -64,7 +64,7 @@ class ResourceLinkTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException EasyBib\Api\Client\Resource\InvalidResourceLinkException
+     * @expectedException \EasyBib\Api\Client\Resource\InvalidResourceLinkException
      * @param string $data
      * @dataProvider dataProviderInvalid
      */

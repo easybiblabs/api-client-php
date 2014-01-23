@@ -31,7 +31,7 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
     {
         $this->setResponse(new Response(200, [], '{}'));
 
-        // this is the system-under-test mock
+        // this is the mock assertion
         $this->httpClient->expects($this->once())
             ->method('get')
             ->with($this->stringEndsWith('/user/'))
@@ -45,7 +45,7 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
     {
         $this->setResponse(new Response(200, [], '{}'));
 
-        // this is the system-under-test mock
+        // this is the mock assertion
         $this->request->expects($this->once())
             ->method('setHeader')
             ->with('Authorization', 'Bearer ABC123');
