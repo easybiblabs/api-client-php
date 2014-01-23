@@ -82,7 +82,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $response->setBody($body);
 
         $container = ResponseDataContainer::fromResponse($response);
-        $apiSession = new ApiSession(new Client());
+        $apiSession = new ApiSession('ABC123', new Client());
         $resourceList = new Collection($container, $apiSession);
 
         return $resourceList;

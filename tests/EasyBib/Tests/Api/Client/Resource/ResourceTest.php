@@ -68,7 +68,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ->method('send')
             ->will($this->returnValue($response));
 
-        $apiSession = new ApiSession($fakeHttpClient);
+        $apiSession = new ApiSession('ABC123', $fakeHttpClient);
 
         $response = new Response(200);
         $response->setBody($body);
