@@ -42,4 +42,14 @@ class Resource
     {
         return isset($this->container->getData()->$name);
     }
+
+    public function getApiSession()
+    {
+        return $this->apiSession;
+    }
+
+    public function getResponseDataContainer()
+    {
+        return $this->container;
+    }
 }

@@ -69,4 +69,14 @@ class Collection implements \ArrayAccess
     {
         throw new \BadMethodCallException('offsetUnset() is degenerate');
     }
+
+    public function getApiSession()
+    {
+        return $this->apiSession;
+    }
+
+    public function getResponseDataContainer()
+    {
+        return $this->container;
+    }
 }

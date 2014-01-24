@@ -20,10 +20,10 @@ trait HasRestfulLinks
             return null;
         }
 
-        $response = $this->apiSession->get($link->getHref());
+        $response = $this->getApiSession()->get($link->getHref());
         $responseContainer = ResponseDataContainer::fromResponse($response);
 
-        return new Resource($responseContainer, $this->apiSession);
+        return new Resource($responseContainer, $this->getApiSession());
     }
 
     /**
@@ -35,7 +35,7 @@ trait HasRestfulLinks
      */
     public function findLink($ref)
     {
-        foreach ($this->container->getLinks() as $link) {
+        foreach ($this->getResponseDataContainer()->getLinks() as $link) {
             if ($link->getRef() == $ref) {
                 return $link;
             }
@@ -43,4 +43,14 @@ trait HasRestfulLinks
 
         return null;
     }
+
+    /**
+     * @return \EasyBib\Api\Client\ApiSession
+     */
+    abstract public function getApiSession();
+
+    /**
+     * @return \EasyBib\Api\Client\ResponseDataContainer
+     */
+    abstract public function getResponseDataContainer();
 }
