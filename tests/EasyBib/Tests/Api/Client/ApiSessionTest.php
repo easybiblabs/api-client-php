@@ -41,12 +41,25 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
         $api->getUser();
     }
 
+    public function testGetCorrectAcceptHeader()
+    {
+        $this->setResponse(new Response(200, [], '{}'));
+
+        // this is the mock assertion
+        $this->request->expects($this->at(0))
+            ->method('setHeader')
+            ->with('Accept', 'application/vnd.com.easybib.data+json');
+
+        $api = new ApiSession('ABC123', $this->httpClient);
+        $api->get('url placeholder');
+    }
+
     public function testGetPassesTokenInHeader()
     {
         $this->setResponse(new Response(200, [], '{}'));
 
         // this is the mock assertion
-        $this->request->expects($this->once())
+        $this->request->expects($this->at(1))
             ->method('setHeader')
             ->with('Authorization', 'Bearer ABC123');
 

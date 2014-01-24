@@ -36,6 +36,7 @@ class ApiSession
     public function get($url)
     {
         $request = $this->httpClient->get($url);
+        $request->setHeader('Accept', 'application/vnd.com.easybib.data+json');
         $request->setHeader('Authorization', 'Bearer ' . $this->token);
 
         return $this->send($request);
