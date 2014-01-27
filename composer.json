@@ -1,7 +1,7 @@
 {
     "name": "easybib/api-client-php",
     "description": "Client for EasyBib API, implemented in PHP",
-    "license": "BSD-2-Clause",
+    "license": "LGPL-3.0",
     "authors": [
         {
             "name": "Yitzchak Schaffer",

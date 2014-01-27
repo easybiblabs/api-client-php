@@ -29,6 +29,7 @@ class ApiTraverser
     public function get($url = null)
     {
         if (!$url) {
+            // the `/user/` endpoint serves as the root entry point
             return $this->getUser();
         }
 
@@ -43,7 +44,7 @@ class ApiTraverser
      *
      * @return Resource
      */
-    private function getUser()
+    public function getUser()
     {
         $response = $this->get('/user/');
         $dataContainer = ResponseDataContainer::fromResponse($response);
