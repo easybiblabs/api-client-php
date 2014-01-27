@@ -28,7 +28,8 @@
     "prefer-stable": true,
     "autoload": {
         "psr-0": {
-            "": "src/"
+            "EasyBib\\Api\\Client\\": "src/",
+            "EasyBib\\Tests\\Api\\Client\\": "tests/"
         },
         "classmap": ["tests/"]
     }
