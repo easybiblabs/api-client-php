@@ -3,6 +3,7 @@
 namespace EasyBib\Tests\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiSession;
+use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Api\Client\ResponseDataContainer;
@@ -82,8 +83,9 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $response->setBody($body);
 
         $container = ResponseDataContainer::fromResponse($response);
-        $apiSession = new ApiSession('ABC123', new Client());
-        $resourceList = new Collection($container, $apiSession);
+        $session = $this->getMock(ApiSession::class);
+        $apiTraverser = new ApiTraverser($session, new Client());
+        $resourceList = new Collection($container, $apiTraverser);
 
         return $resourceList;
     }

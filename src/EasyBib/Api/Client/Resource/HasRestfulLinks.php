@@ -20,10 +20,10 @@ trait HasRestfulLinks
             return null;
         }
 
-        $response = $this->getApiSession()->get($link->getHref());
+        $response = $this->getApiTraverser()->get($link->getHref());
         $responseContainer = ResponseDataContainer::fromResponse($response);
 
-        return new Resource($responseContainer, $this->getApiSession());
+        return new Resource($responseContainer, $this->getApiTraverser());
     }
 
     /**
@@ -45,9 +45,9 @@ trait HasRestfulLinks
     }
 
     /**
-     * @return \EasyBib\Api\Client\ApiSession
+     * @return \EasyBib\Api\Client\ApiTraverser
      */
-    abstract public function getApiSession();
+    abstract public function getApiTraverser();
 
     /**
      * @return \EasyBib\Api\Client\ResponseDataContainer

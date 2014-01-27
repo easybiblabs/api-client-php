@@ -7,7 +7,7 @@ HTTP calls.
 ## Sample code
 
 ```php
-$api = new ApiSession($token, $guzzleClient);
+$api = new ApiTraverser($token, $guzzleClient);
 
 $user = $api->getUser();  // returns Resource for /user/
 $titleOfFirstProject = $user->get('projects')[0]->title;

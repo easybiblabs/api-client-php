@@ -3,6 +3,7 @@
 namespace EasyBib\Tests\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiSession;
+use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Resource\ResourceLink;
 use EasyBib\Api\Client\ResponseDataContainer;
 use EasyBib\Api\Client\Resource\Resource;
@@ -54,13 +55,48 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         }
 
         $response = new Response(200);
+        $response->setBody($body);
+        $container = ResponseDataContainer::fromResponse($response);
+
+        return new Resource($container, $this->getApiTraverser());
+    }
+
+    private function getResponse()
+    {
+        $response = new Response(200);
         $response->setBody('{"data":{"foo":"bar"}}');
 
-        $fakeHttpClient = $this->getMock(Client::class);
+        return $response;
+    }
 
+    private function getRequest($fakeHttpClient)
+    {
         $request = new Request('GET', 'http://jim/');
         $request->setClient($fakeHttpClient);
 
+        return $request;
+    }
+
+    private function getHttpClient()
+    {
+        $previousResponse = $this->getResponse();
+        $fakeHttpClient = $this->getMock(Client::class);
+        $request = $this->getRequest($fakeHttpClient);
+
+        $this->registerStubBehaviorsOnHttpClient(
+            $fakeHttpClient,
+            $request,
+            $previousResponse
+        );
+
+        return $fakeHttpClient;
+    }
+
+    private function registerStubBehaviorsOnHttpClient(
+        $fakeHttpClient,
+        $request,
+        $response
+    ) {
         $fakeHttpClient->expects($this->any())
             ->method('get')
             ->will($this->returnValue($request));
@@ -68,13 +104,18 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $fakeHttpClient->expects($this->any())
             ->method('send')
             ->will($this->returnValue($response));
+    }
 
-        $apiSession = new ApiSession('ABC123', $fakeHttpClient);
+    /**
+     * @return ApiTraverser
+     */
+    private function getApiTraverser()
+    {
+        $fakeHttpClient = $this->getHttpClient();
+        $session = $this->getMock(ApiSession::class);
 
-        $response = new Response(200);
-        $response->setBody($body);
-        $container = ResponseDataContainer::fromResponse($response);
-
-        return new Resource($container, $apiSession);
+        $apiTraverser = new ApiTraverser($session, $fakeHttpClient);
+        
+        return $apiTraverser;
     }
 }
