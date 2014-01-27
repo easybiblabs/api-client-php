@@ -38,7 +38,7 @@ $context = new Context($yourClientId, ['USER_READ', 'DATA_READ_WRITE']);
 $accessToken = $oauth->getAccessToken($context);
 
 // NOTE: here, if no access token is found, you will need to redirect
-// to $api->getAuthorizeUri($context)
+// to $api->getAuthorizeUri($context) - see below for handling
 
 $authentication = new BearerAuth($accessToken->getAccessToken());
 
@@ -55,6 +55,31 @@ $user = $api->getUser();  // user serves as the entry point for traversing resou
 $titleOfFirstProject = $user->get('projects')[0]->title;
 $citationsFromFirstProject = $user->get('projects')[0]->get('citations');
 $linksForSecondProject = $user->get('projects')[1]->getLinkRefs();
+```
+
+If we did not find a current, valid token above, we would redirect the user to
+the authentication endpoint on the OAuth service provider's server. After
+authentication, the OAuth provider would redirect back to our specified
+endpoint. We would then handle the request as follows:
+
+```php
+// assuming same config variables as above
+
+use fkooman\OAuth\Client\Callback;
+
+try {
+    $callback = new Callback(
+        $configContext,
+        $clientConfig,
+        new SessionStorage(),
+        new \Guzzle\Http\Client()
+    );
+
+    $cb->handleCallback($arrayOfQuerystringParams);
+    // auth is good; redirect back to real content
+} catch (AuthorizeException $e) {
+    // handle OAuth error, e.g. user refused to grant permission
+}
 ```
 
 ## License
