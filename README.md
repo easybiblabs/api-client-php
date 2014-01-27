@@ -22,12 +22,13 @@ use Guzzle\Http\Client;
 $yourClientId = 'foo';
 $yourClientSecret = 'bar';
 $configContext = 'easybib-api';
+$apiRootUrl = 'https://data.easybib.com';
 
 $clientConfig = new ClientConfig([
     'client_id' => $yourClientId,
     'client_secret' => $yourClientSecret,
-    'authorize_endpoint' => $apiRootUrl . 'oauth/authorize',
-    'token_endpoint' => $apiRootUrl . 'oauth/token',
+    'authorize_endpoint' => $apiRootUrl . '/oauth/authorize',
+    'token_endpoint' => $apiRootUrl . '/oauth/token',
 ]);
 
 $tokenStore = new SessionStorage();
@@ -41,7 +42,7 @@ $accessToken = $oauth->getAccessToken($context);
 
 $authentication = new BearerAuth($accessToken->getAccessToken());
 
-$guzzleClient = new Client();
+$guzzleClient = new Client($apiRootUrl);
 
 // this keeps Guzzle from throwing exceptions for HTTP 4XX and 5XX responses
 $guzzleClient->setDefaultOption('exceptions', false);
