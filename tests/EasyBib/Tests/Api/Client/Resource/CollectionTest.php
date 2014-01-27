@@ -55,7 +55,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \BadMethodCallException
-     * @expectedExceptionMessage offsetSet() is degenerate
+     * @expectedExceptionMessage offsetSet() is not supported.
      */
     public function testOffsetSet()
     {
@@ -65,7 +65,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \BadMethodCallException
-     * @expectedExceptionMessage offsetUnset() is degenerate
+     * @expectedExceptionMessage offsetUnset() is not supported.
      */
     public function testOffsetUnset()
     {

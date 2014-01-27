@@ -137,8 +137,6 @@ class ApiTraverserTest extends TestCase
         $history = new HistoryPlugin();
 
         $httpClient = new Client();
-        $httpClient->setDefaultOption('exceptions', false);
-
         $httpClient->addSubscriber($responses);
         $httpClient->addSubscriber($history);
 

@@ -21,6 +21,7 @@ class ApiTraverser
     public function __construct(ClientInterface $httpClient)
     {
         $this->httpClient = $httpClient;
+        $this->httpClient->setDefaultOption('exceptions', false);
     }
 
     /**

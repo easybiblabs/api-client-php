@@ -30,18 +30,24 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     {
         $resource = $this->getResource();
 
-        $this->assertInstanceOf(Resource::class, $resource->get('foo ref'));
-        $this->assertEquals('bar', $resource->get('foo ref')->foo);
-        $this->assertNull($resource->get('no such ref'));
+        $goodLinkedResource = $resource->get('foo ref');
+        $nullLinkedResource = $resource->get('no such ref');
+
+        $this->assertInstanceOf(Resource::class, $goodLinkedResource);
+        $this->assertEquals('bar', $goodLinkedResource->foo);
+        $this->assertNull($nullLinkedResource);
     }
 
     public function testFindLink()
     {
         $resource = $this->getResource();
 
-        $this->assertInstanceOf(ResourceLink::class, $resource->findLink('foo ref'));
-        $this->assertEquals('http://foo/', $resource->findLink('foo ref')->getHref());
-        $this->assertNull($resource->findLink('no such ref'));
+        $goodLink = $resource->findLink('foo ref');
+        $nullLink = $resource->findLink('no such ref');
+
+        $this->assertInstanceOf(ResourceLink::class, $goodLink);
+        $this->assertEquals('http://foo/', $goodLink->getHref());
+        $this->assertNull($nullLink);
     }
 
     /**
@@ -88,8 +94,6 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             $request,
             $previousResponse
         );
-
-        $fakeHttpClient->setDefaultOption('exceptions', false);
 
         return $fakeHttpClient;
     }

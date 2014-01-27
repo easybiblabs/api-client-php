@@ -56,7 +56,7 @@ class Collection implements \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        throw new \BadMethodCallException('offsetSet() is degenerate');
+        throw new \BadMethodCallException('offsetSet() is not supported.');
     }
 
     /**
@@ -67,7 +67,7 @@ class Collection implements \ArrayAccess
      */
     public function offsetUnset($offset)
     {
-        throw new \BadMethodCallException('offsetUnset() is degenerate');
+        throw new \BadMethodCallException('offsetUnset() is not supported.');
     }
 
     public function getApiTraverser()
