@@ -2,6 +2,8 @@
 
 namespace EasyBib\Tests\Api\Client;
 
+use EasyBib\Api\Client\Resource\Collection;
+use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Api\Client\Resource\ResourceLink;
 use EasyBib\Api\Client\ResponseDataContainer;
 use Guzzle\Http\Message\Response;
@@ -37,6 +39,15 @@ class ResponseDataContainerTest extends \PHPUnit_Framework_TestCase
             ],
             $container->getLinks()
         );
+    }
+
+    public function testIsHash()
+    {
+        $hashData = '{"data":{"foo":"bar"}}';
+        $arrayData = '{"data":[{"foo":"bar"}]}';
+
+        $this->assertTrue($this->getResponseContainer($hashData)->isHash());
+        $this->assertFalse($this->getResponseContainer($arrayData)->isHash());
     }
 
     private function getResponseContainer($body)

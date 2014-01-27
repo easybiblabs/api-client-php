@@ -32,6 +32,18 @@ class ResponseDataContainer
         );
     }
 
+    /**
+     * Whether the data contained is a hash, as opposed to an indexed array
+     *
+     * @return bool
+     */
+    public function isHash()
+    {
+        $dataArray = (array) $this->getData();
+
+        return (bool) count(array_filter(array_keys($dataArray), 'is_string'));
+    }
+
     public static function fromResponse(Response $response)
     {
         $data = json_decode($response->getBody(true)) ?: (object) [];

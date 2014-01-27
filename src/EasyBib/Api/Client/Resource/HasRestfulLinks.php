@@ -20,10 +20,7 @@ trait HasRestfulLinks
             return null;
         }
 
-        $response = $this->getApiTraverser()->get($link->getHref());
-        $responseContainer = ResponseDataContainer::fromResponse($response);
-
-        return new Resource($responseContainer, $this->getApiTraverser());
+        return $this->getApiTraverser()->get($link->getHref());
     }
 
     /**
