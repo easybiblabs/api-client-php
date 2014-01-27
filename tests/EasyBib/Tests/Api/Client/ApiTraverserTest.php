@@ -4,73 +4,79 @@ namespace EasyBib\Tests\Api\Client;
 
 use EasyBib\Api\Client\ApiSession;
 use EasyBib\Api\Client\ApiTraverser;
+use fkooman\Guzzle\Plugin\BearerAuth\BearerAuth;
 use Guzzle\Http\Client;
-use Guzzle\Http\Message\Request;
 use Guzzle\Http\Message\Response;
+use Guzzle\Plugin\History\HistoryPlugin;
+use Guzzle\Plugin\Mock\MockPlugin;
 
-class ApiTraverserTest extends \PHPUnit_Framework_TestCase
+class ApiTraverserTest extends TestCase
 {
-    private $session;
-    private $httpClient;
-    private $request;
-
-    public function setUp()
-    {
-        $this->session = $this->getMock(ApiSession::class);
-        $this->httpClient = $this->getMock(Client::class);
-
-        $this->request = $this->getMockBuilder(Request::class)
-            ->setConstructorArgs(['get', 'url placeholder'])
-            ->getMock();
-
-        $this->request->setClient($this->httpClient);
-
-        $this->httpClient->expects($this->any())
-            ->method('get')
-            ->will($this->returnValue($this->request));
-    }
-
     public function testGetWithoutUrlGetsUser()
     {
-        $this->setResponse(new Response(200, [], '{}'));
+        $httpClient = new Client();
 
-        // this is the mock assertion
-        $this->httpClient->expects($this->once())
-            ->method('get')
-            ->with($this->stringEndsWith('/user/'))
-            ->will($this->returnValue($this->request));
+        $responses = new MockPlugin([
+            new Response(200, [], '{}'),
+        ]);
 
-        $api = new ApiTraverser($this->session, $this->httpClient);
+        $history = new HistoryPlugin();
+
+        $httpClient->addSubscriber($responses);
+        $httpClient->addSubscriber($history);
+
+        $api = new ApiTraverser($httpClient);
         $api->get();
+
+        $this->stringEndsWith('/user/', $history->getLastRequest()->getUrl());
     }
 
     public function testGetCorrectAcceptHeader()
     {
-        $this->setResponse(new Response(200, [], '{}'));
+        $httpClient = new Client();
 
-        // this is the mock assertion
-        $this->request->expects($this->at(0))
-            ->method('setHeader')
-            ->with('Accept', 'application/vnd.com.easybib.data+json');
+        $responses = new MockPlugin([
+            new Response(200, [], '{}'),
+        ]);
 
-        $api = new ApiTraverser($this->session, $this->httpClient);
+        $history = new HistoryPlugin();
+
+        $httpClient->addSubscriber($responses);
+        $httpClient->addSubscriber($history);
+
+        $api = new ApiTraverser($httpClient);
         $api->get('url placeholder');
+
+        $this->assertTrue(
+            $history->getLastRequest()->getHeader('Accept')
+                ->hasValue('application/vnd.com.easybib.data+json')
+        );
     }
 
     public function testGetPassesTokenInHeader()
     {
-        $this->setResponse(new Response(200, [], '{}'));
-        $this->session->expects($this->any())
-            ->method('getToken')
-            ->will($this->returnValue('ABC123'));
+        $httpClient = new Client();
 
-        // this is the mock assertion
-        $this->request->expects($this->at(1))
-            ->method('setHeader')
-            ->with('Authorization', 'Bearer ABC123');
+        $responses = new MockPlugin([
+            new Response(200, [], '{}'),
+        ]);
 
-        $api = new ApiTraverser($this->session, $this->httpClient);
+        $history = new HistoryPlugin();
+
+        $httpClient->addSubscriber($responses);
+        $httpClient->addSubscriber($history);
+
+        $accessToken = $this->given->iHaveAnAccessToken()->getAccessToken();
+        $bearerAuth = new BearerAuth($accessToken);
+        $httpClient->addSubscriber($bearerAuth);
+
+        $api = new ApiTraverser($httpClient);
         $api->get('url placeholder');
+
+        $this->assertTrue(
+            $history->getLastRequest()->getHeader('Authorization')
+                ->hasValue('Bearer ' . $accessToken)
+        );
     }
 
     /**
@@ -83,16 +89,19 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             'error_description' => 'The access token provided has expired',
         ]);
 
-        $this->setResponse(new Response(400, [], $body));
+        $responses = new MockPlugin([
+            new Response(400, [], $body),
+        ]);
 
-        $api = new ApiTraverser($this->session, $this->httpClient);
+        $history = new HistoryPlugin();
+
+        $httpClient = new Client();
+        $httpClient->setDefaultOption('exceptions', false);
+
+        $httpClient->addSubscriber($responses);
+        $httpClient->addSubscriber($history);
+
+        $api = new ApiTraverser($httpClient);
         $api->get('url placeholder');
-    }
-
-    private function setResponse(Response $response)
-    {
-        $this->request->expects($this->any())
-            ->method('send')
-            ->will($this->returnValue($response));
     }
 }

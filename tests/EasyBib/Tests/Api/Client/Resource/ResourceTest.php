@@ -89,6 +89,8 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             $previousResponse
         );
 
+        $fakeHttpClient->setDefaultOption('exceptions', false);
+
         return $fakeHttpClient;
     }
 
@@ -111,11 +113,6 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     private function getApiTraverser()
     {
-        $fakeHttpClient = $this->getHttpClient();
-        $session = $this->getMock(ApiSession::class);
-
-        $apiTraverser = new ApiTraverser($session, $fakeHttpClient);
-        
-        return $apiTraverser;
+        return new ApiTraverser($this->getHttpClient());
     }
 }

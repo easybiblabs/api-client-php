@@ -10,22 +10,15 @@ use Guzzle\Http\Message\Response;
 class ApiTraverser
 {
     /**
-     * @var ApiSession
-     */
-    private $session;
-
-    /**
      * @var ClientInterface
      */
     private $httpClient;
 
     /**
-     * @param ApiSession $session
      * @param ClientInterface $httpClient
      */
-    public function __construct(ApiSession $session, ClientInterface $httpClient)
+    public function __construct(ClientInterface $httpClient)
     {
-        $this->session = $session;
         $this->httpClient = $httpClient;
     }
 
@@ -41,7 +34,6 @@ class ApiTraverser
 
         $request = $this->httpClient->get($url);
         $request->setHeader('Accept', 'application/vnd.com.easybib.data+json');
-        $request->setHeader('Authorization', 'Bearer ' . $this->session->getToken());
 
         return $this->send($request);
     }

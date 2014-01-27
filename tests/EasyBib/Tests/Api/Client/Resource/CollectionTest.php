@@ -83,8 +83,8 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $response->setBody($body);
 
         $container = ResponseDataContainer::fromResponse($response);
-        $session = $this->getMock(ApiSession::class);
-        $apiTraverser = new ApiTraverser($session, new Client());
+
+        $apiTraverser = new ApiTraverser(new Client());
         $resourceList = new Collection($container, $apiTraverser);
 
         return $resourceList;
