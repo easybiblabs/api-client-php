@@ -50,9 +50,7 @@ $guzzleClient->setDefaultOption('exceptions', false);
 $guzzleClient->addSubscriber($authentication);
 
 $api = new ApiTraverser($guzzleClient);
-
-$user = $api->get();  // returns Resource for /user/
-// same as $api->getUser();
+$user = $api->getUser();  // user serves as the entry point for traversing resources
 
 $titleOfFirstProject = $user->get('projects')[0]->title;
 $citationsFromFirstProject = $user->get('projects')[0]->get('citations');
