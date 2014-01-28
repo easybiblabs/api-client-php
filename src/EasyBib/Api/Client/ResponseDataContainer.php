@@ -43,9 +43,7 @@ class ResponseDataContainer
      */
     public function isList()
     {
-        $dataArray = (array) $this->getData();
-
-        return !((bool) count(array_filter(array_keys($dataArray), 'is_string')));
+        return is_array($this->getData());
     }
 
     public static function fromResponse(Response $response)
