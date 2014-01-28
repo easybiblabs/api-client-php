@@ -25,10 +25,10 @@ class ApiTraverser
     }
 
     /**
-     * @param $url
+     * @param string $url
      * @return \Guzzle\Http\Message\Response
      */
-    public function get($url = null)
+    public function get($url)
     {
         $request = $this->httpClient->get($url);
         $request->setHeader('Accept', 'application/vnd.com.easybib.data+json');
