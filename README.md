@@ -96,7 +96,7 @@ $linksForSecondProject = $user->get('projects')[1]->getLinkRefs();
 
 ## License
 
-This library is licensed under LGPL version 3.0
+This library is licensed under the BSD 2-Clause License. Enjoy!
 
 You can find more about this
-license at http://www.gnu.org/licenses/lgpl-3.0.html
+license at http://opensource.org/licenses/BSD-2-Clause
