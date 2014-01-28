@@ -34,7 +34,7 @@ class ResponseDataContainer
 
     /**
      * Whether the data contained is an indexed array, as opposed to key-value
-     * pair, a.k.a. associative array. This mirrors an ambiguity in the API
+     * pairs, a.k.a. associative array. This mirrors an ambiguity in the API
      * payloads. The `data` section can contain either a set of key-value
      * pairs, *or* an array of "child" items.
      *
