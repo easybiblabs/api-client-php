@@ -70,11 +70,17 @@ class Collection implements \ArrayAccess
         throw new \BadMethodCallException('offsetUnset() is not supported.');
     }
 
+    /**
+     * @return ApiTraverser
+     */
     public function getApiTraverser()
     {
         return $this->apiTraverser;
     }
 
+    /**
+     * @return ResponseDataContainer
+     */
     public function getResponseDataContainer()
     {
         return $this->container;
