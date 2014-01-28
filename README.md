@@ -43,10 +43,6 @@ $accessToken = $oauth->getAccessToken($context);
 $authentication = new BearerAuth($accessToken->getAccessToken());
 
 $guzzleClient = new Client($apiRootUrl);
-
-// this keeps Guzzle from throwing exceptions for HTTP 4XX and 5XX responses
-$guzzleClient->setDefaultOption('exceptions', false);
-
 $guzzleClient->addSubscriber($authentication);
 
 $api = new ApiTraverser($guzzleClient);
