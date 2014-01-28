@@ -38,7 +38,6 @@ class ResponseDataContainer
      * payloads. The `data` section can contain either a set of key-value
      * pairs, *or* an array of "child" items.
      *
-     * @link http://stackoverflow.com/a/4254008/614709 Regarding the implemented strategy
      * @return bool
      */
     public function isList()
