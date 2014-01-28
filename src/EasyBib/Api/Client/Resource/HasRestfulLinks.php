@@ -14,7 +14,7 @@ trait HasRestfulLinks
      */
     public function get($ref)
     {
-        $link = $this->findLink($ref);
+        $link = $this->findReference($ref);
 
         if (!$link) {
             return null;
@@ -28,13 +28,13 @@ trait HasRestfulLinks
      * documents
      *
      * @param string $ref
-     * @return ResourceLink
+     * @return Reference
      */
-    public function findLink($ref)
+    public function findReference($ref)
     {
-        foreach ($this->getResponseDataContainer()->getLinks() as $link) {
-            if ($link->getRef() == $ref) {
-                return $link;
+        foreach ($this->getResponseDataContainer()->getReferences() as $reference) {
+            if ($reference->getRef() == $ref) {
+                return $reference;
             }
         }
 

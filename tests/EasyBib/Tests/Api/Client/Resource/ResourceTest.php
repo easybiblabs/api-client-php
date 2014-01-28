@@ -4,7 +4,7 @@ namespace EasyBib\Tests\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiSession;
 use EasyBib\Api\Client\ApiTraverser;
-use EasyBib\Api\Client\Resource\ResourceLink;
+use EasyBib\Api\Client\Resource\Reference;
 use EasyBib\Api\Client\ResponseDataContainer;
 use EasyBib\Api\Client\Resource\Resource;
 use Guzzle\Http\Client;
@@ -42,10 +42,10 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     {
         $resource = $this->getResource();
 
-        $goodLink = $resource->findLink('foo ref');
-        $nullLink = $resource->findLink('no such ref');
+        $goodLink = $resource->findReference('foo ref');
+        $nullLink = $resource->findReference('no such ref');
 
-        $this->assertInstanceOf(ResourceLink::class, $goodLink);
+        $this->assertInstanceOf(Reference::class, $goodLink);
         $this->assertEquals('http://foo/', $goodLink->getHref());
         $this->assertNull($nullLink);
     }

@@ -2,7 +2,7 @@
 
 namespace EasyBib\Api\Client\Resource;
 
-class ResourceLink
+class Reference
 {
     /**
      * @var \stdClass

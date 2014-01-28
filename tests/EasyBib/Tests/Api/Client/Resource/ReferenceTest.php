@@ -2,9 +2,9 @@
 
 namespace EasyBib\Tests\Api\Client\Resource;
 
-use EasyBib\Api\Client\Resource\ResourceLink;
+use EasyBib\Api\Client\Resource\Reference;
 
-class ResourceLinkTest extends \PHPUnit_Framework_TestCase
+class ReferenceTest extends \PHPUnit_Framework_TestCase
 {
     public function dataProviderValid()
     {
@@ -29,8 +29,8 @@ class ResourceLinkTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetHref($data)
     {
-        $link = new ResourceLink(json_decode($data));
-        $this->assertEquals('http://foo/bar/', $link->getHref());
+        $reference = new Reference(json_decode($data));
+        $this->assertEquals('http://foo/bar/', $reference->getHref());
     }
 
     /**
@@ -39,8 +39,8 @@ class ResourceLinkTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetRef($data)
     {
-        $link = new ResourceLink(json_decode($data));
-        $this->assertEquals('some ref', $link->getRef());
+        $reference = new Reference(json_decode($data));
+        $this->assertEquals('some ref', $reference->getRef());
     }
 
     /**
@@ -49,8 +49,8 @@ class ResourceLinkTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetType($data)
     {
-        $link = new ResourceLink(json_decode($data));
-        $this->assertEquals('text/html', $link->getType());
+        $reference = new Reference(json_decode($data));
+        $this->assertEquals('text/html', $reference->getType());
     }
 
     /**
@@ -59,8 +59,8 @@ class ResourceLinkTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetTitle($data)
     {
-        $link = new ResourceLink(json_decode($data));
-        $this->assertEquals('James', $link->getTitle());
+        $reference = new Reference(json_decode($data));
+        $this->assertEquals('James', $reference->getTitle());
     }
 
     /**
@@ -70,6 +70,6 @@ class ResourceLinkTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidData($data)
     {
-        new ResourceLink(json_decode($data));
+        new Reference(json_decode($data));
     }
 }

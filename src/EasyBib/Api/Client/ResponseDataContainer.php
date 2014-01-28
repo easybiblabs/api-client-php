@@ -2,7 +2,7 @@
 
 namespace EasyBib\Api\Client;
 
-use EasyBib\Api\Client\Resource\ResourceLink;
+use EasyBib\Api\Client\Resource\Reference;
 use Guzzle\Http\Message\Response;
 
 class ResponseDataContainer
@@ -22,11 +22,11 @@ class ResponseDataContainer
         return $this->rawData->data;
     }
 
-    public function getLinks()
+    public function getReferences()
     {
         return array_map(
-            function ($link) {
-                return new ResourceLink($link);
+            function ($reference) {
+                return new Reference($reference);
             },
             $this->rawData->links
         );
