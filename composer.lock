@@ -3,20 +3,20 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "3f53a7f84575c2d1334d69b1e11133b3",
+    "hash": "a2e46ad96ed289a44fc99a5b355059ef",
     "packages": [
         {
             "name": "fkooman/guzzle-bearer-auth-plugin",
-            "version": "dev-master",
+            "version": "0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fkooman/guzzle-bearer-auth-plugin.git",
-                "reference": "382f8fdb0ee6da45682754ec3720cee718f8316a"
+                "reference": "bc0c672a7dbc9e26808f70689c3921117dc88125"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/guzzle-bearer-auth-plugin/zipball/382f8fdb0ee6da45682754ec3720cee718f8316a",
-                "reference": "382f8fdb0ee6da45682754ec3720cee718f8316a",
+                "url": "https://api.github.com/repos/fkooman/guzzle-bearer-auth-plugin/zipball/bc0c672a7dbc9e26808f70689c3921117dc88125",
+                "reference": "bc0c672a7dbc9e26808f70689c3921117dc88125",
                 "shasum": ""
             },
             "require": {
@@ -29,22 +29,19 @@
                     "fkooman\\Guzzle\\Plugin\\BearerAuth": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "authors": [
                 {
-                    "email": "fkooman@tuxed.net",
                     "name": "François Kooman",
+                    "email": "fkooman@tuxed.net",
                     "role": "Developer"
                 }
             ],
             "description": "Guzzle Bearer plugin",
-            "support": {
-                "source": "https://github.com/fkooman/guzzle-bearer-auth-plugin/tree/master",
-                "issues": "https://github.com/fkooman/guzzle-bearer-auth-plugin/issues"
-            },
-            "time": "2014-01-15 16:17:58"
+            "time": "2013-07-06 14:17:35"
         },
         {
             "name": "fkooman/php-oauth-client",
@@ -1175,7 +1172,6 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "fkooman/guzzle-bearer-auth-plugin": 20,
         "fkooman/php-oauth-client": 20,
         "fabpot/php-cs-fixer": 20
     },

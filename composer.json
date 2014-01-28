@@ -15,17 +15,13 @@
         },
         {
             "type": "vcs",
-            "url": "git@github.com:fkooman/guzzle-bearer-auth-plugin"
-        },
-        {
-            "type": "vcs",
-            "url": "git@github.com:yitznewton/php-oauth-client"
+            "url": "git@github.com:easybiblabs/php-oauth-client"
         }
     ],
     "require": {
         "php": ">=5.5",
         "guzzle/guzzle": "3.8.*",
-        "fkooman/guzzle-bearer-auth-plugin": "dev-master",
+        "fkooman/guzzle-bearer-auth-plugin": "0.2.*",
         "fkooman/php-oauth-client": "dev-master"
     },
     "require-dev": {
