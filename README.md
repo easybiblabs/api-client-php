@@ -31,6 +31,8 @@ $clientConfig = new ClientConfig([
     'token_endpoint' => $apiRootUrl . '/oauth/token',
 ]);
 
+// a token store with PDO backend is also available; see
+// https://github.com/fkooman/php-oauth-client#token-storage
 $tokenStore = new SessionStorage();
 $oauth = new Api($configContext, $clientConfig, $tokenStore, $guzzleClient);
 
