@@ -14,16 +14,13 @@ trait HasRestfulLinks
      */
     public function get($ref)
     {
-        $link = $this->findLink($ref);
+        $link = $this->findReference($ref);
 
         if (!$link) {
             return null;
         }
 
-        $response = $this->getApiSession()->get($link->getHref());
-        $responseContainer = ResponseDataContainer::fromResponse($response);
-
-        return new Resource($responseContainer, $this->getApiSession());
+        return $this->getApiTraverser()->get($link->getHref());
     }
 
     /**
@@ -31,13 +28,13 @@ trait HasRestfulLinks
      * documents
      *
      * @param string $ref
-     * @return ResourceLink
+     * @return Reference
      */
-    public function findLink($ref)
+    public function findReference($ref)
     {
-        foreach ($this->getResponseDataContainer()->getLinks() as $link) {
-            if ($link->getRef() == $ref) {
-                return $link;
+        foreach ($this->getResponseDataContainer()->getReferences() as $reference) {
+            if ($reference->getRef() == $ref) {
+                return $reference;
             }
         }
 
@@ -45,9 +42,9 @@ trait HasRestfulLinks
     }
 
     /**
-     * @return \EasyBib\Api\Client\ApiSession
+     * @return \EasyBib\Api\Client\ApiTraverser
      */
-    abstract public function getApiSession();
+    abstract public function getApiTraverser();
 
     /**
      * @return \EasyBib\Api\Client\ResponseDataContainer

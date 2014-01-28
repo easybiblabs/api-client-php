@@ -2,44 +2,44 @@
 
 namespace EasyBib\Api\Client;
 
+use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Resource;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 
-class ApiSession
+class ApiTraverser
 {
-    /**
-     * @var string
-     */
-    private $token;
-
     /**
      * @var ClientInterface
      */
     private $httpClient;
 
     /**
-     * @param string $token
      * @param ClientInterface $httpClient
      */
-    public function __construct($token, ClientInterface $httpClient)
+    public function __construct(ClientInterface $httpClient)
     {
-        $this->token = $token;
         $this->httpClient = $httpClient;
+        $this->httpClient->setDefaultOption('exceptions', false);
     }
 
     /**
-     * @param $url
+     * @param string $url
      * @return \Guzzle\Http\Message\Response
      */
     public function get($url)
     {
         $request = $this->httpClient->get($url);
         $request->setHeader('Accept', 'application/vnd.com.easybib.data+json');
-        $request->setHeader('Authorization', 'Bearer ' . $this->token);
 
-        return $this->send($request);
+        $dataContainer = ResponseDataContainer::fromResponse($this->send($request));
+
+        if ($dataContainer->isList()) {
+            return new Collection($dataContainer, $this);
+        }
+
+        return new Resource($dataContainer, $this);
     }
 
     /**
@@ -49,10 +49,7 @@ class ApiSession
      */
     public function getUser()
     {
-        $response = $this->get('/user/');
-        $dataContainer = ResponseDataContainer::fromResponse($response);
-
-        return new Resource($dataContainer, $this);
+        return $this->get('/user/');
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace EasyBib\Tests\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiSession;
+use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Api\Client\ResponseDataContainer;
@@ -54,7 +55,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \BadMethodCallException
-     * @expectedExceptionMessage offsetSet() is degenerate
+     * @expectedExceptionMessage offsetSet() is not supported.
      */
     public function testOffsetSet()
     {
@@ -64,7 +65,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException \BadMethodCallException
-     * @expectedExceptionMessage offsetUnset() is degenerate
+     * @expectedExceptionMessage offsetUnset() is not supported.
      */
     public function testOffsetUnset()
     {
@@ -82,8 +83,9 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $response->setBody($body);
 
         $container = ResponseDataContainer::fromResponse($response);
-        $apiSession = new ApiSession('ABC123', new Client());
-        $resourceList = new Collection($container, $apiSession);
+
+        $apiTraverser = new ApiTraverser(new Client());
+        $resourceList = new Collection($container, $apiTraverser);
 
         return $resourceList;
     }

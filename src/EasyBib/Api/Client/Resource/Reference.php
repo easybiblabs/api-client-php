@@ -2,13 +2,16 @@
 
 namespace EasyBib\Api\Client\Resource;
 
-class ResourceLink
+class Reference
 {
     /**
      * @var \stdClass
      */
     private $rawData;
 
+    /**
+     * @var array
+     */
     private static $requiredKeys = [
         'href',
         'ref',
@@ -26,26 +29,42 @@ class ResourceLink
         $this->rawData = $rawData;
     }
 
+    /**
+     * @return string
+     */
     public function getHref()
     {
         return $this->rawData->href;
     }
 
+    /**
+     * @return string
+     */
     public function getRef()
     {
         return $this->rawData->ref;
     }
 
+    /**
+     * @return string
+     */
     public function getType()
     {
         return $this->rawData->type;
     }
 
+    /**
+     * @return string
+     */
     public function getTitle()
     {
         return $this->rawData->title;
     }
 
+    /**
+     * @param \stdClass $rawData
+     * @throws InvalidResourceLinkException
+     */
     private static function validate(\stdClass $rawData)
     {
         foreach (self::$requiredKeys as $key) {

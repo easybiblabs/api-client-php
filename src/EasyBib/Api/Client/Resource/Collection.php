@@ -2,7 +2,7 @@
 
 namespace EasyBib\Api\Client\Resource;
 
-use EasyBib\Api\Client\ApiSession;
+use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\ResponseDataContainer;
 
 class Collection implements \ArrayAccess
@@ -15,14 +15,14 @@ class Collection implements \ArrayAccess
     private $container;
 
     /**
-     * @var \EasyBib\Api\Client\ApiSession
+     * @var \EasyBib\Api\Client\ApiTraverser
      */
-    private $apiSession;
+    private $apiTraverser;
 
-    public function __construct(ResponseDataContainer $container, ApiSession $apiSession)
+    public function __construct(ResponseDataContainer $container, ApiTraverser $apiTraverser)
     {
         $this->container = $container;
-        $this->apiSession = $apiSession;
+        $this->apiTraverser = $apiTraverser;
     }
 
     /**
@@ -44,7 +44,7 @@ class Collection implements \ArrayAccess
             $this->container->getData()[$offset]
         );
 
-        return new Resource($containerForChild, $this->apiSession);
+        return new Resource($containerForChild, $this->apiTraverser);
     }
 
     /**
@@ -56,7 +56,7 @@ class Collection implements \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        throw new \BadMethodCallException('offsetSet() is degenerate');
+        throw new \BadMethodCallException('offsetSet() is not supported.');
     }
 
     /**
@@ -67,14 +67,20 @@ class Collection implements \ArrayAccess
      */
     public function offsetUnset($offset)
     {
-        throw new \BadMethodCallException('offsetUnset() is degenerate');
+        throw new \BadMethodCallException('offsetUnset() is not supported.');
     }
 
-    public function getApiSession()
+    /**
+     * @return ApiTraverser
+     */
+    public function getApiTraverser()
     {
-        return $this->apiSession;
+        return $this->apiTraverser;
     }
 
+    /**
+     * @return ResponseDataContainer
+     */
     public function getResponseDataContainer()
     {
         return $this->container;
