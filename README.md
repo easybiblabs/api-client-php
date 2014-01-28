@@ -2,22 +2,28 @@
 
 Use this to request data from the [EasyBib API](https://data.easybib.com/).
 The client uses [Guzzle](http://guzzlephp.org/) under the hood for the actual
-HTTP calls, and [php-oauth-client](https://github.com/fkooman/php-oauth-client)
+HTTP calls, and [php-oauth-client](https://github.com/easybiblabs/php-oauth-client)
 to manage the OAuth2 session.
 
 More information on the OAuth2 session is available in [that project's
-documentation](https://github.com/fkooman/php-oauth-client).
+documentation](https://github.com/easybiblabs/php-oauth-client).
 
-## Sample code
+## Installation
+
+Use [Composer](https://getcomposer.org/) to add this project to your project's
+dependencies.
+
+## Usage
+
+Currently, only read access is supported.
+
+Here is how to instantiate the core objects for the client:
 
 ```php
-use EasyBib\Api\Client\ApiTraverser;
-use fkooman\Guzzle\Plugin\BearerAuth\BearerAuth;
 use fkooman\OAuth\Client\Api;
 use fkooman\OAuth\Client\ClientConfig;
 use fkooman\OAuth\Client\Context;
 use fkooman\OAuth\Client\SessionStorage;
-use Guzzle\Http\Client;
 
 $yourClientId = 'foo';
 $yourClientSecret = 'bar';
@@ -32,33 +38,19 @@ $clientConfig = new ClientConfig([
 ]);
 
 // a token store with PDO backend is also available; see
-// https://github.com/fkooman/php-oauth-client#token-storage
+// https://github.com/easybiblabs/php-oauth-client#token-storage
 $tokenStore = new SessionStorage();
 $oauth = new Api($configContext, $clientConfig, $tokenStore, $guzzleClient);
 
 $context = new Context($yourClientId, ['USER_READ', 'DATA_READ_WRITE']);
-$accessToken = $oauth->getAccessToken($context);
-
-// NOTE: here, if no access token is found, you will need to redirect
-// to $api->getAuthorizeUri($context) - see below for handling
-
-$authentication = new BearerAuth($accessToken->getAccessToken());
-
-$guzzleClient = new Client($apiRootUrl);
-$guzzleClient->addSubscriber($authentication);
-
-$api = new ApiTraverser($guzzleClient);
-$user = $api->getUser();  // user serves as the entry point for traversing resources
-
-$titleOfFirstProject = $user->get('projects')[0]->title;
-$citationsFromFirstProject = $user->get('projects')[0]->get('citations');
-$linksForSecondProject = $user->get('projects')[1]->getLinkRefs();
 ```
 
-If we did not find a current, valid token above, we would redirect the user to
-the authentication endpoint on the OAuth service provider's server. After
-authentication, the OAuth provider would redirect back to our specified
-endpoint. We would then handle the request as follows:
+Next, your application will redirect the user to the EasyBib OAuth
+authorization endpoint
+so that the user can approve the request for access.
+
+The EasyBib OAuth service will redirect the user back to your application
+with the user's token. Your application should handle that request as follows:
 
 ```php
 // assuming same config variables as above
@@ -73,11 +65,33 @@ try {
         new \Guzzle\Http\Client()
     );
 
-    $cb->handleCallback($arrayOfQuerystringParams);
-    // auth is good; redirect back to real content
+    $callback->handleCallback($_GET);
 } catch (AuthorizeException $e) {
     // handle OAuth error, e.g. user refused to grant permission
 }
+
+// auth is good; redirect back to real content
+```
+
+At this point you can access the EasyBib API:
+
+```php
+use EasyBib\Api\Client\ApiTraverser;
+use fkooman\Guzzle\Plugin\BearerAuth\BearerAuth;
+use Guzzle\Http\Client;
+
+$accessToken = $api->getAccessToken($context);
+$authentication = new BearerAuth($accessToken->getAccessToken());
+
+$guzzleClient = new Client($apiRootUrl);
+$guzzleClient->addSubscriber($authentication);
+
+$api = new ApiTraverser($guzzleClient);
+$user = $api->getUser();  // user serves as the entry point for traversing resources
+
+$titleOfFirstProject = $user->get('projects')[0]->title;
+$citationsFromFirstProject = $user->get('projects')[0]->get('citations');
+$linksForSecondProject = $user->get('projects')[1]->getLinkRefs();
 ```
 
 ## License
