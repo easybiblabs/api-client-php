@@ -12,16 +12,25 @@ class ResponseDataContainer
      */
     private $rawData;
 
+    /**
+     * @param \stdClass $rawData
+     */
     public function __construct(\stdClass $rawData)
     {
         $this->rawData = $rawData;
     }
 
+    /**
+     * @return array|\stdClass
+     */
     public function getData()
     {
         return $this->rawData->data;
     }
 
+    /**
+     * @return array Reference[]
+     */
     public function getReferences()
     {
         return array_map(
@@ -45,6 +54,10 @@ class ResponseDataContainer
         return is_array($this->getData());
     }
 
+    /**
+     * @param Response $response
+     * @return ResponseDataContainer
+     */
     public static function fromResponse(Response $response)
     {
         $data = json_decode($response->getBody(true)) ?: (object) [];
