@@ -33,15 +33,19 @@ class ResponseDataContainer
     }
 
     /**
-     * Whether the data contained is a hash, as opposed to an indexed array
+     * Whether the data contained is an indexed array, as opposed to key-value
+     * pair, a.k.a. associative array. This mirrors an ambiguity in the API
+     * payloads. The `data` section can contain either a set of key-value
+     * pairs, *or* an array of "child" items.
      *
+     * @link http://stackoverflow.com/a/4254008/614709 Regarding the implemented strategy
      * @return bool
      */
-    public function isHash()
+    public function isList()
     {
         $dataArray = (array) $this->getData();
 
-        return (bool) count(array_filter(array_keys($dataArray), 'is_string'));
+        return !((bool) count(array_filter(array_keys($dataArray), 'is_string')));
     }
 
     public static function fromResponse(Response $response)

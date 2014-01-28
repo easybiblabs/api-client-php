@@ -35,11 +35,11 @@ class ApiTraverser
 
         $dataContainer = ResponseDataContainer::fromResponse($this->send($request));
 
-        if ($dataContainer->isHash()) {
-            return new Resource($dataContainer, $this);
+        if ($dataContainer->isList()) {
+            return new Collection($dataContainer, $this);
         }
 
-        return new Collection($dataContainer, $this);
+        return new Resource($dataContainer, $this);
     }
 
     /**

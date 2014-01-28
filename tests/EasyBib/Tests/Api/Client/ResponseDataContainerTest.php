@@ -41,13 +41,13 @@ class ResponseDataContainerTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testIsHash()
+    public function testIsList()
     {
         $hashData = '{"data":{"foo":"bar"}}';
-        $arrayData = '{"data":[{"foo":"bar"}]}';
+        $listData = '{"data":[{"foo":"bar"}]}';
 
-        $this->assertTrue($this->getResponseContainer($hashData)->isHash());
-        $this->assertFalse($this->getResponseContainer($arrayData)->isHash());
+        $this->assertFalse($this->getResponseContainer($hashData)->isList());
+        $this->assertTrue($this->getResponseContainer($listData)->isList());
     }
 
     private function getResponseContainer($body)
