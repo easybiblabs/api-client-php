@@ -3,22 +3,19 @@
 namespace EasyBib\Api\Client\Session;
 
 use EasyBib\Api\Client\TokenStore\TokenStoreInterface;
+use Guzzle\Http\ClientInterface;
 
 class ApiSession
 {
     private $baseUrl;
     private $tokenStore;
+    private $httpClient;
 
-    public function __construct($baseUrl, TokenStoreInterface $tokenStore)
+    public function __construct($baseUrl, TokenStoreInterface $tokenStore, ClientInterface $httpClient)
     {
         $this->baseUrl = $baseUrl;
         $this->tokenStore = $tokenStore;
-    }
-
-    public function getToken()
-    {
-        $this->ensureToken();
-        return $this->tokenStore->getToken();
+        $this->httpClient = $httpClient;
     }
 
     public function handleIncomingToken(IncomingTokenInterface $tokenRequest)
@@ -26,11 +23,13 @@ class ApiSession
         $this->tokenStore->setToken($tokenRequest);
     }
 
-    private function ensureToken(RedirectorInterface $redirector)
+    public function ensureToken(RedirectorInterface $redirector)
     {
         if (!$this->tokenStore->getToken()) {
-            call_user_func($redirector->getCallback($this->getAuthorizeUrl()));
+            $redirector->redirect($this->getAuthorizeUrl());
         }
+
+        // set token listener thingy
     }
 
     private function getAuthorizeUrl()

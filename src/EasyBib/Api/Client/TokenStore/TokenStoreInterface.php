@@ -7,10 +7,10 @@ use EasyBib\Api\Client\Session\IncomingTokenInterface;
 interface TokenStoreInterface
 {
     /**
-     * @param \EasyBib\Api\Client\Session\IncomingTokenInterface $token
+     * @param \EasyBib\Api\Client\Session\IncomingTokenInterface $incomingToken
      * @return void
      */
-    public function setToken(IncomingTokenInterface $token);
+    public function setToken(IncomingTokenInterface $incomingToken);
 
     /**
      * @return string

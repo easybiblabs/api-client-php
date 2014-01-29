@@ -5,7 +5,8 @@ namespace EasyBib\Api\Client\Session;
 interface RedirectorInterface
 {
     /**
-     * @return callable
+     * @param $url
+     * @return void
      */
-    public function getCallback();
+    public function redirect($url);
 }

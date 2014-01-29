@@ -8,12 +8,11 @@ class ExceptionRedirector implements RedirectorInterface
 {
     /**
      * @param string $url
-     * @return callable
+     * @throws RedirectException
+     * @return void
      */
-    public function getCallback($url)
+    public function redirect($url)
     {
-        return function () use ($url) {
-            throw new RedirectException('Redirecting to ' . $url);
-        };
+        throw new RedirectException('Redirecting to ' . $url);
     }
 }
