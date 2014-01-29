@@ -3,6 +3,7 @@
 namespace EasyBib\Api\Client\Session;
 
 use EasyBib\Api\Client\TokenStore\TokenStoreInterface;
+use fkooman\Guzzle\Plugin\BearerAuth\BearerAuth;
 use Guzzle\Http\ClientInterface;
 
 class ApiSession
@@ -21,15 +22,16 @@ class ApiSession
     public function handleIncomingToken(IncomingTokenInterface $tokenRequest)
     {
         $this->tokenStore->setToken($tokenRequest);
+        $authentication = new BearerAuth($tokenRequest->getToken());
+        $this->httpClient->addSubscriber($authentication);
     }
 
     public function ensureToken(RedirectorInterface $redirector)
     {
+        // TODO handle expired token
         if (!$this->tokenStore->getToken()) {
             $redirector->redirect($this->getAuthorizeUrl());
         }
-
-        // set token listener thingy
     }
 
     private function getAuthorizeUrl()
