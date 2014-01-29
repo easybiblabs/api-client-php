@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "a2e46ad96ed289a44fc99a5b355059ef",
+    "hash": "a72d5f61420f17a46885a65ca2708e1e",
     "packages": [
         {
             "name": "fkooman/guzzle-bearer-auth-plugin",
@@ -44,100 +44,17 @@
             "time": "2013-07-06 14:17:35"
         },
         {
-            "name": "fkooman/php-oauth-client",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/yitznewton/php-oauth-client.git",
-                "reference": "bdd10360bbc6569a20231939fc11668b0a6074ba"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/yitznewton/php-oauth-client/zipball/bdd10360bbc6569a20231939fc11668b0a6074ba",
-                "reference": "bdd10360bbc6569a20231939fc11668b0a6074ba",
-                "shasum": ""
-            },
-            "require": {
-                "ext-openssl": "*",
-                "fkooman/php-oauth-lib-common": "0.3.*",
-                "guzzle/guzzle": "3.8.*",
-                "monolog/monolog": "1.6.*",
-                "php": ">=5.3.3"
-            },
-            "require-dev": {
-                "sami/sami": "v1.1"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "fkooman\\OAuth\\Client": "src/"
-                }
-            },
-            "license": [
-                "LGPL-3.0+"
-            ],
-            "authors": [
-                {
-                    "email": "fkooman@tuxed.net",
-                    "name": "François Kooman",
-                    "role": "Developer"
-                }
-            ],
-            "description": "PHP OAuth 2.0 Client",
-            "support": {
-                "source": "https://github.com/yitznewton/php-oauth-client/tree/master"
-            },
-            "time": "2014-01-27 16:00:42"
-        },
-        {
-            "name": "fkooman/php-oauth-lib-common",
-            "version": "0.3.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/fkooman/php-oauth-lib-common.git",
-                "reference": "9ece2afedcdf90f431c13e4ba2b699c97d303fc0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/php-oauth-lib-common/zipball/9ece2afedcdf90f431c13e4ba2b699c97d303fc0",
-                "reference": "9ece2afedcdf90f431c13e4ba2b699c97d303fc0",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "fkooman\\OAuth\\Common\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "François Kooman",
-                    "email": "fkooman@tuxed.net",
-                    "role": "Developer"
-                }
-            ],
-            "description": "PHP library for common OAuth classes.",
-            "time": "2013-11-09 09:48:35"
-        },
-        {
             "name": "guzzle/guzzle",
-            "version": "v3.8.0",
+            "version": "v3.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "b4a3ce8c05e777fa18b802956d5d0e38ad338a69"
+                "reference": "4de0618a01b34aa1c8c33a3f13f396dcd3882eba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/b4a3ce8c05e777fa18b802956d5d0e38ad338a69",
-                "reference": "b4a3ce8c05e777fa18b802956d5d0e38ad338a69",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/4de0618a01b34aa1c8c33a3f13f396dcd3882eba",
+                "reference": "4de0618a01b34aa1c8c33a3f13f396dcd3882eba",
                 "shasum": ""
             },
             "require": {
@@ -175,8 +92,8 @@
                 "phpunit/phpunit": "3.7.*",
                 "psr/log": "1.0.*",
                 "symfony/class-loader": "*",
-                "zendframework/zend-cache": "2.0.*",
-                "zendframework/zend-log": "2.0.*"
+                "zendframework/zend-cache": "<2.3",
+                "zendframework/zend-log": "<2.3"
             },
             "type": "library",
             "extra": {
@@ -186,8 +103,8 @@
             },
             "autoload": {
                 "psr-0": {
-                    "Guzzle\\Tests": "tests/",
-                    "Guzzle": "src/"
+                    "Guzzle": "src/",
+                    "Guzzle\\Tests": "tests/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -216,107 +133,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2013-12-05 23:39:20"
-        },
-        {
-            "name": "monolog/monolog",
-            "version": "1.6.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "f72392d0e6eb855118f5a84e89ac2d257c704abd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/f72392d0e6eb855118f5a84e89ac2d257c704abd",
-                "reference": "f72392d0e6eb855118f5a84e89ac2d257c704abd",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0",
-                "psr/log": "~1.0"
-            },
-            "require-dev": {
-                "doctrine/couchdb": "dev-master",
-                "mlehner/gelf-php": "1.0.*",
-                "raven/raven": "0.5.*"
-            },
-            "suggest": {
-                "doctrine/couchdb": "Allow sending log messages to a CouchDB server",
-                "ext-amqp": "Allow sending log messages to an AMQP server (1.0+ required)",
-                "ext-mongo": "Allow sending log messages to a MongoDB server",
-                "mlehner/gelf-php": "Allow sending log messages to a GrayLog2 server",
-                "raven/raven": "Allow sending log messages to a Sentry server"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.6.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Monolog": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jordi Boggiano",
-                    "email": "j.boggiano@seld.be",
-                    "homepage": "http://seld.be",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Sends your logs to files, sockets, inboxes, databases and various web services",
-            "homepage": "http://github.com/Seldaek/monolog",
-            "keywords": [
-                "log",
-                "logging",
-                "psr-3"
-            ],
-            "time": "2013-07-28 22:38:30"
-        },
-        {
-            "name": "psr/log",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/php-fig/log.git",
-                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/fe0936ee26643249e916849d48e3a51d5f5e278b",
-                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Psr\\Log\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
-                }
-            ],
-            "description": "Common interface for logging libraries",
-            "keywords": [
-                "log",
-                "psr",
-                "psr-3"
-            ],
-            "time": "2012-12-21 11:40:51"
+            "time": "2014-01-28 22:29:15"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -1172,7 +989,6 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "fkooman/php-oauth-client": 20,
         "fabpot/php-cs-fixer": 20
     },
     "platform": {

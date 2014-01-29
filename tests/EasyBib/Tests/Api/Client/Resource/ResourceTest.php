@@ -2,7 +2,7 @@
 
 namespace EasyBib\Tests\Api\Client\Resource;
 
-use EasyBib\Api\Client\ApiSession;
+use EasyBib\Api\Client\Session\ApiSession;
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Resource\Reference;
 use EasyBib\Api\Client\ResponseDataContainer;
