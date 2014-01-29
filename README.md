@@ -24,6 +24,7 @@ use fkooman\OAuth\Client\Api;
 use fkooman\OAuth\Client\ClientConfig;
 use fkooman\OAuth\Client\Context;
 use fkooman\OAuth\Client\SessionStorage;
+use Guzzle\Http\Client;
 
 $yourClientId = 'foo';
 $yourClientSecret = 'bar';
@@ -40,6 +41,7 @@ $clientConfig = new ClientConfig([
 // a token store with PDO backend is also available; see
 // https://github.com/easybiblabs/php-oauth-client#token-storage
 $tokenStore = new SessionStorage();
+$guzzleClient = new Client();
 $oauth = new Api($configContext, $clientConfig, $tokenStore, $guzzleClient);
 
 $context = new Context($yourClientId, ['USER_READ', 'DATA_READ_WRITE']);
@@ -48,6 +50,10 @@ $context = new Context($yourClientId, ['USER_READ', 'DATA_READ_WRITE']);
 Next, your application will redirect the user to the EasyBib OAuth
 authorization endpoint
 so that the user can approve the request for access.
+
+```php
+$yourApplication->redirect($oauth->getAuthorizeUrl($context));
+```
 
 The EasyBib OAuth service will redirect the user back to your application
 with the user's token. Your application should handle that request as follows:
@@ -78,7 +84,6 @@ At this point you can access the EasyBib API:
 ```php
 use EasyBib\Api\Client\ApiTraverser;
 use fkooman\Guzzle\Plugin\BearerAuth\BearerAuth;
-use Guzzle\Http\Client;
 
 $accessToken = $api->getAccessToken($context);
 $authentication = new BearerAuth($accessToken->getAccessToken());
