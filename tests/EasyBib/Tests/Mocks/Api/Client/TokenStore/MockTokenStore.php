@@ -42,4 +42,14 @@ class MockTokenStore implements TokenStoreInterface
     {
         $this->expirationTime = $time;
     }
+
+    /**
+     * For testing purposes
+     *
+     * @param $token
+     */
+    public function forceToken($token)
+    {
+        $this->token = $token;
+    }
 }

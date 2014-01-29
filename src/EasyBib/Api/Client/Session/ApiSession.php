@@ -22,20 +22,31 @@ class ApiSession
     public function handleIncomingToken(IncomingTokenInterface $tokenRequest)
     {
         $this->tokenStore->setToken($tokenRequest);
-        $authentication = new BearerAuth($tokenRequest->getToken());
-        $this->httpClient->addSubscriber($authentication);
+        $this->pushTokenToHttpClient($tokenRequest->getToken());
     }
 
     public function ensureToken(RedirectorInterface $redirector)
     {
         // TODO handle expired token
-        if (!$this->tokenStore->getToken()) {
+        $token = $this->tokenStore->getToken();
+
+        if (!$token) {
             $redirector->redirect($this->getAuthorizeUrl());
         }
+
+        $this->pushTokenToHttpClient($token);
     }
 
     private function getAuthorizeUrl()
     {
         return $this->baseUrl . '/authorize';
+    }
+
+    /**
+     * @param $token
+     */
+    private function pushTokenToHttpClient($token)
+    {
+        $this->httpClient->addSubscriber(new BearerAuth($token));
     }
 }

@@ -15,6 +15,11 @@ use Guzzle\Plugin\Mock\MockPlugin;
 class ApiSessionTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var HistoryPlugin
+     */
+    private $history;
+
+    /**
      * @var Client
      */
     private $httpClient;
@@ -27,6 +32,16 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->httpClient = new Client();
+
+        $mockResponses = new MockPlugin([
+            new Response(200, [], '{}'),
+        ]);
+
+        $this->history = new HistoryPlugin();
+
+        $this->httpClient->addSubscriber($mockResponses);
+        $this->httpClient->addSubscriber($this->history);
+
         $this->tokenStore = new MockTokenStore();
     }
 
@@ -34,32 +49,31 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
      * @expectedException \EasyBib\Tests\Mocks\Api\Client\Session\MockRedirectException
      * @expectedExceptionMessage Redirecting to https://data.playground.easybib.example.com/authorize
      */
-    public function testEnsureToken()
+    public function testEnsureTokenWhenNotSet()
     {
         $session = $this->getSession();
         $redirector = new ExceptionMockRedirector();
         $session->ensureToken($redirector);
     }
 
+    public function testEnsureTokenWhenSet()
+    {
+        $this->tokenStore->forceToken('ABC123');
+        $session = $this->getSession();
+        $redirector = new ExceptionMockRedirector();
+        $session->ensureToken($redirector);
+
+        $lastRequest = $this->makeRequest();
+        $this->assertEquals('Bearer ABC123', $lastRequest->getHeader('Authorization'));
+    }
+
     public function testHandleIncomingToken()
     {
-        $mockResponses = new MockPlugin([
-            new Response(200, [], '{}'),
-        ]);
-
-        $history = new HistoryPlugin();
-
-        $this->httpClient->addSubscriber($mockResponses);
-        $this->httpClient->addSubscriber($history);
-
         $session = $this->getSession();
         $tokenRequest = new MockIncomingToken('ABC123');
         $session->handleIncomingToken($tokenRequest);
 
-        $request = $this->httpClient->get('http://example.org');
-        $request->send();
-
-        $lastRequest = $history->getLastRequest();
+        $lastRequest = $this->makeRequest();
 
         $this->assertEquals('ABC123', $this->tokenStore->getToken());
         $this->assertEquals('Bearer ABC123', $lastRequest->getHeader('Authorization'));
@@ -73,5 +87,16 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
         $apiRootUrl = 'https://data.playground.easybib.example.com';
         $session = new ApiSession($apiRootUrl, $this->tokenStore, $this->httpClient);
         return $session;
+    }
+
+    /**
+     * @return \Guzzle\Http\Message\RequestInterface
+     */
+    private function makeRequest()
+    {
+        $request = $this->httpClient->get('http://example.org');
+        $request->send();
+        $lastRequest = $this->history->getLastRequest();
+        return $lastRequest;
     }
 }
