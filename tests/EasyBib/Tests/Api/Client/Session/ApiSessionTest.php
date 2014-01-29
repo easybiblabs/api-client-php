@@ -9,7 +9,6 @@ use EasyBib\Tests\Mocks\Api\Client\TokenStore\MockTokenStore;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\Request;
 use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\Backoff\HttpBackoffStrategy;
 use Guzzle\Plugin\History\HistoryPlugin;
 use Guzzle\Plugin\Mock\MockPlugin;
 

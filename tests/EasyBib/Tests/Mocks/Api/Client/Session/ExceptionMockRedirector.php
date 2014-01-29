@@ -3,7 +3,6 @@
 namespace EasyBib\Tests\Mocks\Api\Client\Session;
 
 use EasyBib\Api\Client\Session\RedirectorInterface;
-use EasyBib\Tests\Mocks\Api\Client\Session\MockRedirectException;
 
 class ExceptionMockRedirector implements RedirectorInterface
 {

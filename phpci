@@ -19,6 +19,9 @@ echo './vendor/bin/phpmd src/ text phpmd.xml'
 echo './vendor/bin/php-cs-fixer --dry-run --verbose --diff fix src --fixers=unused_use'
 ./vendor/bin/php-cs-fixer --dry-run --verbose --diff fix src --fixers=unused_use || EXIT=1
 
+echo './vendor/bin/php-cs-fixer --dry-run --verbose --diff fix tests --fixers=unused_use'
+./vendor/bin/php-cs-fixer --dry-run --verbose --diff fix tests --fixers=unused_use || EXIT=1
+
 echo './vendor/bin/phpunit'
 ./vendor/bin/phpunit || EXIT=1
 

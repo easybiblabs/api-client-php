@@ -2,7 +2,6 @@
 
 namespace EasyBib\Tests\Api\Client;
 
-use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Api\Client\Resource\Reference;
 use EasyBib\Api\Client\ResponseDataContainer;
