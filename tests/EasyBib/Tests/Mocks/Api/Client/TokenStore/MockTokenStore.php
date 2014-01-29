@@ -7,7 +7,15 @@ use EasyBib\Api\Client\TokenStore\TokenStoreInterface;
 
 class MockTokenStore implements TokenStoreInterface
 {
+    /**
+     * @var string
+     */
     private $token;
+
+    /**
+     * @var int
+     */
+    private $expirationTime;
 
     /**
      * @param \EasyBib\Api\Client\Session\IncomingTokenInterface $tokenInterface
@@ -32,8 +40,6 @@ class MockTokenStore implements TokenStoreInterface
      */
     public function setExpirationTime($time)
     {
-        // TODO: Implement setExpirationTime() method.
-        // stick this here in the meantime to pass PHPMD
-        $time;
+        $this->expirationTime = $time;
     }
 }
