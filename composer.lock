@@ -48,13 +48,13 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/yitznewton/php-oauth-client.git",
-                "reference": "bdd10360bbc6569a20231939fc11668b0a6074ba"
+                "url": "https://github.com/easybiblabs/php-oauth-client.git",
+                "reference": "5d9697950cdcfbef21847f71e5cd9ca866edbda3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yitznewton/php-oauth-client/zipball/bdd10360bbc6569a20231939fc11668b0a6074ba",
-                "reference": "bdd10360bbc6569a20231939fc11668b0a6074ba",
+                "url": "https://api.github.com/repos/easybiblabs/php-oauth-client/zipball/5d9697950cdcfbef21847f71e5cd9ca866edbda3",
+                "reference": "5d9697950cdcfbef21847f71e5cd9ca866edbda3",
                 "shasum": ""
             },
             "require": {
@@ -65,7 +65,11 @@
                 "php": ">=5.3.3"
             },
             "require-dev": {
-                "sami/sami": "v1.1"
+                "fabpot/php-cs-fixer": "dev-master",
+                "phpmd/phpmd": "*",
+                "phpunit/phpunit": ">=3.7",
+                "sami/sami": "v1.1",
+                "squizlabs/php_codesniffer": "1.*"
             },
             "type": "library",
             "autoload": {
@@ -85,9 +89,9 @@
             ],
             "description": "PHP OAuth 2.0 Client",
             "support": {
-                "source": "https://github.com/yitznewton/php-oauth-client/tree/master"
+                "source": "https://github.com/easybiblabs/php-oauth-client/tree/master"
             },
-            "time": "2014-01-27 16:00:42"
+            "time": "2014-01-29 15:10:43"
         },
         {
             "name": "fkooman/php-oauth-lib-common",
