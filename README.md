@@ -2,11 +2,7 @@
 
 Use this to request data from the [EasyBib API](https://data.easybib.com/).
 The client uses [Guzzle](http://guzzlephp.org/) under the hood for the actual
-HTTP calls, and [php-oauth-client](https://github.com/easybiblabs/php-oauth-client)
-to manage the OAuth2 session.
-
-More information on the OAuth2 session is available in [that project's
-documentation](https://github.com/easybiblabs/php-oauth-client).
+HTTP calls.
 
 ## Installation
 
