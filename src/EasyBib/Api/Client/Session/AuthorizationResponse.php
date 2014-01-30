@@ -29,7 +29,7 @@ class AuthorizationResponse
 
     private static function validate(array $params)
     {
-        $validator = new ArrayValidator(self::$validParams);
+        $validator = new ArrayValidator(self::$validParams, self::$validParams);
         $validator->validate($params);
     }
 }
