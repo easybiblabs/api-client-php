@@ -3,6 +3,7 @@
 namespace EasyBib\Tests\Api\Client\Session;
 
 use EasyBib\Api\Client\ApiConfig;
+use EasyBib\Api\Client\Scope;
 use EasyBib\Api\Client\Session\ApiSession;
 use EasyBib\Api\Client\Session\TokenResponse;
 use EasyBib\Tests\Mocks\Api\Client\Session\ExceptionMockRedirector;
@@ -18,6 +19,11 @@ use Guzzle\Plugin\Mock\MockPlugin;
  */
 class ApiSessionTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var string
+     */
+    private $redirectUrl = 'http://myapp.example.org/handle/oauth';
+
     /**
      * @var HistoryPlugin
      */
@@ -56,11 +62,13 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
 
     public function testEnsureTokenWhenNotSet()
     {
-        $this->setExpectedException(
-            MockRedirectException::class,
-            'Redirecting to https://data.playground.easybib.example.com/authorize'
-            . '?response_type=code&client_id=client_123'
-        );
+        $redirectUrl = urlencode($this->redirectUrl);
+
+        $message = 'Redirecting to https://data.playground.easybib.example.com/authorize'
+            . "?response_type=code&client_id=client_123&redirect_url=$redirectUrl"
+            . "&scope=USER_READ+DATA_READ_WRITE";
+
+        $this->setExpectedException(MockRedirectException::class, $message);
 
         $this->session->ensureToken();
     }
@@ -95,17 +103,22 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
     private function getSession()
     {
         $apiRootUrl = 'https://data.playground.easybib.example.com';
+        $scope = new Scope(['USER_READ', 'DATA_READ_WRITE']);
 
-        return new ApiSession(
+        $session = new ApiSession(
             $apiRootUrl,
             $this->tokenStore,
             $this->httpClient,
             new ExceptionMockRedirector(),
             new ApiConfig([
                 'client_id' => 'client_123',
-                'redirect_url' => 'http://myapp.example.org/handle/oauth',
+                'redirect_url' => $this->redirectUrl,
             ])
         );
+
+        $session->setScope($scope);
+
+        return $session;
     }
 
     /**

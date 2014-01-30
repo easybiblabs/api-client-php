@@ -3,6 +3,7 @@
 namespace EasyBib\Api\Client\Session;
 
 use EasyBib\Api\Client\ApiConfig;
+use EasyBib\Api\Client\Scope;
 use EasyBib\Api\Client\TokenStore\TokenStoreInterface;
 use fkooman\Guzzle\Plugin\BearerAuth\BearerAuth;
 use Guzzle\Http\ClientInterface;
@@ -35,6 +36,11 @@ class ApiSession
     private $config;
 
     /**
+     * @var Scope
+     */
+    private $scope;
+
+    /**
      * @param string $baseUrl
      * @param TokenStoreInterface $tokenStore
      * @param ClientInterface $httpClient
@@ -53,6 +59,11 @@ class ApiSession
         $this->httpClient = $httpClient;
         $this->redirector = $redirector;
         $this->config = $config;
+    }
+
+    public function setScope(Scope $scope)
+    {
+        $this->scope = $scope;
     }
 
     public function authorize()
@@ -99,6 +110,10 @@ class ApiSession
     private function getAuthorizeUrl()
     {
         $params = ['response_type' => 'code'] + $this->config->getParams();
+
+        if ($this->scope) {
+            $params += $this->scope->getQuerystringParams();
+        }
 
         return $this->baseUrl . '/authorize?' . http_build_query($params);
     }

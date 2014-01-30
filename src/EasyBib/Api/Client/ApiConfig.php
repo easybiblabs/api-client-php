@@ -16,7 +16,6 @@ class ApiConfig
     private static $permittedParams = [
         'client_id',
         'redirect_url',
-        // 'scope',  // not yet supported
         // 'state',  // not yet supported
     ];
 
@@ -28,7 +27,9 @@ class ApiConfig
 
     public function getParams()
     {
-        return $this->params;
+        $params = $this->params;
+
+        return $params;
     }
 
     private static function validate(array $params)
