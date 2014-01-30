@@ -2,15 +2,14 @@
 
 namespace EasyBib\Api\Client\TokenStore;
 
-use EasyBib\Api\Client\Session\IncomingTokenInterface;
 
 interface TokenStoreInterface
 {
     /**
-     * @param \EasyBib\Api\Client\Session\IncomingTokenInterface $incomingToken
+     * @param string $token
      * @return void
      */
-    public function setToken(IncomingTokenInterface $incomingToken);
+    public function setToken($token);
 
     /**
      * @return string

@@ -7,7 +7,6 @@ use EasyBib\Tests\Mocks\Api\Client\Session\ExceptionMockRedirector;
 use EasyBib\Tests\Mocks\Api\Client\Session\MockIncomingToken;
 use EasyBib\Tests\Mocks\Api\Client\TokenStore\MockTokenStore;
 use Guzzle\Http\Client;
-use Guzzle\Http\Message\Request;
 use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\History\HistoryPlugin;
 use Guzzle\Plugin\Mock\MockPlugin;
@@ -29,6 +28,11 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
      */
     private $tokenStore;
 
+    /**
+     * @var ApiSession
+     */
+    private $session;
+
     public function setUp()
     {
         $this->httpClient = new Client();
@@ -41,8 +45,8 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
 
         $this->httpClient->addSubscriber($mockResponses);
         $this->httpClient->addSubscriber($this->history);
-
         $this->tokenStore = new MockTokenStore();
+        $this->session = $this->getSession();
     }
 
     /**
@@ -51,27 +55,25 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function testEnsureTokenWhenNotSet()
     {
-        $session = $this->getSession();
         $redirector = new ExceptionMockRedirector();
-        $session->ensureToken($redirector);
+        $this->session->ensureToken($redirector);
     }
 
     public function testEnsureTokenWhenSet()
     {
-        $this->tokenStore->forceToken('ABC123');
-        $session = $this->getSession();
+        $this->tokenStore->setToken('ABC123');
         $redirector = new ExceptionMockRedirector();
-        $session->ensureToken($redirector);
+        $this->session->ensureToken($redirector);
 
         $lastRequest = $this->makeRequest();
+
         $this->assertEquals('Bearer ABC123', $lastRequest->getHeader('Authorization'));
     }
 
     public function testHandleIncomingToken()
     {
-        $session = $this->getSession();
         $tokenRequest = new MockIncomingToken('ABC123');
-        $session->handleIncomingToken($tokenRequest);
+        $this->session->handleIncomingToken($tokenRequest);
 
         $lastRequest = $this->makeRequest();
 
@@ -85,8 +87,8 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
     private function getSession()
     {
         $apiRootUrl = 'https://data.playground.easybib.example.com';
-        $session = new ApiSession($apiRootUrl, $this->tokenStore, $this->httpClient);
-        return $session;
+
+        return new ApiSession($apiRootUrl, $this->tokenStore, $this->httpClient);
     }
 
     /**
@@ -96,7 +98,7 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
     {
         $request = $this->httpClient->get('http://example.org');
         $request->send();
-        $lastRequest = $this->history->getLastRequest();
-        return $lastRequest;
+
+        return $this->history->getLastRequest();
     }
 }

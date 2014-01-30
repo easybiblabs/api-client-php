@@ -2,7 +2,6 @@
 
 namespace EasyBib\Tests\Mocks\Api\Client\TokenStore;
 
-use EasyBib\Api\Client\Session\IncomingTokenInterface;
 use EasyBib\Api\Client\TokenStore\TokenStoreInterface;
 
 class MockTokenStore implements TokenStoreInterface
@@ -18,12 +17,11 @@ class MockTokenStore implements TokenStoreInterface
     private $expirationTime;
 
     /**
-     * @param \EasyBib\Api\Client\Session\IncomingTokenInterface $tokenInterface
-     * @return void
+     * @param string $token
      */
-    public function setToken(IncomingTokenInterface $tokenInterface)
+    public function setToken($token)
     {
-        $this->token = $tokenInterface->getToken();
+        $this->token = $token;
     }
 
     /**
@@ -41,15 +39,5 @@ class MockTokenStore implements TokenStoreInterface
     public function setExpirationTime($time)
     {
         $this->expirationTime = $time;
-    }
-
-    /**
-     * For testing purposes
-     *
-     * @param $token
-     */
-    public function forceToken($token)
-    {
-        $this->token = $token;
     }
 }

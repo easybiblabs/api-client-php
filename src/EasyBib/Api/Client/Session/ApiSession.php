@@ -40,8 +40,9 @@ class ApiSession
      */
     public function handleIncomingToken(IncomingTokenInterface $tokenRequest)
     {
-        $this->tokenStore->setToken($tokenRequest);
-        $this->pushTokenToHttpClient($tokenRequest->getToken());
+        $token = $tokenRequest->getToken();
+        $this->tokenStore->setToken($token);
+        $this->pushTokenToHttpClient($token);
     }
 
     /**
