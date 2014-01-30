@@ -76,14 +76,14 @@ class ApiSession
     {
         $tokenRequest = new TokenRequest($this->config, $this->httpClient, $authorizationResponse);
         $tokenResponse = $tokenRequest->send();
-        $this->handleIncomingToken($tokenResponse);
+        $this->handleTokenResponse($tokenResponse);
     }
 
     /**
      * @todo this will become private
      * @param TokenResponse $tokenResponse
      */
-    public function handleIncomingToken(TokenResponse $tokenResponse)
+    public function handleTokenResponse(TokenResponse $tokenResponse)
     {
         $token = $tokenResponse->getToken();
         $this->tokenStore->setToken($token);

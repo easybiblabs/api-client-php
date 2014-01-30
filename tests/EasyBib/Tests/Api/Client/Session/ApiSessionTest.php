@@ -89,7 +89,7 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
             'access_token' => 'ABC123',
         ]);
         
-        $this->session->handleIncomingToken($tokenRequest);
+        $this->session->handleTokenResponse($tokenRequest);
 
         $lastRequest = $this->makeRequest();
 

@@ -4,6 +4,13 @@ namespace EasyBib\Tests\Mocks\Api\Client\Session;
 
 use EasyBib\Api\Client\Session\RedirectorInterface;
 
+/**
+ * This simulates redirects. It can be detected and caught within test harnesses,
+ * as well as outputting a message and exiting in command-line test scripts.
+ *
+ * Class ExceptionMockRedirector
+ * @package EasyBib\Tests\Mocks\Api\Client\Session
+ */
 class ExceptionMockRedirector implements RedirectorInterface
 {
     /**
