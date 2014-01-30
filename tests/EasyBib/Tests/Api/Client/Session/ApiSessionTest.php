@@ -55,15 +55,13 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function testEnsureTokenWhenNotSet()
     {
-        $redirector = new ExceptionMockRedirector();
-        $this->session->ensureToken($redirector);
+        $this->session->ensureToken();
     }
 
     public function testEnsureTokenWhenSet()
     {
         $this->tokenStore->setToken('ABC123');
-        $redirector = new ExceptionMockRedirector();
-        $this->session->ensureToken($redirector);
+        $this->session->ensureToken();
 
         $lastRequest = $this->makeRequest();
 
@@ -91,7 +89,12 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
     {
         $apiRootUrl = 'https://data.playground.easybib.example.com';
 
-        return new ApiSession($apiRootUrl, $this->tokenStore, $this->httpClient);
+        return new ApiSession(
+            $apiRootUrl,
+            $this->tokenStore,
+            $this->httpClient,
+            new ExceptionMockRedirector()
+        );
     }
 
     /**

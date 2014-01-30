@@ -24,17 +24,36 @@ class ApiSession
     private $httpClient;
 
     /**
+     * @var RedirectorInterface
+     */
+    private $redirector;
+
+    /**
      * @param string $baseUrl
      * @param TokenStoreInterface $tokenStore
      * @param ClientInterface $httpClient
+     * @param RedirectorInterface $redirector
      */
-    public function __construct($baseUrl, TokenStoreInterface $tokenStore, ClientInterface $httpClient)
-    {
+    public function __construct(
+        $baseUrl,
+        TokenStoreInterface $tokenStore,
+        ClientInterface $httpClient,
+        RedirectorInterface $redirector
+    ) {
         $this->baseUrl = $baseUrl;
         $this->tokenStore = $tokenStore;
         $this->httpClient = $httpClient;
+        $this->redirector = $redirector;
     }
 
+    public function authorize()
+    {
+        $this->redirector->redirect($this->getAuthorizeUrl());
+    }
+
+    /**
+     * @param AuthorizationResponse $authorizationResponse
+     */
     public function handleAuthorizationResponse(AuthorizationResponse $authorizationResponse)
     {
         $tokenRequest = new TokenRequest($this, $authorizationResponse);
@@ -42,6 +61,7 @@ class ApiSession
     }
 
     /**
+     * @todo this will become private
      * @param TokenResponse $tokenResponse
      */
     public function handleIncomingToken(TokenResponse $tokenResponse)
@@ -51,16 +71,13 @@ class ApiSession
         $this->pushTokenToHttpClient($token);
     }
 
-    /**
-     * @param RedirectorInterface $redirector
-     */
-    public function ensureToken(RedirectorInterface $redirector)
+    public function ensureToken()
     {
         // TODO handle expired token
         $token = $this->tokenStore->getToken();
 
         if (!$token) {
-            $redirector->redirect($this->getAuthorizeUrl());
+            $this->authorize();
         }
 
         $this->pushTokenToHttpClient($token);
