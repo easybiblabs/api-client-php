@@ -24,19 +24,26 @@ you might use something like the following pseudocode:
 ```php
 class SessionTokenStore implements \EasyBib\Api\Client\Session\TokenStore\TokenStoreInterface
 {
+    private $sessionWrapper;
+
+    public function __constructor(MySessionWrapper $sessionWrapper)
+    {
+        $this->sessionWrapper = $sessionWrapper;
+    }
+
     public function getToken()
     {
-        return $this->mySessionWrapper->get('easybib.api.token');
+        return $this->sessionWrapper->get('easybib.api.token');
     }
 
     public function setToken($token)
     {
-        $this->mySessionWrapper->set('easybib.api.token', $token);
+        $this->sessionWrapper->set('easybib.api.token', $token);
     }
 
     public function setExpirationTime($time)
     {
-        $this->mySessionWrapper->expireAt($time);
+        $this->sessionWrapper->expireAt($time);
     }
 }
 ```
