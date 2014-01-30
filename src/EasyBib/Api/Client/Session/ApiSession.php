@@ -98,7 +98,9 @@ class ApiSession
      */
     private function getAuthorizeUrl()
     {
-        return $this->baseUrl . '/authorize';
+        $params = ['response_type' => 'code'] + $this->config->getParams();
+
+        return $this->baseUrl . '/authorize?' . http_build_query($params);
     }
 
     /**

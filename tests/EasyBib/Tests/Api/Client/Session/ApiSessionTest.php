@@ -6,6 +6,7 @@ use EasyBib\Api\Client\ApiConfig;
 use EasyBib\Api\Client\Session\ApiSession;
 use EasyBib\Api\Client\Session\TokenResponse;
 use EasyBib\Tests\Mocks\Api\Client\Session\ExceptionMockRedirector;
+use EasyBib\Tests\Mocks\Api\Client\Session\MockRedirectException;
 use EasyBib\Tests\Mocks\Api\Client\TokenStore\MockTokenStore;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\Response;
@@ -53,12 +54,14 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
         $this->session = $this->getSession();
     }
 
-    /**
-     * @expectedException \EasyBib\Tests\Mocks\Api\Client\Session\MockRedirectException
-     * @expectedExceptionMessage Redirecting to https://data.playground.easybib.example.com/authorize
-     */
     public function testEnsureTokenWhenNotSet()
     {
+        $this->setExpectedException(
+            MockRedirectException::class,
+            'Redirecting to https://data.playground.easybib.example.com/authorize'
+            . '?response_type=code&client_id=client_123'
+        );
+
         $this->session->ensureToken();
     }
 
@@ -98,7 +101,10 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
             $this->tokenStore,
             $this->httpClient,
             new ExceptionMockRedirector(),
-            new ApiConfig(['client_id' => 'client_123'])
+            new ApiConfig([
+                'client_id' => 'client_123',
+                'redirect_url' => 'http://myapp.example.org/handle/oauth',
+            ])
         );
     }
 

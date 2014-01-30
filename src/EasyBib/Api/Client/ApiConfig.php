@@ -13,19 +13,27 @@ class ApiConfig
         'client_id',
     ];
 
-    private static $alwaysParams = [
-        'response_type' => 'code',
+    private static $permittedParams = [
+        'client_id',
+        'redirect_url',
+        // 'scope',  // not yet supported
+        // 'state',  // not yet supported
     ];
 
     public function __construct(array $params)
     {
         self::validate($params);
-        $this->params = self::$alwaysParams + $params;
+        $this->params = $params;
+    }
+
+    public function getParams()
+    {
+        return $this->params;
     }
 
     private static function validate(array $params)
     {
-        $validator = new ArrayValidator(self::$requiredParams);
+        $validator = new ArrayValidator(self::$requiredParams, self::$permittedParams);
         $validator->validate($params);
     }
 }
