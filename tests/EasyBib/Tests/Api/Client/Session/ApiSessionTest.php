@@ -6,43 +6,20 @@ use EasyBib\Api\Client\Session\ApiConfig;
 use EasyBib\Api\Client\Session\Scope;
 use EasyBib\Api\Client\Session\ApiSession;
 use EasyBib\Api\Client\Session\TokenResponse;
+use EasyBib\Tests\Api\Client\TestCase;
 use EasyBib\Tests\Mocks\Api\Client\Session\ExceptionMockRedirector;
 use EasyBib\Tests\Mocks\Api\Client\Session\MockRedirectException;
-use EasyBib\Tests\Mocks\Api\Client\Session\MockTokenStore;
 use Guzzle\Http\Client;
-use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\History\HistoryPlugin;
-use Guzzle\Plugin\Mock\MockPlugin;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class ApiSessionTest extends \PHPUnit_Framework_TestCase
+class ApiSessionTest extends TestCase
 {
     /**
      * @var string
      */
     private $redirectUrl = 'http://myapp.example.org/handle/oauth';
-
-    /**
-     * @var string
-     */
-    private $apiBaseUrl = 'http://data.easybib.example.com';
-
-    /**
-     * @var HistoryPlugin
-     */
-    private $history;
-
-    /**
-     * @var Client
-     */
-    private $httpClient;
-
-    /**
-     * @var MockTokenStore
-     */
-    private $tokenStore;
 
     /**
      * @var ApiSession
@@ -51,17 +28,8 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->httpClient = new Client($this->apiBaseUrl);
+        parent::setUp();
 
-        $mockResponses = new MockPlugin([
-            new Response(200, [], '{}'),
-        ]);
-
-        $this->history = new HistoryPlugin();
-
-        $this->httpClient->addSubscriber($mockResponses);
-        $this->httpClient->addSubscriber($this->history);
-        $this->tokenStore = new MockTokenStore();
         $this->session = $this->getSession();
     }
 
@@ -86,6 +54,14 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
         $lastRequest = $this->makeRequest();
 
         $this->assertEquals('Bearer ABC123', $lastRequest->getHeader('Authorization'));
+    }
+
+    public function testHandleAuthorizationResponse()
+    {
+        $this->markTestIncomplete();
+        $this->session->handleAuthorizationResponse($this->authorization);
+        $this->shouldHaveMadeATokenRequest();
+        //$this->should->haveStoredAToken();
     }
 
     public function testHandleIncomingToken()
