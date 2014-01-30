@@ -1,7 +1,6 @@
 <?php
 
-namespace EasyBib\Api\Client\TokenStore;
-
+namespace EasyBib\Api\Client\Session\TokenStore;
 
 interface TokenStoreInterface
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace EasyBib\Tests\Mocks\Api\Client\TokenStore;
+namespace EasyBib\Tests\Mocks\Api\Client\Session;
 
-use EasyBib\Api\Client\TokenStore\TokenStoreInterface;
+use EasyBib\Api\Client\Session\TokenStore\TokenStoreInterface;
 
-class MockTokenStore implements TokenStoreInterface
+class MockTokenStore implements \EasyBib\Api\Client\Session\TokenStore\TokenStoreInterface
 {
     /**
      * @var string

@@ -2,9 +2,7 @@
 
 namespace EasyBib\Api\Client\Session;
 
-use EasyBib\Api\Client\ApiConfig;
-use EasyBib\Api\Client\Scope;
-use EasyBib\Api\Client\TokenStore\TokenStoreInterface;
+use EasyBib\Api\Client\Session\TokenStore\TokenStoreInterface;
 use fkooman\Guzzle\Plugin\BearerAuth\BearerAuth;
 use Guzzle\Http\ClientInterface;
 
@@ -16,7 +14,7 @@ class ApiSession
     private $baseUrl;
 
     /**
-     * @var \EasyBib\Api\Client\TokenStore\TokenStoreInterface
+     * @var \EasyBib\Api\Client\Session\TokenStore\TokenStoreInterface
      */
     private $tokenStore;
 

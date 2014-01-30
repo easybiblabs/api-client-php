@@ -1,6 +1,6 @@
 <?php
 
-namespace EasyBib\Tests\Api\Client\Mocks\TokenStore;
+namespace EasyBib\Tests\Api\Client\Mocks\Session;
 
 class MockTokenStoreTest extends \PHPUnit_Framework_TestCase
 {

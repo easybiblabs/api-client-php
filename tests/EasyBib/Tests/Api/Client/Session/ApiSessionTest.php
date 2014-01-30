@@ -2,13 +2,13 @@
 
 namespace EasyBib\Tests\Api\Client\Session;
 
-use EasyBib\Api\Client\ApiConfig;
-use EasyBib\Api\Client\Scope;
+use EasyBib\Api\Client\Session\ApiConfig;
+use EasyBib\Api\Client\Session\Scope;
 use EasyBib\Api\Client\Session\ApiSession;
 use EasyBib\Api\Client\Session\TokenResponse;
 use EasyBib\Tests\Mocks\Api\Client\Session\ExceptionMockRedirector;
 use EasyBib\Tests\Mocks\Api\Client\Session\MockRedirectException;
-use EasyBib\Tests\Mocks\Api\Client\TokenStore\MockTokenStore;
+use EasyBib\Tests\Mocks\Api\Client\Session\MockTokenStore;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\History\HistoryPlugin;

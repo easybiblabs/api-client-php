@@ -2,7 +2,7 @@
 
 namespace EasyBib\Tests\Api\Client\Session;
 
-use EasyBib\Api\Client\ApiConfig;
+use EasyBib\Api\Client\Session\ApiConfig;
 use EasyBib\Api\Client\Session\AuthorizationResponse;
 use EasyBib\Api\Client\Session\TokenRequest;
 use Guzzle\Http\Client;

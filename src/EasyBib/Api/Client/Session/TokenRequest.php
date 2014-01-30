@@ -2,7 +2,6 @@
 
 namespace EasyBib\Api\Client\Session;
 
-use EasyBib\Api\Client\ApiConfig;
 use Guzzle\Http\ClientInterface;
 
 class TokenRequest
@@ -10,7 +9,7 @@ class TokenRequest
     const GRANT_TYPE = 'authorization_code';
 
     /**
-     * @var \EasyBib\Api\Client\ApiConfig
+     * @var \EasyBib\Api\Client\Session\ApiConfig
      */
     private $config;
 
