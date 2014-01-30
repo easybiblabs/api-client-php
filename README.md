@@ -22,7 +22,7 @@ Tokens might be stored in session or in a database. For a session implementation
 you might use something like the following pseudocode:
 
 ```php
-class SessionTokenStore implements TokenStoreInterface
+class SessionTokenStore implements \EasyBib\Api\Client\Session\TokenStore\TokenStoreInterface
 {
     public function getToken()
     {
@@ -31,7 +31,7 @@ class SessionTokenStore implements TokenStoreInterface
 
     public function setToken($token)
     {
-        $this->mySessionWrapper->set('easybib.api.token');
+        $this->mySessionWrapper->set('easybib.api.token', $token);
     }
 
     public function setExpirationTime($time)
@@ -48,7 +48,7 @@ browser to EasyBib's authorization page for confirmation. Your application's
 redirect mechanism must be injected via something like this pseudocode:
 
 ```php
-class MyRedirector implements RedirectorInterface
+class MyRedirector implements \EasyBib\Api\Client\Session\RedirectorInterface
 {
     public function redirect($url)
     {
