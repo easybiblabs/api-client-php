@@ -14,8 +14,9 @@ class Given
 
     /**
      * @param $token
+     * @param \Guzzle\Plugin\Mock\MockPlugin $mockResponses
      */
-    public function iExpectToReceiveATokenRequest($token, MockPlugin $mockResponses)
+    public function iAmReadyToRespondToATokenRequest($token, MockPlugin $mockResponses)
     {
         $tokenData = json_encode([
             'access_token' => $token,

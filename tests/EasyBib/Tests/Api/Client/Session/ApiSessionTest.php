@@ -57,10 +57,10 @@ class ApiSessionTest extends TestCase
     public function testHandleAuthorizationResponse()
     {
         $token = 'token_ABC123';
-        $this->given->iExpectToReceiveATokenRequest($token, $this->mockResponses);
+        $this->given->iAmReadyToRespondToATokenRequest($token, $this->mockResponses);
 
         $this->session->handleAuthorizationResponse($this->authorization);
-        
+
         $this->shouldHaveMadeATokenRequest();
         $this->shouldHaveATokenAssigned($token);
     }

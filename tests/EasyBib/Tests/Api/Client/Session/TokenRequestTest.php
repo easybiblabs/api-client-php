@@ -12,7 +12,7 @@ class TokenRequestTest extends TestCase
     public function testSend()
     {
         $token = 'token_ABC123';
-        $this->given->iExpectToReceiveATokenRequest($token, $this->mockResponses);
+        $this->given->iAmReadyToRespondToATokenRequest($token, $this->mockResponses);
 
         $tokenRequest = new TokenRequest($this->config, $this->httpClient, $this->authorization);
         $tokenResponse = $tokenRequest->send();
