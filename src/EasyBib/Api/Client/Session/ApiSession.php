@@ -74,7 +74,13 @@ class ApiSession
      */
     public function handleAuthorizationResponse(AuthorizationResponse $authorizationResponse)
     {
-        $tokenRequest = new TokenRequest($this->clientConfig, $this->httpClient, $authorizationResponse);
+        $tokenRequest = new TokenRequest(
+            $this->clientConfig,
+            $this->serverConfig,
+            $this->httpClient,
+            $authorizationResponse
+        );
+
         $tokenResponse = $tokenRequest->send();
         $this->handleTokenResponse($tokenResponse);
     }

@@ -10,6 +10,9 @@ use Guzzle\Http\Client;
 use Guzzle\Plugin\History\HistoryPlugin;
 use Guzzle\Plugin\Mock\MockPlugin;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
     /**
