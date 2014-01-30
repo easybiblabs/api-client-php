@@ -19,7 +19,7 @@ key integration points.
 ### Token storage
 
 Tokens might be stored in session or in a database. For a session implementation,
-you might use something like the following pseudocode:
+you might use something like the following:
 
 ```php
 class SessionTokenStore implements \EasyBib\Api\Client\Session\TokenStore\TokenStoreInterface
@@ -52,15 +52,22 @@ class SessionTokenStore implements \EasyBib\Api\Client\Session\TokenStore\TokenS
 
 To make the initial authorization call, your app must redirect the user's
 browser to EasyBib's authorization page for confirmation. Your application's
-redirect mechanism must be injected via something like this pseudocode:
+redirect mechanism must be injected via something like this:
 
 ```php
 class MyRedirector implements \EasyBib\Api\Client\Session\RedirectorInterface
 {
+    private $responseWrapper;
+
+    public function __construct(MyResponseWrapper $responseWrapper)
+    {
+        $this->responseWrapper = $responseWrapper;
+    }
+
     public function redirect($url)
     {
         // throws exception or calls header() to redirect user
-        $this->myResponseWrapper->redirect($url);
+        $this->responseWrapper->redirect($url);
     }
 }
 ```
