@@ -2,6 +2,7 @@
 
 namespace EasyBib\Api\Client\Session;
 
+use EasyBib\Api\Client\ApiConfig;
 use EasyBib\Api\Client\TokenStore\TokenStoreInterface;
 use fkooman\Guzzle\Plugin\BearerAuth\BearerAuth;
 use Guzzle\Http\ClientInterface;
@@ -29,21 +30,29 @@ class ApiSession
     private $redirector;
 
     /**
+     * @var ApiConfig
+     */
+    private $config;
+
+    /**
      * @param string $baseUrl
      * @param TokenStoreInterface $tokenStore
      * @param ClientInterface $httpClient
      * @param RedirectorInterface $redirector
+     * @param ApiConfig $config
      */
     public function __construct(
         $baseUrl,
         TokenStoreInterface $tokenStore,
         ClientInterface $httpClient,
-        RedirectorInterface $redirector
+        RedirectorInterface $redirector,
+        ApiConfig $config
     ) {
         $this->baseUrl = $baseUrl;
         $this->tokenStore = $tokenStore;
         $this->httpClient = $httpClient;
         $this->redirector = $redirector;
+        $this->config = $config;
     }
 
     public function authorize()
@@ -57,7 +66,8 @@ class ApiSession
     public function handleAuthorizationResponse(AuthorizationResponse $authorizationResponse)
     {
         $tokenRequest = new TokenRequest($this, $authorizationResponse);
-        $this->handleIncomingToken($tokenRequest->send());
+        $tokenResponse = $tokenRequest->send();
+        $this->handleIncomingToken($tokenResponse);
     }
 
     /**

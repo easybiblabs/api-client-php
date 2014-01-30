@@ -2,6 +2,7 @@
 
 namespace EasyBib\Tests\Api\Client\Session;
 
+use EasyBib\Api\Client\ApiConfig;
 use EasyBib\Api\Client\Session\ApiSession;
 use EasyBib\Api\Client\Session\TokenResponse;
 use EasyBib\Tests\Mocks\Api\Client\Session\ExceptionMockRedirector;
@@ -11,6 +12,9 @@ use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\History\HistoryPlugin;
 use Guzzle\Plugin\Mock\MockPlugin;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class ApiSessionTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -93,7 +97,8 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
             $apiRootUrl,
             $this->tokenStore,
             $this->httpClient,
-            new ExceptionMockRedirector()
+            new ExceptionMockRedirector(),
+            new ApiConfig(['client_id' => 'client_123'])
         );
     }
 

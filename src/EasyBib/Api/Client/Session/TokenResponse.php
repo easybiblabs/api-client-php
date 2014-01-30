@@ -2,6 +2,8 @@
 
 namespace EasyBib\Api\Client\Session;
 
+use EasyBib\Api\Client\ArrayValidator;
+
 class TokenResponse
 {
     private $token;
@@ -30,10 +32,7 @@ class TokenResponse
      */
     private static function validate(array $params)
     {
-        foreach (self::$requiredParams as $key) {
-            if (!isset($params[$key])) {
-                throw new \InvalidArgumentException('Missing key ' . $key);
-            }
-        }
+        $validator = new ArrayValidator(self::$requiredParams);
+        $validator->validate($params);
     }
 }
