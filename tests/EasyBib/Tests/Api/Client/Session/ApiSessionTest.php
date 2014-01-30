@@ -25,6 +25,11 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
     private $redirectUrl = 'http://myapp.example.org/handle/oauth';
 
     /**
+     * @var string
+     */
+    private $apiBaseUrl = 'http://data.easybib.example.com';
+
+    /**
      * @var HistoryPlugin
      */
     private $history;
@@ -46,7 +51,7 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->httpClient = new Client();
+        $this->httpClient = new Client($this->apiBaseUrl);
 
         $mockResponses = new MockPlugin([
             new Response(200, [], '{}'),
@@ -64,7 +69,7 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
     {
         $redirectUrl = urlencode($this->redirectUrl);
 
-        $message = 'Redirecting to https://data.playground.easybib.example.com/oauth/authorize'
+        $message = "Redirecting to $this->apiBaseUrl/oauth/authorize"
             . "?response_type=code&client_id=client_123&redirect_url=$redirectUrl"
             . "&scope=USER_READ+DATA_READ_WRITE";
 
@@ -102,11 +107,9 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
      */
     private function getSession()
     {
-        $apiRootUrl = 'https://data.playground.easybib.example.com';
         $scope = new Scope(['USER_READ', 'DATA_READ_WRITE']);
 
         $session = new ApiSession(
-            $apiRootUrl,
             $this->tokenStore,
             $this->httpClient,
             new ExceptionMockRedirector(),

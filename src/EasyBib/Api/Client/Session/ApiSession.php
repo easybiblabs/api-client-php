@@ -9,11 +9,6 @@ use Guzzle\Http\ClientInterface;
 class ApiSession
 {
     /**
-     * @var string
-     */
-    private $baseUrl;
-
-    /**
      * @var \EasyBib\Api\Client\Session\TokenStore\TokenStoreInterface
      */
     private $tokenStore;
@@ -39,20 +34,17 @@ class ApiSession
     private $scope;
 
     /**
-     * @param string $baseUrl
      * @param TokenStoreInterface $tokenStore
      * @param ClientInterface $httpClient
      * @param RedirectorInterface $redirector
      * @param ApiConfig $config
      */
     public function __construct(
-        $baseUrl,
         TokenStoreInterface $tokenStore,
         ClientInterface $httpClient,
         RedirectorInterface $redirector,
         ApiConfig $config
     ) {
-        $this->baseUrl = $baseUrl;
         $this->tokenStore = $tokenStore;
         $this->httpClient = $httpClient;
         $this->redirector = $redirector;
@@ -113,7 +105,8 @@ class ApiSession
             $params += $this->scope->getQuerystringParams();
         }
 
-        return $this->baseUrl . '/oauth/authorize?' . http_build_query($params);
+        return $this->httpClient->getBaseUrl() . '/oauth/authorize?'
+            . http_build_query($params);
     }
 
     /**
