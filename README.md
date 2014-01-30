@@ -9,85 +9,73 @@ HTTP calls.
 Use [Composer](https://getcomposer.org/) to add this project to your project's
 dependencies.
 
+Currently, only read access to the API is supported.
+
+## Extension for your app
+
+In order to use this client, you will need to implement several interfaces at
+key integration points.
+
+### Token storage
+
+Tokens might be stored in session or in a database. For a session implementation,
+you might use something like the following pseudocode:
+
+```php
+class SessionTokenStore implements TokenStoreInterface
+{
+    public function getToken()
+    {
+        return $this->mySessionWrapper->get('easybib.api.token');
+    }
+
+    public function setToken($token)
+    {
+        $this->mySessionWrapper->set('easybib.api.token');
+    }
+
+    public function setExpirationTime($time)
+    {
+        $this->mySessionWrapper->expireAt($time);
+    }
+}
+```
+
+### Redirection
+
+To make the initial authorization call, your app must redirect the user's
+browser to EasyBib's authorization page for confirmation. Your application's
+redirect mechanism must be injected via something like this pseudocode:
+
+```php
+class MyRedirector implements RedirectorInterface
+{
+    public function redirect($url)
+    {
+        // throws exception or calls header() to redirect user
+        $this->myResponseWrapper->redirect($url);
+    }
+}
+```
+
 ## Usage
 
-Currently, only read access is supported.
+When you are ready to connect to the EasyBib API, you will need to authorize
+your user.
 
-Here is how to instantiate the core objects for the client:
-
-```php
-use fkooman\OAuth\Client\Api;
-use fkooman\OAuth\Client\ClientConfig;
-use fkooman\OAuth\Client\Context;
-use fkooman\OAuth\Client\SessionStorage;
-use Guzzle\Http\Client;
-
-$yourClientId = 'foo';
-$yourClientSecret = 'bar';
-$configContext = 'easybib-api';
-$apiRootUrl = 'https://data.easybib.com';
-
-$clientConfig = new ClientConfig([
-    'client_id' => $yourClientId,
-    'client_secret' => $yourClientSecret,
-    'authorize_endpoint' => $apiRootUrl . '/oauth/authorize',
-    'token_endpoint' => $apiRootUrl . '/oauth/token',
-]);
-
-// a token store with PDO backend is also available; see
-// https://github.com/easybiblabs/php-oauth-client#token-storage
-$tokenStore = new SessionStorage();
-$guzzleClient = new Client();
-$oauth = new Api($configContext, $clientConfig, $tokenStore, $guzzleClient);
-
-$context = new Context($yourClientId, ['USER_READ', 'DATA_READ_WRITE']);
-```
-
-Next, your application will redirect the user to the EasyBib OAuth
-authorization endpoint
-so that the user can approve the request for access.
-
-```php
-$yourApplication->redirect($oauth->getAuthorizeUrl($context));
-```
+> TODO fill me in
 
 The EasyBib OAuth service will redirect the user back to your application
 with the user's token. Your application should handle that request as follows:
 
-```php
-// assuming same config variables as above
-
-use fkooman\OAuth\Client\Callback;
-
-try {
-    $callback = new Callback(
-        $configContext,
-        $clientConfig,
-        new SessionStorage(),
-        new \Guzzle\Http\Client()
-    );
-
-    $callback->handleCallback($_GET);
-} catch (AuthorizeException $e) {
-    // handle OAuth error, e.g. user refused to grant permission
-}
-
-// auth is good; redirect back to real content
-```
+> TODO fill me in
 
 At this point you can access the EasyBib API:
 
+> TODO finish this section
+
 ```php
-use EasyBib\Api\Client\ApiTraverser;
-use fkooman\Guzzle\Plugin\BearerAuth\BearerAuth;
-
-$accessToken = $api->getAccessToken($context);
-$authentication = new BearerAuth($accessToken->getAccessToken());
-
-$guzzleClient = new Client($apiRootUrl);
-$guzzleClient->addSubscriber($authentication);
-
-$api = new ApiTraverser($guzzleClient);
+$api = new ApiTraverser($apiSession);
 $user = $api->getUser();  // user serves as the entry point for traversing resources
 
 $titleOfFirstProject = $user->get('projects')[0]->title;
