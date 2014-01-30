@@ -4,7 +4,6 @@ namespace EasyBib\Tests\Api\Client\Session;
 
 use EasyBib\Api\Client\Session\Scope;
 use EasyBib\Api\Client\Session\ApiSession;
-use EasyBib\Api\Client\Session\TokenResponse;
 use EasyBib\Tests\Api\Client\TestCase;
 use EasyBib\Tests\Mocks\Api\Client\Session\ExceptionMockRedirector;
 use EasyBib\Tests\Mocks\Api\Client\Session\MockRedirectException;
@@ -59,24 +58,19 @@ class ApiSessionTest extends TestCase
     {
         $token = 'token_ABC123';
         $this->given->iExpectToReceiveATokenRequest($token, $this->mockResponses);
+
         $this->session->handleAuthorizationResponse($this->authorization);
+        
         $this->shouldHaveMadeATokenRequest();
-        // TODO
-        // $this->should->haveStoredAToken();
+        $this->shouldHaveATokenAssigned($token);
     }
 
-    public function testHandleIncomingToken()
+    private function shouldHaveATokenAssigned($token)
     {
-        $tokenResponse = new TokenResponse([
-            'access_token' => 'ABC123',
-        ]);
-        
-        $this->session->handleTokenResponse($tokenResponse);
-
         $lastRequest = $this->makeRequest();
 
-        $this->assertEquals('ABC123', $this->tokenStore->getToken());
-        $this->assertEquals('Bearer ABC123', $lastRequest->getHeader('Authorization'));
+        $this->assertEquals($token, $this->tokenStore->getToken());
+        $this->assertEquals('Bearer ' . $token, $lastRequest->getHeader('Authorization'));
     }
 
     /**

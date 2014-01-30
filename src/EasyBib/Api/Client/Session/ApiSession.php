@@ -71,17 +71,6 @@ class ApiSession
         $this->handleTokenResponse($tokenResponse);
     }
 
-    /**
-     * @todo this will become private
-     * @param TokenResponse $tokenResponse
-     */
-    public function handleTokenResponse(TokenResponse $tokenResponse)
-    {
-        $token = $tokenResponse->getToken();
-        $this->tokenStore->setToken($token);
-        $this->pushTokenToHttpClient($token);
-    }
-
     public function ensureToken()
     {
         // TODO handle expired token
@@ -91,6 +80,16 @@ class ApiSession
             $this->authorize();
         }
 
+        $this->pushTokenToHttpClient($token);
+    }
+
+    /**
+     * @param TokenResponse $tokenResponse
+     */
+    private function handleTokenResponse(TokenResponse $tokenResponse)
+    {
+        $token = $tokenResponse->getToken();
+        $this->tokenStore->setToken($token);
         $this->pushTokenToHttpClient($token);
     }
 
