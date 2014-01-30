@@ -16,7 +16,7 @@ class ArrayValidator
 
     /**
      * @param array $requiredKeys
-     * @param array $permittedKeys
+     * @param array $permittedKeys An optional whitelist for array keys
      */
     public function __construct(array $requiredKeys, array $permittedKeys = null)
     {
@@ -30,20 +30,16 @@ class ArrayValidator
      */
     public function validate(array $params)
     {
-        foreach ($this->requiredKeys as $key) {
-            if (!isset($params[$key])) {
-                throw new \InvalidArgumentException('Missing key ' . $key);
-            }
+        if ($missingKeys = array_diff($this->requiredKeys, array_keys($params))) {
+            throw new \InvalidArgumentException('Missing key(s) ' . implode(', ', $missingKeys));
         }
 
         if (!$this->permittedKeys) {
             return;
         }
 
-        foreach (array_keys($params) as $key) {
-            if (!in_array($key, $this->permittedKeys)) {
-                throw new \InvalidArgumentException('Unexpected key ' . $key);
-            }
+        if ($unexpectedKeys = array_diff(array_keys($params), $this->permittedKeys)) {
+            throw new \InvalidArgumentException('Unexpected key(s) ' . implode(', ', $unexpectedKeys));
         }
     }
 }

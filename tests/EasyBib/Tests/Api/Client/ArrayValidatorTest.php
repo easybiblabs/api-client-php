@@ -67,7 +67,7 @@ class ArrayValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(
             \InvalidArgumentException::class,
-            'Missing key ' . $expectedMissingKey
+            'Missing key(s) ' . $expectedMissingKey
         );
 
         $validator = new ArrayValidator($requiredKeys);
@@ -84,7 +84,7 @@ class ArrayValidatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(
             \InvalidArgumentException::class,
-            'Unexpected key ' . $expectedExtraKey
+            'Unexpected key(s) ' . $expectedExtraKey
         );
 
         $validator = new ArrayValidator($expectedKeys, $expectedKeys);
