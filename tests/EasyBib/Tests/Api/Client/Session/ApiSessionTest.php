@@ -107,8 +107,6 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
      */
     private function getSession()
     {
-        $scope = new Scope(['USER_READ', 'DATA_READ_WRITE']);
-
         $session = new ApiSession(
             $this->tokenStore,
             $this->httpClient,
@@ -119,6 +117,7 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
             ])
         );
 
+        $scope = new Scope(['USER_READ', 'DATA_READ_WRITE']);
         $session->setScope($scope);
 
         return $session;

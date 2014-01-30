@@ -16,7 +16,6 @@ class TokenRequest
     /**
      * @var \Guzzle\Http\ClientInterface
      */
-
     private $httpClient;
 
     /**
@@ -48,6 +47,9 @@ class TokenRequest
         $request->send();
     }
 
+    /**
+     * @return array
+     */
     private function getParams()
     {
         return [
