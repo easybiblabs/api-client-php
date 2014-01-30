@@ -61,7 +61,7 @@ class TokenRequestTest extends \PHPUnit_Framework_TestCase
     public function testSend()
     {
         $tokenRequest = new TokenRequest($this->config, $this->httpClient, $this->authorizationResponse);
-        $tokenResponse = $tokenRequest->send();
+        $tokenRequest->send();
 
         $lastRequest = $this->history->getLastRequest();
 
