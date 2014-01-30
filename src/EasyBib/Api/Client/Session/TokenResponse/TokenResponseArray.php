@@ -1,9 +1,8 @@
 <?php
 
-namespace EasyBib\Api\Client\Session\IncomingToken;
+namespace EasyBib\Api\Client\Session\TokenResponse;
 
-
-class IncomingTokenArray implements IncomingTokenInterface
+class TokenResponseArray implements TokenResponseInterface
 {
     private $token;
 

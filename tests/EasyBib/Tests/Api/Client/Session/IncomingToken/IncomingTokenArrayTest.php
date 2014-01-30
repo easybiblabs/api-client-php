@@ -2,7 +2,7 @@
 
 namespace EasyBib\Tests\Api\Client\Session\IncomingToken;
 
-use EasyBib\Api\Client\Session\IncomingToken\IncomingTokenArray;
+use EasyBib\Api\Client\Session\TokenResponse\TokenResponseArray;
 
 class IncomingTokenArrayTest extends \PHPUnit_Framework_TestCase
 {
@@ -46,7 +46,7 @@ class IncomingTokenArrayTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructorValidates(array $params)
     {
-        new IncomingTokenArray($params);
+        new \EasyBib\Api\Client\Session\TokenResponse\TokenResponseArray($params);
     }
 
     /**
@@ -56,7 +56,7 @@ class IncomingTokenArrayTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetToken(array $params, $token)
     {
-        $incomingToken = new IncomingTokenArray($params);
+        $incomingToken = new \EasyBib\Api\Client\Session\TokenResponse\TokenResponseArray($params);
         $this->assertEquals($token, $incomingToken->getToken());
     }
 }

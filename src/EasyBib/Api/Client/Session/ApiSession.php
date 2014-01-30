@@ -2,7 +2,7 @@
 
 namespace EasyBib\Api\Client\Session;
 
-use EasyBib\Api\Client\Session\IncomingToken\IncomingTokenInterface;
+use EasyBib\Api\Client\Session\TokenResponse\TokenResponseInterface;
 use EasyBib\Api\Client\TokenStore\TokenStoreInterface;
 use fkooman\Guzzle\Plugin\BearerAuth\BearerAuth;
 use Guzzle\Http\ClientInterface;
@@ -36,10 +36,16 @@ class ApiSession
         $this->httpClient = $httpClient;
     }
 
+//    public function handleAuthorizationResponse(AuthorizationRepsonseInterface $authorizationRepsonse)
+//    {
+//        $tokenRequest = new AccessTokenRequest($this, $authorizationRepsonse);
+//        $this->handleIncomingToken($tokenRequest->send());
+//    }
+
     /**
-     * @param IncomingTokenInterface $tokenRequest
+     * @param TokenResponseInterface $tokenRequest
      */
-    public function handleIncomingToken(IncomingTokenInterface $tokenRequest)
+    public function handleIncomingToken(TokenResponseInterface $tokenRequest)
     {
         $token = $tokenRequest->getToken();
         $this->tokenStore->setToken($token);
