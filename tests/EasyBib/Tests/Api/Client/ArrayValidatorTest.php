@@ -30,7 +30,7 @@ class ArrayValidatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function getInvalidData()
+    public function getWithMissingData()
     {
         $invalidData = [];
 
@@ -44,12 +44,26 @@ class ArrayValidatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider getInvalidData
+     * @return array
+     */
+    public function getWithExtraData()
+    {
+        $invalidData = [];
+
+        $data = $this->getValidData()[0];
+        $data[0]['jamma'] = 'bamma';
+        $invalidData[] = [$data[0], $data[1], 'jamma'];
+
+        return $invalidData;
+    }
+
+    /**
+     * @dataProvider getWithMissingData
      * @params array $input
      * @params array $requiredKeys
      * @params string $expectedMissingKey
      */
-    public function testValidateWithInvalidData(array $input, array $requiredKeys, $expectedMissingKey)
+    public function testValidateWithMissingData(array $input, array $requiredKeys, $expectedMissingKey)
     {
         $this->setExpectedException(
             \InvalidArgumentException::class,
@@ -57,6 +71,35 @@ class ArrayValidatorTest extends \PHPUnit_Framework_TestCase
         );
 
         $validator = new ArrayValidator($requiredKeys);
+        $validator->validate($input);
+    }
+
+    /**
+     * @dataProvider getWithExtraData
+     * @params array $input
+     * @params array $expectedKeys
+     * @params string $expectedMissingKey
+     */
+    public function testValidateWithExtraData(array $input, array $expectedKeys, $expectedExtraKey)
+    {
+        $this->setExpectedException(
+            \InvalidArgumentException::class,
+            'Unexpected key ' . $expectedExtraKey
+        );
+
+        $validator = new ArrayValidator($expectedKeys, $expectedKeys);
+        $validator->validate($input);
+    }
+
+    /**
+     * @dataProvider getWithExtraData
+     * @params array $input
+     * @params array $expectedKeys
+     * @params string $expectedMissingKey
+     */
+    public function testValidateWithExtraDataNoPermittedKeysGiven(array $input, array $expectedKeys, $expectedExtraKey)
+    {
+        $validator = new ArrayValidator($expectedKeys);
         $validator->validate($input);
     }
 

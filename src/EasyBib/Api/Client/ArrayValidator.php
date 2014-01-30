@@ -9,9 +9,19 @@ class ArrayValidator
      */
     private $requiredKeys;
 
-    public function __construct(array $requiredKeys)
+    /**
+     * @var array
+     */
+    private $permittedKeys;
+
+    /**
+     * @param array $requiredKeys
+     * @param array $permittedKeys
+     */
+    public function __construct(array $requiredKeys, array $permittedKeys = null)
     {
         $this->requiredKeys = $requiredKeys;
+        $this->permittedKeys = $permittedKeys;
     }
 
     /**
@@ -23,6 +33,16 @@ class ArrayValidator
         foreach ($this->requiredKeys as $key) {
             if (!isset($params[$key])) {
                 throw new \InvalidArgumentException('Missing key ' . $key);
+            }
+        }
+
+        if (!$this->permittedKeys) {
+            return;
+        }
+
+        foreach (array_keys($params) as $key) {
+            if (!in_array($key, $this->permittedKeys)) {
+                throw new \InvalidArgumentException('Unexpected key ' . $key);
             }
         }
     }
