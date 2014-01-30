@@ -9,7 +9,7 @@ class TokenRequest
     const GRANT_TYPE = 'authorization_code';
 
     /**
-     * @var \EasyBib\Api\Client\Session\ApiConfig
+     * @var \EasyBib\Api\Client\Session\ClientConfig
      */
     private $config;
 
@@ -24,12 +24,12 @@ class TokenRequest
     private $authorizationResponse;
 
     /**
-     * @param ApiConfig $config
+     * @param ClientConfig $config
      * @param ClientInterface $httpClient
      * @param AuthorizationResponse $authorization
      */
     public function __construct(
-        ApiConfig $config,
+        ClientConfig $config,
         ClientInterface $httpClient,
         AuthorizationResponse $authorization
     ) {

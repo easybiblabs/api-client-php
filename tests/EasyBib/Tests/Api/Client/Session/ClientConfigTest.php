@@ -4,7 +4,7 @@ namespace EasyBib\Tests\Api\Client\Session;
 
 use EasyBib\Api\Client\Session\TokenResponse;
 
-class ApiConfigTest extends \PHPUnit_Framework_TestCase
+class ClientConfigTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @return array

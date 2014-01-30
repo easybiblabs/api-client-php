@@ -33,7 +33,7 @@ class ApiSessionTest extends TestCase
 
     public function testEnsureTokenWhenNotSet()
     {
-        $redirectUrl = urlencode($this->config->getParams()['redirect_url']);
+        $redirectUrl = urlencode($this->clientConfig->getParams()['redirect_url']);
 
         $message = "Redirecting to $this->apiBaseUrl/oauth/authorize"
             . "?response_type=code&client_id=client_123&redirect_url=$redirectUrl"
@@ -82,7 +82,8 @@ class ApiSessionTest extends TestCase
             $this->tokenStore,
             $this->httpClient,
             new ExceptionMockRedirector(),
-            $this->config
+            $this->clientConfig,
+            $this->serverConfig
         );
 
         $scope = new Scope(['USER_READ', 'DATA_READ_WRITE']);

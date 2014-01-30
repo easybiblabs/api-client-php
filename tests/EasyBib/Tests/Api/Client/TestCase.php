@@ -2,8 +2,9 @@
 
 namespace EasyBib\Tests\Api\Client;
 
-use EasyBib\Api\Client\Session\ApiConfig;
+use EasyBib\Api\Client\Session\ClientConfig;
 use EasyBib\Api\Client\Session\AuthorizationResponse;
+use EasyBib\Api\Client\Session\ServerConfig;
 use EasyBib\Tests\Mocks\Api\Client\Session\MockTokenStore;
 use Guzzle\Http\Client;
 use Guzzle\Plugin\History\HistoryPlugin;
@@ -42,9 +43,14 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     protected $tokenStore;
 
     /**
-     * @var ApiConfig
+     * @var ClientConfig
      */
-    protected $config;
+    protected $clientConfig;
+
+    /**
+     * @var ServerConfig
+     */
+    protected $serverConfig;
 
     /**
      * @var AuthorizationResponse
@@ -62,9 +68,14 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->config = new ApiConfig([
+        $this->clientConfig = new ClientConfig([
             'client_id' => 'client_123',
             'redirect_url' => 'http://myapp.example.com/',
+        ]);
+
+        $this->serverConfig = new ServerConfig([
+            'authorization_endpoint' => '/oauth/authorize',
+            'token_endpoint' => '/oauth/token',
         ]);
 
         $this->httpClient = new Client($this->apiBaseUrl);
@@ -84,8 +95,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $expectedParams = [
             'grant_type' => 'authorization_code',
             'code' => $this->authorization->getCode(),
-            'redirect_uri' => $this->config->getParams()['redirect_url'],
-            'client_id' => $this->config->getParams()['client_id'],
+            'redirect_uri' => $this->clientConfig->getParams()['redirect_url'],
+            'client_id' => $this->clientConfig->getParams()['client_id'],
         ];
 
         $this->assertEquals('POST', $lastRequest->getMethod());

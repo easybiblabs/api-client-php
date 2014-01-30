@@ -24,9 +24,14 @@ class ApiSession
     private $redirector;
 
     /**
-     * @var ApiConfig
+     * @var ClientConfig
      */
-    private $config;
+    private $clientConfig;
+
+    /**
+     * @var ServerConfig
+     */
+    private $serverConfig;
 
     /**
      * @var Scope
@@ -37,18 +42,21 @@ class ApiSession
      * @param TokenStoreInterface $tokenStore
      * @param ClientInterface $httpClient
      * @param RedirectorInterface $redirector
-     * @param ApiConfig $config
+     * @param ClientConfig $clientConfig
+     * @param ServerConfig $serverConfig
      */
     public function __construct(
         TokenStoreInterface $tokenStore,
         ClientInterface $httpClient,
         RedirectorInterface $redirector,
-        ApiConfig $config
+        ClientConfig $clientConfig,
+        ServerConfig $serverConfig
     ) {
         $this->tokenStore = $tokenStore;
         $this->httpClient = $httpClient;
         $this->redirector = $redirector;
-        $this->config = $config;
+        $this->clientConfig = $clientConfig;
+        $this->serverConfig = $serverConfig;
     }
 
     public function setScope(Scope $scope)
@@ -66,7 +74,7 @@ class ApiSession
      */
     public function handleAuthorizationResponse(AuthorizationResponse $authorizationResponse)
     {
-        $tokenRequest = new TokenRequest($this->config, $this->httpClient, $authorizationResponse);
+        $tokenRequest = new TokenRequest($this->clientConfig, $this->httpClient, $authorizationResponse);
         $tokenResponse = $tokenRequest->send();
         $this->handleTokenResponse($tokenResponse);
     }
@@ -98,14 +106,15 @@ class ApiSession
      */
     private function getAuthorizeUrl()
     {
-        $params = ['response_type' => 'code'] + $this->config->getParams();
+        $params = ['response_type' => 'code'] + $this->clientConfig->getParams();
 
         if ($this->scope) {
             $params += $this->scope->getQuerystringParams();
         }
 
-        return $this->httpClient->getBaseUrl() . '/oauth/authorize?'
-            . http_build_query($params);
+        return $this->httpClient->getBaseUrl()
+            . $this->serverConfig->getParams()['authorization_endpoint']
+            . '?' . http_build_query($params);
     }
 
     /**
