@@ -64,7 +64,7 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
     {
         $redirectUrl = urlencode($this->redirectUrl);
 
-        $message = 'Redirecting to https://data.playground.easybib.example.com/authorize'
+        $message = 'Redirecting to https://data.playground.easybib.example.com/oauth/authorize'
             . "?response_type=code&client_id=client_123&redirect_url=$redirectUrl"
             . "&scope=USER_READ+DATA_READ_WRITE";
 

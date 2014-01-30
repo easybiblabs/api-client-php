@@ -76,7 +76,7 @@ class ApiSession
      */
     public function handleAuthorizationResponse(AuthorizationResponse $authorizationResponse)
     {
-        $tokenRequest = new TokenRequest($this, $authorizationResponse);
+        $tokenRequest = new TokenRequest($this->config, $this->httpClient, $authorizationResponse);
         $tokenResponse = $tokenRequest->send();
         $this->handleIncomingToken($tokenResponse);
     }
@@ -115,7 +115,7 @@ class ApiSession
             $params += $this->scope->getQuerystringParams();
         }
 
-        return $this->baseUrl . '/authorize?' . http_build_query($params);
+        return $this->baseUrl . '/oauth/authorize?' . http_build_query($params);
     }
 
     /**
