@@ -6,7 +6,6 @@ use EasyBib\Api\Client\Session\ApiConfig;
 use EasyBib\Api\Client\Session\AuthorizationResponse;
 use EasyBib\Tests\Mocks\Api\Client\Session\MockTokenStore;
 use Guzzle\Http\Client;
-use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\History\HistoryPlugin;
 use Guzzle\Plugin\Mock\MockPlugin;
 
@@ -31,6 +30,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      * @var Client
      */
     protected $httpClient;
+
+    /**
+     * @var MockPlugin
+     */
+    protected $mockResponses;
 
     /**
      * @var MockTokenStore
@@ -58,21 +62,17 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->httpClient = new Client($this->apiBaseUrl);
-
-        $mockResponses = new MockPlugin([
-            new Response(200, [], '{}'),
-        ]);
-
-        $this->history = new HistoryPlugin();
-
         $this->config = new ApiConfig([
             'client_id' => 'client_123',
             'redirect_url' => 'http://myapp.example.com/',
         ]);
 
-        $this->httpClient->addSubscriber($mockResponses);
+        $this->httpClient = new Client($this->apiBaseUrl);
+        $this->mockResponses = new MockPlugin();
+        $this->history = new HistoryPlugin();
+        $this->httpClient->addSubscriber($this->mockResponses);
         $this->httpClient->addSubscriber($this->history);
+
         $this->tokenStore = new MockTokenStore();
         $this->authorization = new AuthorizationResponse(['code' => 'ABC123']);
     }
@@ -91,6 +91,5 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals('POST', $lastRequest->getMethod());
         $this->assertEquals($expectedParams, $lastRequest->getPostFields()->toArray());
         $this->assertEquals($this->apiBaseUrl . '/oauth/token', $lastRequest->getUrl());
-        // TODO assert return value
     }
 }

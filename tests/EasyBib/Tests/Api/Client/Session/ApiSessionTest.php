@@ -2,7 +2,6 @@
 
 namespace EasyBib\Tests\Api\Client\Session;
 
-use EasyBib\Api\Client\Session\ApiConfig;
 use EasyBib\Api\Client\Session\Scope;
 use EasyBib\Api\Client\Session\ApiSession;
 use EasyBib\Api\Client\Session\TokenResponse;
@@ -35,7 +34,7 @@ class ApiSessionTest extends TestCase
 
     public function testEnsureTokenWhenNotSet()
     {
-        $redirectUrl = urlencode($this->redirectUrl);
+        $redirectUrl = urlencode($this->config->getParams()['redirect_url']);
 
         $message = "Redirecting to $this->apiBaseUrl/oauth/authorize"
             . "?response_type=code&client_id=client_123&redirect_url=$redirectUrl"
@@ -58,19 +57,21 @@ class ApiSessionTest extends TestCase
 
     public function testHandleAuthorizationResponse()
     {
-        $this->markTestIncomplete();
+        $token = 'token_ABC123';
+        $this->given->iExpectToReceiveATokenRequest($token, $this->mockResponses);
         $this->session->handleAuthorizationResponse($this->authorization);
         $this->shouldHaveMadeATokenRequest();
-        //$this->should->haveStoredAToken();
+        // TODO
+        // $this->should->haveStoredAToken();
     }
 
     public function testHandleIncomingToken()
     {
-        $tokenRequest = new TokenResponse([
+        $tokenResponse = new TokenResponse([
             'access_token' => 'ABC123',
         ]);
         
-        $this->session->handleTokenResponse($tokenRequest);
+        $this->session->handleTokenResponse($tokenResponse);
 
         $lastRequest = $this->makeRequest();
 
@@ -87,10 +88,7 @@ class ApiSessionTest extends TestCase
             $this->tokenStore,
             $this->httpClient,
             new ExceptionMockRedirector(),
-            new ApiConfig([
-                'client_id' => 'client_123',
-                'redirect_url' => $this->redirectUrl,
-            ])
+            $this->config
         );
 
         $scope = new Scope(['USER_READ', 'DATA_READ_WRITE']);

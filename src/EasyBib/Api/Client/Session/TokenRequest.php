@@ -44,7 +44,9 @@ class TokenRequest
     public function send()
     {
         $request = $this->httpClient->post('/oauth/token', [], $this->getParams());
-        $request->send();
+        $responseBody = $request->send()->getBody(true);
+
+        return new TokenResponse(json_decode($responseBody, true));
     }
 
     /**
