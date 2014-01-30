@@ -3,8 +3,8 @@
 namespace EasyBib\Tests\Api\Client\Session;
 
 use EasyBib\Api\Client\Session\ApiSession;
+use EasyBib\Api\Client\Session\IncomingToken\IncomingTokenArray;
 use EasyBib\Tests\Mocks\Api\Client\Session\ExceptionMockRedirector;
-use EasyBib\Tests\Mocks\Api\Client\Session\MockIncomingToken;
 use EasyBib\Tests\Mocks\Api\Client\TokenStore\MockTokenStore;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\Response;
@@ -72,7 +72,10 @@ class ApiSessionTest extends \PHPUnit_Framework_TestCase
 
     public function testHandleIncomingToken()
     {
-        $tokenRequest = new MockIncomingToken('ABC123');
+        $tokenRequest = new IncomingTokenArray([
+            'access_token' => 'ABC123',
+        ]);
+        
         $this->session->handleIncomingToken($tokenRequest);
 
         $lastRequest = $this->makeRequest();

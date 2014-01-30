@@ -1,6 +1,6 @@
 <?php
 
-namespace EasyBib\Api\Client\Session;
+namespace EasyBib\Api\Client\Session\IncomingToken;
 
 interface IncomingTokenInterface
 {

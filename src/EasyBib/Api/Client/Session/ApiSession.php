@@ -2,6 +2,7 @@
 
 namespace EasyBib\Api\Client\Session;
 
+use EasyBib\Api\Client\Session\IncomingToken\IncomingTokenInterface;
 use EasyBib\Api\Client\TokenStore\TokenStoreInterface;
 use fkooman\Guzzle\Plugin\BearerAuth\BearerAuth;
 use Guzzle\Http\ClientInterface;
