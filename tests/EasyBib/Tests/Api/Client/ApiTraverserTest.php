@@ -2,7 +2,6 @@
 
 namespace EasyBib\Tests\Api\Client;
 
-use EasyBib\Api\Client\ApiSession;
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Resource;
@@ -107,7 +106,7 @@ class ApiTraverserTest extends TestCase
         $httpClient->addSubscriber($responses);
         $httpClient->addSubscriber($history);
 
-        $accessToken = $this->given->iHaveAnAccessToken()->getAccessToken();
+        $accessToken = $this->given->iHaveAnAccessToken();
         $bearerAuth = new BearerAuth($accessToken);
         $httpClient->addSubscriber($bearerAuth);
 

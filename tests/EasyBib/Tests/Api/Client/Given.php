@@ -2,27 +2,31 @@
 
 namespace EasyBib\Tests\Api\Client;
 
-use EasyBib\Api\Client\ApiTraverser;
-use fkooman\OAuth\Client\AccessToken;
-use fkooman\OAuth\Client\Api;
-use fkooman\OAuth\Client\ClientConfig;
-use fkooman\OAuth\Client\Context;
-use fkooman\OAuth\Client\MockStorage;
-use fkooman\OAuth\Client\StorageInterface;
-use fkooman\OAuth\Common\Scope;
-use Guzzle\Http\Client;
+use Guzzle\Http\Message\Response;
+use Guzzle\Plugin\Mock\MockPlugin;
 
 class Given
 {
     public function iHaveAnAccessToken()
     {
-        return new AccessToken([
-            'client_config_id' => 'foo',
-            'user_id' => 'bar',
-            'scope' => new Scope(['USER_READ', 'DATA_READ_WRITE']),
-            'issue_time' => 1,
-            'token_type' => 'Bearer',
-            'access_token' => 'ABC123',
+        return 'ABC123';
+    }
+
+    /**
+     * @param $token
+     * @param \Guzzle\Plugin\Mock\MockPlugin $mockResponses
+     */
+    public function iAmReadyToRespondToATokenRequest($token, MockPlugin $mockResponses)
+    {
+        $tokenData = json_encode([
+            'access_token' => $token,
+            'expires_in' => 3600,
+            'token_type' => 'bearer',
+            'scope' => 'USER_READ',
+            'refresh_token' => 'refresh_XYZ987',
         ]);
+
+        $rawTokenResponse = new Response(200, [], $tokenData);
+        $mockResponses->addResponse($rawTokenResponse);
     }
 }
