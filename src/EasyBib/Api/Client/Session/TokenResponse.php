@@ -2,7 +2,6 @@
 
 namespace EasyBib\Api\Client\Session;
 
-use EasyBib\Api\Client\ArrayValidator;
 
 class TokenResponse
 {

@@ -2,6 +2,7 @@
 
 namespace EasyBib\Tests\Api\Client\Session;
 
+use EasyBib\Api\Client\Session\ArrayValidationException;
 use EasyBib\Api\Client\Session\TokenResponse;
 
 class TokenResponseTest extends \PHPUnit_Framework_TestCase
@@ -42,10 +43,10 @@ class TokenResponseTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getInvalidParamSets
      * @param array $params
-     * @expectedException \InvalidArgumentException
      */
     public function testConstructorValidates(array $params)
     {
+        $this->setExpectedException(ArrayValidationException::class);
         new TokenResponse($params);
     }
 

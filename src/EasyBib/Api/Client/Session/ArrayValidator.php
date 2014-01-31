@@ -1,6 +1,6 @@
 <?php
 
-namespace EasyBib\Api\Client;
+namespace EasyBib\Api\Client\Session;
 
 class ArrayValidator
 {
@@ -26,12 +26,12 @@ class ArrayValidator
 
     /**
      * @param array $params
-     * @throws \InvalidArgumentException
+     * @throws ArrayValidationException
      */
     public function validate(array $params)
     {
         if ($missingKeys = array_diff($this->requiredKeys, array_keys($params))) {
-            throw new \InvalidArgumentException('Missing key(s) ' . implode(', ', $missingKeys));
+            throw new ArrayValidationException('Missing key(s) ' . implode(', ', $missingKeys));
         }
 
         if (!$this->permittedKeys) {
@@ -39,7 +39,7 @@ class ArrayValidator
         }
 
         if ($unexpectedKeys = array_diff(array_keys($params), $this->permittedKeys)) {
-            throw new \InvalidArgumentException('Unexpected key(s) ' . implode(', ', $unexpectedKeys));
+            throw new ArrayValidationException('Unexpected key(s) ' . implode(', ', $unexpectedKeys));
         }
     }
 }

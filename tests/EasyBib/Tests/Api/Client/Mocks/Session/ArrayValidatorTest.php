@@ -1,8 +1,9 @@
 <?php
 
-namespace EasyBib\Tests\Api\Client;
+namespace EasyBib\Tests\Api\Client\Mocks\Session;
 
-use EasyBib\Api\Client\ArrayValidator;
+use EasyBib\Api\Client\Session\ArrayValidationException;
+use EasyBib\Api\Client\Session\ArrayValidator;
 
 class ArrayValidatorTest extends \PHPUnit_Framework_TestCase
 {
@@ -66,7 +67,7 @@ class ArrayValidatorTest extends \PHPUnit_Framework_TestCase
     public function testValidateWithMissingData(array $input, array $requiredKeys, $expectedMissingKey)
     {
         $this->setExpectedException(
-            \InvalidArgumentException::class,
+            ArrayValidationException::class,
             'Missing key(s) ' . $expectedMissingKey
         );
 
@@ -83,7 +84,7 @@ class ArrayValidatorTest extends \PHPUnit_Framework_TestCase
     public function testValidateWithExtraData(array $input, array $expectedKeys, $expectedExtraKey)
     {
         $this->setExpectedException(
-            \InvalidArgumentException::class,
+            ArrayValidationException::class,
             'Unexpected key(s) ' . $expectedExtraKey
         );
 
