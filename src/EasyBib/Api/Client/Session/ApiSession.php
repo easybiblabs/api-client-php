@@ -118,10 +118,11 @@ class ApiSession
             $params += $this->scope->getQuerystringParams();
         }
 
-        return vsprintf('%s%s%s', [
+        return vsprintf('%s%s%s%s', [
             $this->httpClient->getBaseUrl(),
             $this->serverConfig->getParams()['authorization_endpoint'],
-            '?' . http_build_query($params),
+            '?',
+            http_build_query($params),
         ]);
     }
 
