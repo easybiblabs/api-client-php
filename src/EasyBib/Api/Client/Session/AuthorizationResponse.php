@@ -11,8 +11,14 @@ class AuthorizationResponse
      */
     private $code;
 
+    /**
+     * @var array
+     */
     private static $validParams = ['code'];
 
+    /**
+     * @param array $params
+     */
     public function __construct(array $params)
     {
         self::validate($params);
@@ -27,6 +33,9 @@ class AuthorizationResponse
         return $this->code;
     }
 
+    /**
+     * @param array $params
+     */
     private static function validate(array $params)
     {
         $validator = new ArrayValidator(self::$validParams, self::$validParams);
