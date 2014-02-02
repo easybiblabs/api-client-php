@@ -3,45 +3,104 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "a72d5f61420f17a46885a65ca2708e1e",
+    "hash": "c89ed8c167859f875a52c21855a8d581",
     "packages": [
         {
-            "name": "fkooman/guzzle-bearer-auth-plugin",
-            "version": "0.2.1",
+            "name": "easybiblabs/oauth2-client-php",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/fkooman/guzzle-bearer-auth-plugin.git",
-                "reference": "bc0c672a7dbc9e26808f70689c3921117dc88125"
+                "url": "https://github.com/easybiblabs/oauth2-client-php.git",
+                "reference": "cf9dff7cc4110b863d25975115fa851745fd0b64"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fkooman/guzzle-bearer-auth-plugin/zipball/bc0c672a7dbc9e26808f70689c3921117dc88125",
-                "reference": "bc0c672a7dbc9e26808f70689c3921117dc88125",
+                "url": "https://api.github.com/repos/easybiblabs/oauth2-client-php/zipball/cf9dff7cc4110b863d25975115fa851745fd0b64",
+                "reference": "cf9dff7cc4110b863d25975115fa851745fd0b64",
                 "shasum": ""
             },
             "require": {
-                "guzzle/guzzle": ">=v3.7.0",
-                "php": ">=5.3.3"
+                "firebase/php-jwt": "dev-master",
+                "guzzle/guzzle": "3.8.*",
+                "php": ">=5.5",
+                "symfony/http-foundation": ">=2.3.0"
+            },
+            "require-dev": {
+                "fabpot/php-cs-fixer": "dev-master",
+                "phpmd/phpmd": "*",
+                "phpunit/phpunit": ">=3.7",
+                "squizlabs/php_codesniffer": "1.*"
             },
             "type": "library",
             "autoload": {
                 "psr-0": {
-                    "fkooman\\Guzzle\\Plugin\\BearerAuth": "src/"
-                }
+                    "EasyBib\\Guzzle\\": "src/",
+                    "EasyBib\\OAuth2\\Client\\": "src/",
+                    "EasyBib\\Tests\\OAuth2\\Client\\": "tests/"
+                },
+                "classmap": [
+                    "tests/"
+                ]
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT"
+                "BSD-2-Clause"
             ],
             "authors": [
                 {
-                    "name": "François Kooman",
-                    "email": "fkooman@tuxed.net",
+                    "name": "Yitzchak Schaffer",
+                    "email": "yitzchak@imagineeasy.com"
+                }
+            ],
+            "description": "OAuth2 client for PHP",
+            "support": {
+                "source": "https://github.com/easybiblabs/oauth2-client-php/tree/master",
+                "issues": "https://github.com/easybiblabs/oauth2-client-php/issues"
+            },
+            "time": "2014-02-05 16:00:34"
+        },
+        {
+            "name": "firebase/php-jwt",
+            "version": "dev-master",
+            "target-dir": "Firebase/PHP-JWT",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/firebase/php-jwt.git",
+                "reference": "53669d621149e49c2a428722a62acfef3342c260"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/53669d621149e49c2a428722a62acfef3342c260",
+                "reference": "53669d621149e49c2a428722a62acfef3342c260",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "Authentication/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Neuman Vong",
+                    "email": "neuman+pear@twilio.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Anant Narayanan",
+                    "email": "anant@php.net",
                     "role": "Developer"
                 }
             ],
-            "description": "Guzzle Bearer plugin",
-            "time": "2013-07-06 14:17:35"
+            "description": "A simple library to encode and decode JSON Web Tokens (JWT) in PHP. Should conform to the current spec.",
+            "homepage": "https://github.com/firebase/php-jwt",
+            "time": "2013-09-03 20:55:18"
         },
         {
             "name": "guzzle/guzzle",
@@ -188,6 +247,56 @@
             "description": "Symfony EventDispatcher Component",
             "homepage": "http://symfony.com",
             "time": "2013-12-28 08:12:03"
+        },
+        {
+            "name": "symfony/http-foundation",
+            "version": "v2.4.1",
+            "target-dir": "Symfony/Component/HttpFoundation",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/HttpFoundation.git",
+                "reference": "6c6b8a7bcd7e2cc920cd6acace563fdbf121d844"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/HttpFoundation/zipball/6c6b8a7bcd7e2cc920cd6acace563fdbf121d844",
+                "reference": "6c6b8a7bcd7e2cc920cd6acace563fdbf121d844",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.4-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\HttpFoundation\\": ""
+                },
+                "classmap": [
+                    "Symfony/Component/HttpFoundation/Resources/stubs"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony HttpFoundation Component",
+            "homepage": "http://symfony.com",
+            "time": "2014-01-05 02:10:50"
         }
     ],
     "packages-dev": [
@@ -226,7 +335,6 @@
                     "Symfony\\CS": "."
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -237,6 +345,10 @@
                 }
             ],
             "description": "A script to automatically fix Symfony Coding Standard",
+            "support": {
+                "source": "https://github.com/fabpot/php-cs-fixer/tree/master",
+                "issues": "https://github.com/fabpot/php-cs-fixer/issues"
+            },
             "time": "2014-01-18 17:53:09"
         },
         {
@@ -304,22 +416,22 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "1.2.13",
+            "version": "1.2.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "466e7cd2554b4e264c9e3f31216d25ac0e5f3d94"
+                "reference": "6ba4ed2895d538a039d5d5866edc4ec0424c7852"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/466e7cd2554b4e264c9e3f31216d25ac0e5f3d94",
-                "reference": "466e7cd2554b4e264c9e3f31216d25ac0e5f3d94",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/6ba4ed2895d538a039d5d5866edc4ec0424c7852",
+                "reference": "6ba4ed2895d538a039d5d5866edc4ec0424c7852",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3",
                 "phpunit/php-file-iterator": ">=1.3.0@stable",
-                "phpunit/php-text-template": ">=1.1.1@stable",
+                "phpunit/php-text-template": ">=1.2.0@stable",
                 "phpunit/php-token-stream": ">=1.1.3@stable"
             },
             "require-dev": {
@@ -361,7 +473,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2013-09-10 08:14:32"
+            "time": "2014-02-03 07:44:47"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -548,16 +660,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "3.7.29",
+            "version": "3.7.30",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "faeb2d9f15dc83830d2db5e4c67acf1d68c9b5ac"
+                "reference": "2f33258fa5a0c330515b7deba2bc040fa5c3953b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/faeb2d9f15dc83830d2db5e4c67acf1d68c9b5ac",
-                "reference": "faeb2d9f15dc83830d2db5e4c67acf1d68c9b5ac",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2f33258fa5a0c330515b7deba2bc040fa5c3953b",
+                "reference": "2f33258fa5a0c330515b7deba2bc040fa5c3953b",
                 "shasum": ""
             },
             "require": {
@@ -618,7 +730,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2014-01-15 06:46:38"
+            "time": "2014-01-31 08:54:33"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -721,16 +833,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "1.5.1",
+            "version": "1.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "bd1e50b8c252c914881dba1dcef089219e430dbd"
+                "reference": "a76a39b317ce8106abe6264daa505e24e1731860"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/bd1e50b8c252c914881dba1dcef089219e430dbd",
-                "reference": "bd1e50b8c252c914881dba1dcef089219e430dbd",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/a76a39b317ce8106abe6264daa505e24e1731860",
+                "reference": "a76a39b317ce8106abe6264daa505e24e1731860",
                 "shasum": ""
             },
             "require": {
@@ -787,7 +899,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2013-12-12 03:08:49"
+            "time": "2014-02-04 23:49:58"
         },
         {
             "name": "symfony/console",
@@ -987,8 +1099,9 @@
     "aliases": [
 
     ],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
+        "easybiblabs/oauth2-client-php": 20,
         "fabpot/php-cs-fixer": 20
     },
     "platform": {

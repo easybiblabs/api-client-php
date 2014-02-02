@@ -12,21 +12,26 @@ class Given
         return 'ABC123';
     }
 
-    /**
-     * @param $token
-     * @param \Guzzle\Plugin\Mock\MockPlugin $mockResponses
-     */
-    public function iAmReadyToRespondToATokenRequest($token, MockPlugin $mockResponses)
+    public function iAmReadyToReturnAResource(
+        MockPlugin $mockResponses,
+        array $resource = ['data' => []]
+    ) {
+        $payload = ['status' => 'ok'] + $resource;
+
+        $mockResponses->addResponse(
+            new Response(200, [], json_encode($payload))
+        );
+    }
+
+    public function iAmReadyToReturnAnExpiredTokenError(MockPlugin $mockResponses)
     {
-        $tokenData = json_encode([
-            'access_token' => $token,
-            'expires_in' => 3600,
-            'token_type' => 'bearer',
-            'scope' => 'USER_READ',
-            'refresh_token' => 'refresh_XYZ987',
+        $body = json_encode([
+            'error' => 'invalid_grant',
+            'error_description' => 'The access token provided has expired',
         ]);
 
-        $rawTokenResponse = new Response(200, [], $tokenData);
-        $mockResponses->addResponse($rawTokenResponse);
+        $mockResponses->addResponse(
+            new Response(400, [], $body)
+        );
     }
 }

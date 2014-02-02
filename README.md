@@ -6,6 +6,8 @@ HTTP calls.
 
 ## Installation
 
+This library requires PHP 5.5 or later.
+
 Use [Composer](https://getcomposer.org/) to add this project to your project's
 dependencies.
 
@@ -14,82 +16,22 @@ Currently, only read access to the API is supported.
 ## Extension for your app
 
 In order to use this client, you will need to implement several interfaces at
-key integration points.
+key integration points. See the OAuth2 documentation for details.
 
-### Token storage
-
-Tokens might be stored in session or in a database. For a session implementation,
-you might use something like the following:
-
-```php
-class SessionTokenStore implements \EasyBib\Api\Client\Session\TokenStore\TokenStoreInterface
-{
-    private $sessionWrapper;
-
-    public function __constructor(MySessionWrapper $sessionWrapper)
-    {
-        $this->sessionWrapper = $sessionWrapper;
-    }
-
-    public function getToken()
-    {
-        return $this->sessionWrapper->get('easybib.api.token');
-    }
-
-    public function setToken($token)
-    {
-        $this->sessionWrapper->set('easybib.api.token', $token);
-    }
-
-    public function setExpirationTime($time)
-    {
-        $this->sessionWrapper->expireAt($time);
-    }
-}
-```
-
-### Redirection
-
-To make the initial authorization call, your app must redirect the user's
-browser to EasyBib's authorization page for confirmation. Your application's
-redirect mechanism must be injected via something like this:
-
-```php
-class MyRedirector implements \EasyBib\Api\Client\Session\RedirectorInterface
-{
-    private $responseWrapper;
-
-    public function __construct(MyResponseWrapper $responseWrapper)
-    {
-        $this->responseWrapper = $responseWrapper;
-    }
-
-    public function redirect($url)
-    {
-        // throws exception or calls header() to redirect user
-        $this->responseWrapper->redirect($url);
-    }
-}
-```
+> TODO link to OAuth2 docs from above section
 
 ## Usage
 
-When you are ready to connect to the EasyBib API, you will need to authorize
-your user.
+First, instantiate the relevant objects.
 
-> TODO fill me in
-
-The EasyBib OAuth service will redirect the user back to your application
-with the user's token. Your application should handle that request as follows:
-
-> TODO fill me in
+> TODO fill this in
 
 At this point you can access the EasyBib API:
 
 > TODO finish this section
 
 ```php
-$api = new ApiTraverser($apiSession);
+$api = new ApiTraverser($oauthSession);
 $user = $api->getUser();  // user serves as the entry point for traversing resources
 
 $titleOfFirstProject = $user->get('projects')[0]->title;
