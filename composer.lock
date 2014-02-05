@@ -3,20 +3,20 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "c89ed8c167859f875a52c21855a8d581",
+    "hash": "04fba77d66238301a58ce74b84b687cf",
     "packages": [
         {
             "name": "easybiblabs/oauth2-client-php",
-            "version": "dev-master",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/easybiblabs/oauth2-client-php.git",
-                "reference": "cf9dff7cc4110b863d25975115fa851745fd0b64"
+                "reference": "4abeeb8cafc1df9ebd5dc4ee57a323c9ac21d68a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/easybiblabs/oauth2-client-php/zipball/cf9dff7cc4110b863d25975115fa851745fd0b64",
-                "reference": "cf9dff7cc4110b863d25975115fa851745fd0b64",
+                "url": "https://api.github.com/repos/easybiblabs/oauth2-client-php/zipball/4abeeb8cafc1df9ebd5dc4ee57a323c9ac21d68a",
+                "reference": "4abeeb8cafc1df9ebd5dc4ee57a323c9ac21d68a",
                 "shasum": ""
             },
             "require": {
@@ -53,10 +53,10 @@
             ],
             "description": "OAuth2 client for PHP",
             "support": {
-                "source": "https://github.com/easybiblabs/oauth2-client-php/tree/master",
+                "source": "https://github.com/easybiblabs/oauth2-client-php/tree/0.1.0",
                 "issues": "https://github.com/easybiblabs/oauth2-client-php/issues"
             },
-            "time": "2014-02-05 16:00:34"
+            "time": "2014-02-05 17:25:20"
         },
         {
             "name": "firebase/php-jwt",
@@ -1101,7 +1101,6 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
-        "easybiblabs/oauth2-client-php": 20,
         "fabpot/php-cs-fixer": 20
     },
     "platform": {

@@ -20,7 +20,7 @@
     ],
     "require": {
         "php": ">=5.5",
-        "easybiblabs/oauth2-client-php": "dev-master",
+        "easybiblabs/oauth2-client-php": "0.1.*",
         "guzzle/guzzle": "3.8.*"
     },
     "require-dev": {

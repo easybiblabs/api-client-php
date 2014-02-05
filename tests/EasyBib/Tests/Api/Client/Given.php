@@ -76,10 +76,8 @@ class Given
 
         $oauthHttpClient = new Client('http://data.easybib.com');
 
-        // TODO remove redirector from JWT
         $oauthSession = new JsonWebTokenSession(
             $oauthHttpClient,
-            new ExceptionMockRedirector(),
             $clientConfig,
             $serverConfig
         );
