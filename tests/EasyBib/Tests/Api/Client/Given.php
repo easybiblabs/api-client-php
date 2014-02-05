@@ -74,7 +74,7 @@ class Given
             'token_endpoint' => '/oauth/token',
         ]);
 
-        $oauthHttpClient = new Client();
+        $oauthHttpClient = new Client('http://data.easybib.com');
 
         // TODO remove redirector from JWT
         $oauthSession = new JsonWebTokenSession(
@@ -109,7 +109,7 @@ class Given
             'token_endpoint' => '/oauth/token',
         ]);
 
-        $oauthHttpClient = new Client();
+        $oauthHttpClient = new Client('http://data.easybib.com');
 
         $oauthSession = new AuthorizationCodeSession(
             $oauthHttpClient,
