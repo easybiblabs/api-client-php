@@ -13,25 +13,22 @@ dependencies.
 
 Currently, only read access to the API is supported.
 
-## Extension for your app
-
-In order to use this client, you will need to implement several interfaces at
-key integration points. See the OAuth2 documentation for details.
-
-> TODO link to OAuth2 docs from above section
-
 ## Usage
 
-First, instantiate the relevant objects.
+You will need an OAuth client session configured for the EasyBib Api. You can find
+an example in [the tests](tests/EasyBib/Tests/Api/Client/Given.php)
+on the `iHaveRegisteredWithAnAuthCodeSession()` method, and much more documentation
+in [the OAuth client repo's documentation](http://github.com/easybiblabs/oauth2-client-php).
 
-> TODO fill this in
-
-At this point you can access the EasyBib API:
-
-> TODO finish this section
+With your OAuth client, you can then call the API:
 
 ```php
-$api = new ApiTraverser($oauthSession);
+// instantiate $oauthSession, and then:
+
+$apiHttpClient = new \Guzzle\Http\Client('https://data.easybib.com');
+$oauthSession->addResourceClient($apiHttpClient);
+$api = new ApiTraverser($apiHttpClient);
+
 $user = $api->getUser();  // user serves as the entry point for traversing resources
 
 $titleOfFirstProject = $user->get('projects')[0]->title;
