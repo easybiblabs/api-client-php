@@ -57,12 +57,12 @@ class ApiTraverserTest extends TestCase
         $this->assertInstanceOf(Collection::class, $api->get('citations'));
     }
 
-    public function testGetPassesTokenInHeader()
+    public function testGetPassesTokenInHeaderWithJwt()
     {
-        $this->markTestIncomplete();
+        $accessToken = 'ABC123';
 
+        $this->given->iHaveAGoodJwtOauthSession($accessToken, $this->httpClient);
         $this->given->iAmReadyToReturnAResource($this->mockResponses);
-        $accessToken = $this->given->iHaveAnAccessToken();
 
         $api = new ApiTraverser($this->httpClient);
         $api->get('url placeholder');
