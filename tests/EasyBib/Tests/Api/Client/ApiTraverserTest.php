@@ -61,7 +61,23 @@ class ApiTraverserTest extends TestCase
     {
         $accessToken = 'ABC123';
 
-        $this->given->iHaveAGoodJwtOauthSession($accessToken, $this->httpClient);
+        $this->given->iHaveRegisteredWithAJwtSession($accessToken, $this->httpClient);
+        $this->given->iAmReadyToReturnAResource($this->mockResponses);
+
+        $api = new ApiTraverser($this->httpClient);
+        $api->get('url placeholder');
+
+        $this->assertTrue(
+            $this->history->getLastRequest()->getHeader('Authorization')
+                ->hasValue('Bearer ' . $accessToken)
+        );
+    }
+
+    public function testGetPassesTokenInHeaderWithAuthCodeGrant()
+    {
+        $accessToken = 'ABC123';
+
+        $this->given->iHaveRegisteredWithAnAuthCodeSession($accessToken, $this->httpClient);
         $this->given->iAmReadyToReturnAResource($this->mockResponses);
 
         $api = new ApiTraverser($this->httpClient);
