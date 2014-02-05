@@ -24,7 +24,8 @@ class Given
 {
     /**
      * @param MockPlugin $mockResponses
-     * @param array $resource
+     * @param array $resource An array representing the resource to return. Uses
+     *     an empty resource by default.
      */
     public function iAmReadyToReturnAResource(
         MockPlugin $mockResponses,
