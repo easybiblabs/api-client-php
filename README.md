@@ -6,90 +6,29 @@ HTTP calls.
 
 ## Installation
 
+This library requires PHP 5.5 or later.
+
 Use [Composer](https://getcomposer.org/) to add this project to your project's
 dependencies.
 
 Currently, only read access to the API is supported.
 
-## Extension for your app
-
-In order to use this client, you will need to implement several interfaces at
-key integration points.
-
-### Token storage
-
-Tokens might be stored in session or in a database. For a session implementation,
-you might use something like the following:
-
-```php
-class SessionTokenStore implements \EasyBib\Api\Client\Session\TokenStore\TokenStoreInterface
-{
-    private $sessionWrapper;
-
-    public function __constructor(MySessionWrapper $sessionWrapper)
-    {
-        $this->sessionWrapper = $sessionWrapper;
-    }
-
-    public function getToken()
-    {
-        return $this->sessionWrapper->get('easybib.api.token');
-    }
-
-    public function setToken($token)
-    {
-        $this->sessionWrapper->set('easybib.api.token', $token);
-    }
-
-    public function setExpirationTime($time)
-    {
-        $this->sessionWrapper->expireAt($time);
-    }
-}
-```
-
-### Redirection
-
-To make the initial authorization call, your app must redirect the user's
-browser to EasyBib's authorization page for confirmation. Your application's
-redirect mechanism must be injected via something like this:
-
-```php
-class MyRedirector implements \EasyBib\Api\Client\Session\RedirectorInterface
-{
-    private $responseWrapper;
-
-    public function __construct(MyResponseWrapper $responseWrapper)
-    {
-        $this->responseWrapper = $responseWrapper;
-    }
-
-    public function redirect($url)
-    {
-        // throws exception or calls header() to redirect user
-        $this->responseWrapper->redirect($url);
-    }
-}
-```
-
 ## Usage
 
-When you are ready to connect to the EasyBib API, you will need to authorize
-your user.
+You will need an OAuth client session configured for the EasyBib Api. You can find
+an example in [the tests](tests/EasyBib/Tests/Api/Client/Given.php)
+on the `iHaveRegisteredWithAnAuthCodeSession()` method, and much more documentation
+in [the OAuth client repo's documentation](http://github.com/easybiblabs/oauth2-client-php).
 
-> TODO fill me in
-
-The EasyBib OAuth service will redirect the user back to your application
-with the user's token. Your application should handle that request as follows:
-
-> TODO fill me in
-
-At this point you can access the EasyBib API:
-
-> TODO finish this section
+With your OAuth client, you can then call the API:
 
 ```php
-$api = new ApiTraverser($apiSession);
+// instantiate $oauthSession, and then:
+
+$apiHttpClient = new \Guzzle\Http\Client('https://data.easybib.com');
+$oauthSession->addResourceClient($apiHttpClient);
+$api = new ApiTraverser($apiHttpClient);
+
 $user = $api->getUser();  // user serves as the entry point for traversing resources
 
 $titleOfFirstProject = $user->get('projects')[0]->title;

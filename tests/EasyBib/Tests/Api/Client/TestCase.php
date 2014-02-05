@@ -2,13 +2,15 @@
 
 namespace EasyBib\Tests\Api\Client;
 
-use EasyBib\Api\Client\Session\ClientConfig;
-use EasyBib\Api\Client\Session\AuthorizationResponse;
-use EasyBib\Api\Client\Session\ServerConfig;
-use EasyBib\Tests\Mocks\Api\Client\Session\MockTokenStore;
+use EasyBib\OAuth2\Client\AuthorizationCodeGrant\Authorization\AuthorizationResponse;
+use EasyBib\OAuth2\Client\AuthorizationCodeGrant\ClientConfig;
+use EasyBib\OAuth2\Client\ServerConfig;
+use EasyBib\OAuth2\Client\TokenStore;
 use Guzzle\Http\Client;
 use Guzzle\Plugin\History\HistoryPlugin;
 use Guzzle\Plugin\Mock\MockPlugin;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -41,7 +43,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     protected $mockResponses;
 
     /**
-     * @var MockTokenStore
+     * @var TokenStore
      */
     protected $tokenStore;
 
@@ -87,7 +89,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $this->httpClient->addSubscriber($this->mockResponses);
         $this->httpClient->addSubscriber($this->history);
 
-        $this->tokenStore = new MockTokenStore();
+        $this->tokenStore = new TokenStore(new Session(new MockArraySessionStorage()));
         $this->authorization = new AuthorizationResponse(['code' => 'ABC123']);
     }
 

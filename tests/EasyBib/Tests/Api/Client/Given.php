@@ -2,31 +2,123 @@
 
 namespace EasyBib\Tests\Api\Client;
 
+use EasyBib\OAuth2\Client\AuthorizationCodeGrant\AuthorizationCodeSession;
+use EasyBib\OAuth2\Client\AuthorizationCodeGrant\ClientConfig as AuthCodeClientConfig;
+use EasyBib\OAuth2\Client\JsonWebTokenGrant\ClientConfig as JwtClientConfig;
+use EasyBib\OAuth2\Client\JsonWebTokenGrant\JsonWebTokenSession;
+use EasyBib\OAuth2\Client\Scope;
+use EasyBib\OAuth2\Client\ServerConfig;
+use EasyBib\OAuth2\Client\TokenStore;
+use EasyBib\Tests\Mocks\OAuth2\Client\ExceptionMockRedirector;
+use Guzzle\Http\Client;
+use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\Mock\MockPlugin;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class Given
 {
-    public function iHaveAnAccessToken()
-    {
-        return 'ABC123';
+    /**
+     * @param MockPlugin $mockResponses
+     * @param array $resource An array representing the resource to return. Uses
+     *     an empty resource by default.
+     */
+    public function iAmReadyToReturnAResource(
+        MockPlugin $mockResponses,
+        array $resource = ['data' => []]
+    ) {
+        $payload = ['status' => 'ok'] + $resource;
+
+        $mockResponses->addResponse(
+            new Response(200, [], json_encode($payload))
+        );
     }
 
     /**
-     * @param $token
-     * @param \Guzzle\Plugin\Mock\MockPlugin $mockResponses
+     * @param MockPlugin $mockResponses
      */
-    public function iAmReadyToRespondToATokenRequest($token, MockPlugin $mockResponses)
+    public function iAmReadyToReturnAnExpiredTokenError(MockPlugin $mockResponses)
     {
-        $tokenData = json_encode([
-            'access_token' => $token,
-            'expires_in' => 3600,
-            'token_type' => 'bearer',
-            'scope' => 'USER_READ',
-            'refresh_token' => 'refresh_XYZ987',
+        $body = json_encode([
+            'error' => 'invalid_grant',
+            'error_description' => 'The access token provided has expired',
         ]);
 
-        $rawTokenResponse = new Response(200, [], $tokenData);
-        $mockResponses->addResponse($rawTokenResponse);
+        $mockResponses->addResponse(
+            new Response(400, [], $body)
+        );
+    }
+
+    /**
+     * @param $accessToken
+     * @param ClientInterface $resourceHttpClient
+     */
+    public function iHaveRegisteredWithAJwtSession($accessToken, ClientInterface $resourceHttpClient)
+    {
+        $session = new Session(new MockArraySessionStorage());
+        $session->set(TokenStore::KEY_ACCESS_TOKEN, $accessToken);
+
+        $tokenStore = new TokenStore($session);
+
+        $clientConfig = new JwtClientConfig([
+            'client_id' => 'client_123',
+            'client_secret' => 'secret_123',
+            'subject' => 'user_123',
+        ]);
+
+        $serverConfig = new ServerConfig([
+            'authorize_endpoint' => '/oauth/authorize',
+            'token_endpoint' => '/oauth/token',
+        ]);
+
+        $oauthHttpClient = new Client('http://data.easybib.com');
+
+        $oauthSession = new JsonWebTokenSession(
+            $oauthHttpClient,
+            $clientConfig,
+            $serverConfig
+        );
+
+        $oauthSession->setTokenStore($tokenStore);
+        $oauthSession->setScope(new Scope(['USER_READ', 'DATA_READ_WRITE']));
+        $oauthSession->addResourceClient($resourceHttpClient);
+    }
+
+    /**
+     * @param $accessToken
+     * @param ClientInterface $resourceHttpClient
+     */
+    public function iHaveRegisteredWithAnAuthCodeSession($accessToken, ClientInterface $resourceHttpClient)
+    {
+        $session = new Session(new MockArraySessionStorage());
+        $session->set(TokenStore::KEY_ACCESS_TOKEN, $accessToken);
+
+        $tokenStore = new TokenStore($session);
+
+        $clientConfig = new AuthCodeClientConfig([
+            'client_id' => 'client_123',
+        ]);
+
+        $serverConfig = new ServerConfig([
+            'authorize_endpoint' => '/oauth/authorize',
+            'token_endpoint' => '/oauth/token',
+        ]);
+
+        $oauthHttpClient = new Client('http://data.easybib.com');
+
+        $oauthSession = new AuthorizationCodeSession(
+            $oauthHttpClient,
+            new ExceptionMockRedirector(),
+            $clientConfig,
+            $serverConfig
+        );
+
+        $oauthSession->setTokenStore($tokenStore);
+        $oauthSession->setScope(new Scope(['USER_READ', 'DATA_READ_WRITE']));
+        $oauthSession->addResourceClient($resourceHttpClient);
     }
 }
