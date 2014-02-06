@@ -27,13 +27,13 @@ trait HasRestfulLinks
      * Allows retrieval of the URL; useful e.g. when GETting exported
      * documents
      *
-     * @param string $ref
+     * @param string $rel
      * @return Reference
      */
-    public function findReference($ref)
+    public function findReference($rel)
     {
         foreach ($this->getResponseDataContainer()->getReferences() as $reference) {
-            if ($reference->getRel() == $ref) {
+            if ($reference->getRel() == $rel) {
                 return $reference;
             }
         }

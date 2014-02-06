@@ -72,7 +72,6 @@ class ApiTraverser
     public function delete($url)
     {
         $request = $this->httpClient->delete($url);
-
         $dataContainer = ResourceDataContainer::fromResponse($this->send($request));
 
         return new Resource($dataContainer, $this);
