@@ -66,6 +66,19 @@ class ApiTraverser
     }
 
     /**
+     * @param $url
+     * @return Resource
+     */
+    public function delete($url)
+    {
+        $request = $this->httpClient->delete($url);
+
+        $dataContainer = ResourceDataContainer::fromResponse($this->send($request));
+
+        return new Resource($dataContainer, $this);
+    }
+
+    /**
      * This bootstraps the session by returning the user's "root" Resource
      *
      * @return Resource

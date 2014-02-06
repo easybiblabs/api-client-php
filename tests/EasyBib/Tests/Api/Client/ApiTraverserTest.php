@@ -191,6 +191,21 @@ class ApiTraverserTest extends TestCase
         $this->shouldHaveReturnedAResource($expectedResponseResource, $response);
     }
 
+    public function testDelete()
+    {
+        $expectedResource = [
+            'data' => [],
+        ];
+
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses);
+
+        $api = new ApiTraverser($this->httpClient);
+        $response = $api->delete('/projects/123/citations/456');
+
+        $this->shouldHaveMadeAnApiRequest('DELETE');
+        $this->shouldHaveReturnedADeletedResource($expectedResource, $response);
+    }
+
     private function shouldHaveMadeAnApiRequest($httpMethod)
     {
         $lastRequest = $this->history->getLastRequest();
@@ -207,15 +222,19 @@ class ApiTraverserTest extends TestCase
         array $expectedResponseArray,
         Resource $resource
     ) {
-        $this->assertEquals(
-            $this->recursiveCastObject($expectedResponseArray['data']),
-            $resource->getResponseDataContainer()->getData()
-        );
+        $this->assertSameData($expectedResponseArray, $resource);
 
         $this->assertEquals(
             $this->extractReferences($expectedResponseArray['links']),
             $resource->getResponseDataContainer()->getReferences()
         );
+    }
+
+    private function shouldHaveReturnedADeletedResource(
+        array $expectedResponseArray,
+        Resource $resource
+    ) {
+        $this->assertSameData($expectedResponseArray, $resource);
     }
 
     private function shouldHaveReturnedACollection(
@@ -237,6 +256,18 @@ class ApiTraverserTest extends TestCase
                 return new Reference($this->recursiveCastObject($reference));
             },
             $links
+        );
+    }
+
+    /**
+     * @param array $expectedResponseArray
+     * @param Resource $resource
+     */
+    private function assertSameData(array $expectedResponseArray, Resource $resource)
+    {
+        $this->assertEquals(
+            $this->recursiveCastObject($expectedResponseArray['data']),
+            $resource->getResponseDataContainer()->getData()
         );
     }
 }
