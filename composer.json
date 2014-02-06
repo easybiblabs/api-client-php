@@ -34,6 +34,7 @@
     "autoload": {
         "psr-0": {
             "EasyBib\\Api\\Client\\": "src/",
+            "EasyBib\\Guzzle\\": "src/",
             "EasyBib\\Tests\\Api\\Client\\": "tests/"
         },
         "classmap": ["tests/"]

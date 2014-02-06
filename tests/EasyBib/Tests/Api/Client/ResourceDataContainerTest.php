@@ -4,10 +4,10 @@ namespace EasyBib\Tests\Api\Client;
 
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Api\Client\Resource\Reference;
-use EasyBib\Api\Client\ResponseDataContainer;
+use EasyBib\Api\Client\ResourceDataContainer;
 use Guzzle\Http\Message\Response;
 
-class ResponseDataContainerTest extends \PHPUnit_Framework_TestCase
+class ResourceDataContainerTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetData()
     {
@@ -18,7 +18,7 @@ class ResponseDataContainerTest extends \PHPUnit_Framework_TestCase
     public function testGetLinks()
     {
         $container = $this->getResponseContainer(
-            '{"links":[{"href":"http://api.example.org/foo/bar/","ref":"foo",
+            '{"links":[{"href":"http://api.example.org/foo/bar/","rel":"foo",
                 "type":"application/vnd.com.easybib.data+json","title":"Some link"}]}'
         );
 
@@ -30,7 +30,7 @@ class ResponseDataContainerTest extends \PHPUnit_Framework_TestCase
                 new Reference(
                     (object) [
                         'href' => 'http://api.example.org/foo/bar/',
-                        'ref' => 'foo',
+                        'rel' => 'foo',
                         'type' => 'application/vnd.com.easybib.data+json',
                         'title' => 'Some link',
                     ]
@@ -49,11 +49,15 @@ class ResponseDataContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->getResponseContainer($listData)->isList());
     }
 
+    /**
+     * @param string $body A string of JSON
+     * @return ResourceDataContainer
+     */
     private function getResponseContainer($body)
     {
         $response = new Response(200);
         $response->setBody($body);
 
-        return ResponseDataContainer::fromResponse($response);
+        return ResourceDataContainer::fromResponse($response);
     }
 }

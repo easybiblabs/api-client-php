@@ -9,17 +9,17 @@ class ReferenceTest extends \PHPUnit_Framework_TestCase
     public function dataProviderValid()
     {
         return [
-            ['{"href":"http://foo/bar/","ref":"some ref","type":"text/html","title":"James"}'],
+            ['{"href":"http://foo/bar/","rel":"some rel","type":"text/html","title":"James"}'],
         ];
     }
 
     public function dataProviderInvalid()
     {
         return [
-            ['{"href":"http://foo/bar/","ref":"some ref","type":"text/html"}'],
-            ['{"href":"http://foo/bar/","ref":"some ref","title":"James"}'],
+            ['{"href":"http://foo/bar/","rel":"some rel","type":"text/html"}'],
+            ['{"href":"http://foo/bar/","rel":"some rel","title":"James"}'],
             ['{"href":"http://foo/bar/","type":"text/html","title":"James"}'],
-            ['{"ref":"some ref","type":"text/html","title":"James"}'],
+            ['{"rel":"some rel","type":"text/html","title":"James"}'],
         ];
     }
 
@@ -37,10 +37,10 @@ class ReferenceTest extends \PHPUnit_Framework_TestCase
      * @param string $data
      * @dataProvider dataProviderValid
      */
-    public function testGetRef($data)
+    public function testGetRel($data)
     {
         $reference = new Reference(json_decode($data));
-        $this->assertEquals('some ref', $reference->getRef());
+        $this->assertEquals('some rel', $reference->getRel());
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace EasyBib\Api\Client\Resource;
 
-use EasyBib\Api\Client\ResponseDataContainer;
+use EasyBib\Api\Client\ResourceDataContainer;
 
 trait HasRestfulLinks
 {
@@ -27,13 +27,13 @@ trait HasRestfulLinks
      * Allows retrieval of the URL; useful e.g. when GETting exported
      * documents
      *
-     * @param string $ref
+     * @param string $rel
      * @return Reference
      */
-    public function findReference($ref)
+    public function findReference($rel)
     {
         foreach ($this->getResponseDataContainer()->getReferences() as $reference) {
-            if ($reference->getRef() == $ref) {
+            if ($reference->getRel() == $rel) {
                 return $reference;
             }
         }
@@ -47,7 +47,7 @@ trait HasRestfulLinks
     abstract public function getApiTraverser();
 
     /**
-     * @return \EasyBib\Api\Client\ResponseDataContainer
+     * @return \EasyBib\Api\Client\ResourceDataContainer
      */
     abstract public function getResponseDataContainer();
 }
