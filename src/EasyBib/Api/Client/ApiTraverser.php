@@ -30,17 +30,31 @@ class ApiTraverser
 
     /**
      * @param string $url
-     * @return \Guzzle\Http\Message\Response
+     * @return HasRestfulLinks
      */
     public function get($url)
     {
         $request = $this->httpClient->get($url);
 
-        $dataContainer = ResponseDataContainer::fromResponse($this->send($request));
+        $dataContainer = ResourceDataContainer::fromResponse($this->send($request));
 
         if ($dataContainer->isList()) {
             return new Collection($dataContainer, $this);
         }
+
+        return new Resource($dataContainer, $this);
+    }
+
+    /**
+     * @param $url
+     * @param array $resource
+     * @return Resource
+     */
+    public function post($url, array $resource)
+    {
+        $payload = json_encode(['data' => $resource]);
+        $request = $this->httpClient->post($url, [], $payload);
+        $dataContainer = ResourceDataContainer::fromResponse($this->send($request));
 
         return new Resource($dataContainer, $this);
     }

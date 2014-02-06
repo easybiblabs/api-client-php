@@ -14,7 +14,7 @@ class Reference
      */
     private static $requiredKeys = [
         'href',
-        'ref',
+        'rel',
         'type',
         'title',
     ];
@@ -40,9 +40,9 @@ class Reference
     /**
      * @return string
      */
-    public function getRef()
+    public function getRel()
     {
-        return $this->rawData->ref;
+        return $this->rawData->rel;
     }
 
     /**

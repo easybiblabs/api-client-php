@@ -2,7 +2,7 @@
 
 namespace EasyBib\Api\Client\Resource;
 
-use EasyBib\Api\Client\ResponseDataContainer;
+use EasyBib\Api\Client\ResourceDataContainer;
 
 trait HasRestfulLinks
 {
@@ -33,7 +33,7 @@ trait HasRestfulLinks
     public function findReference($ref)
     {
         foreach ($this->getResponseDataContainer()->getReferences() as $reference) {
-            if ($reference->getRef() == $ref) {
+            if ($reference->getRel() == $ref) {
                 return $reference;
             }
         }
@@ -47,7 +47,7 @@ trait HasRestfulLinks
     abstract public function getApiTraverser();
 
     /**
-     * @return \EasyBib\Api\Client\ResponseDataContainer
+     * @return \EasyBib\Api\Client\ResourceDataContainer
      */
     abstract public function getResponseDataContainer();
 }

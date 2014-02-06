@@ -5,7 +5,7 @@ namespace EasyBib\Tests\Api\Client\Resource;
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Resource;
-use EasyBib\Api\Client\ResponseDataContainer;
+use EasyBib\Api\Client\ResourceDataContainer;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\Response;
 
@@ -81,7 +81,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $response = new Response(200);
         $response->setBody($body);
 
-        $container = ResponseDataContainer::fromResponse($response);
+        $container = ResourceDataContainer::fromResponse($response);
 
         $apiTraverser = new ApiTraverser(new Client());
         $resourceList = new Collection($container, $apiTraverser);

@@ -26,8 +26,9 @@ class Given
      * @param MockPlugin $mockResponses
      * @param array $resource An array representing the resource to return. Uses
      *     an empty resource by default.
+     * @return array
      */
-    public function iAmReadyToReturnAResource(
+    public function iAmReadyToRespondWithAResource(
         MockPlugin $mockResponses,
         array $resource = ['data' => []]
     ) {
@@ -36,6 +37,8 @@ class Given
         $mockResponses->addResponse(
             new Response(200, [], json_encode($payload))
         );
+
+        return $resource;
     }
 
     /**

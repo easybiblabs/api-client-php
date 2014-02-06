@@ -5,7 +5,7 @@ namespace EasyBib\Api\Client;
 use EasyBib\Api\Client\Resource\Reference;
 use Guzzle\Http\Message\Response;
 
-class ResponseDataContainer
+class ResourceDataContainer
 {
     /**
      * @var \stdClass
@@ -56,12 +56,12 @@ class ResponseDataContainer
 
     /**
      * @param Response $response
-     * @return ResponseDataContainer
+     * @return ResourceDataContainer
      */
     public static function fromResponse(Response $response)
     {
         $data = json_decode($response->getBody(true)) ?: (object) [];
 
-        return new ResponseDataContainer($data);
+        return new ResourceDataContainer($data);
     }
 }

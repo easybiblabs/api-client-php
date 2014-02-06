@@ -3,14 +3,14 @@
 namespace EasyBib\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiTraverser;
-use EasyBib\Api\Client\ResponseDataContainer;
+use EasyBib\Api\Client\ResourceDataContainer;
 
 class Resource
 {
     use HasRestfulLinks;
 
     /**
-     * @var ResponseDataContainer
+     * @var ResourceDataContainer
      */
     private $container;
 
@@ -19,7 +19,7 @@ class Resource
      */
     private $apiTraverser;
 
-    public function __construct(ResponseDataContainer $container, ApiTraverser $apiTraverser)
+    public function __construct(ResourceDataContainer $container, ApiTraverser $apiTraverser)
     {
         $this->container = $container;
         $this->apiTraverser = $apiTraverser;
@@ -52,7 +52,7 @@ class Resource
     }
 
     /**
-     * @return ResponseDataContainer
+     * @return ResourceDataContainer
      */
     public function getResponseDataContainer()
     {

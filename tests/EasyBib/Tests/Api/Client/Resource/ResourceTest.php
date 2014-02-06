@@ -4,7 +4,7 @@ namespace EasyBib\Tests\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Resource\Reference;
-use EasyBib\Api\Client\ResponseDataContainer;
+use EasyBib\Api\Client\ResourceDataContainer;
 use EasyBib\Api\Client\Resource\Resource;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\Request;
@@ -29,8 +29,8 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     {
         $resource = $this->getResource();
 
-        $goodLinkedResource = $resource->get('foo ref');
-        $nullLinkedResource = $resource->get('no such ref');
+        $goodLinkedResource = $resource->get('foo rel');
+        $nullLinkedResource = $resource->get('no such rel');
 
         $this->assertInstanceOf(Resource::class, $goodLinkedResource);
         $this->assertEquals('bar', $goodLinkedResource->foo);
@@ -41,8 +41,8 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     {
         $resource = $this->getResource();
 
-        $goodLink = $resource->findReference('foo ref');
-        $nullLink = $resource->findReference('no such ref');
+        $goodLink = $resource->findReference('foo rel');
+        $nullLink = $resource->findReference('no such rel');
 
         $this->assertInstanceOf(Reference::class, $goodLink);
         $this->assertEquals('http://foo/', $goodLink->getHref());
@@ -56,12 +56,12 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     private function getResource($body = null)
     {
         if (!$body) {
-            $body = '{"links":[{"href":"http://foo/","ref":"foo ref","type":"text","title":"The Foo"}]}';
+            $body = '{"links":[{"href":"http://foo/","rel":"foo rel","type":"text","title":"The Foo"}]}';
         }
 
         $response = new Response(200);
         $response->setBody($body);
-        $container = ResponseDataContainer::fromResponse($response);
+        $container = ResourceDataContainer::fromResponse($response);
 
         return new Resource($container, $this->getApiTraverser());
     }
