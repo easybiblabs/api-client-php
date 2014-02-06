@@ -14,15 +14,17 @@ class ApiTraverserTest extends TestCase
     {
         $collection = [
             'data' => [
-
+                [
+                    'links' => [],
+                    'data' => [
+                        'href' => 'http://foo.example.com/',
+                        'rel' => 'me',
+                        'type' => 'text',
+                        'title' => 'Bar',
+                    ],
+                ]
             ],
             'links' => [
-                [
-                    'href' => 'http://foo.example.com/',
-                    'rel' => 'me',
-                    'type' => 'text',
-                    'title' => 'Bar',
-                ]
             ],
         ];
 
@@ -35,38 +37,49 @@ class ApiTraverserTest extends TestCase
         $this->shouldHaveReturnedACollection($collection, $response);
     }
 
-    public function testGetUserReturnsResource()
+    public function testGetUser()
     {
-        $resource = ['data' => [
-            'first' => 'Jim',
-            'last' => 'Johnson',
-            'email' => 'jj@example.org',
-            'role' => 'mybib',
-        ]];
+        $user = [
+            'links' => [],
+            'data' => [
+                'first' => 'Jim',
+                'last' => 'Johnson',
+                'email' => 'jj@example.org',
+                'role' => 'mybib',
+            ]
+        ];
 
-        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $resource);
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $user);
 
         $api = new ApiTraverser($this->httpClient);
+        $response = $api->getUser();
 
-        $this->assertInstanceOf(Resource::class, $api->getUser());
+        $this->shouldHaveMadeAnApiRequest('GET');
+        $this->shouldHaveReturnedAResource($user, $response);
     }
 
     public function testGetCitationsReturnsCollection()
     {
-        $resource = ['data' => [
-            [
-                'data' => [
-                    'source' => 'book',
-                    'pubtype' => ['main' => 'pubnonperiodical'],
+        $collection = [
+            'links' => [],
+            'data' => [
+                [
+                    'links' => [],
+                    'data' => [
+                        'source' => 'book',
+                        'pubtype' => ['main' => 'pubnonperiodical'],
+                    ],
                 ],
-            ],
-        ]];
+            ]
+        ];
 
-        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $resource);
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $collection);
 
         $api = new ApiTraverser($this->httpClient);
+        $response = $api->get('citations');
 
-        $this->assertInstanceOf(Collection::class, $api->get('citations'));
+        $this->shouldHaveMadeAnApiRequest('GET');
+        $this->shouldHaveReturnedACollection($collection, $response);
     }
 
     public function testGetPassesTokenInHeaderWithJwt()
@@ -185,7 +198,7 @@ class ApiTraverserTest extends TestCase
         array $expectedResponseArray,
         Collection $collection
     ) {
-        $this->assertEquals(count($expectedResponseArray['links']), count($collection));
+        $this->assertEquals(count($expectedResponseArray['data']), count($collection));
     }
 
     private function recursiveCastObject(array $array)
