@@ -11,11 +11,25 @@ This library requires PHP 5.5 or later.
 Use [Composer](https://getcomposer.org/) to add this project to your project's
 dependencies.
 
-### Once you have composer set up, you can run
+### Your Composer JSON
+
+
+```json
+"repositories":[
+    {
+        "type": "vcs",
+        "url": "git@github.com:easybiblabs/oauth2-client-php.git"
+    },
+],
+"require": {
+    "php":">=5.5.0",
+    "easybib/api-client-php": "dev-master"
+},
+```
+
+Once your JSON is set, this will install the package
 
 ```
-composer.phar require easybib/api-client-php:dev-master
-
 composer.phar install
 ```
 
