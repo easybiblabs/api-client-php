@@ -7,7 +7,7 @@ use EasyBib\Api\Client\Resource\Reference;
 use EasyBib\Api\Client\ResourceDataContainer;
 use Guzzle\Http\Message\Response;
 
-class ResponseDataContainerTest extends \PHPUnit_Framework_TestCase
+class ResourceDataContainerTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetData()
     {
@@ -49,6 +49,10 @@ class ResponseDataContainerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->getResponseContainer($listData)->isList());
     }
 
+    /**
+     * @param string $body A string of JSON
+     * @return ResourceDataContainer
+     */
     private function getResponseContainer($body)
     {
         $response = new Response(200);

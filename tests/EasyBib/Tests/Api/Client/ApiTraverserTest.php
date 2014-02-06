@@ -229,7 +229,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
     public function testGetWithExpiredToken()
     {
-        $this->given->iAmReadyToReturnAnExpiredTokenError($this->mockResponses);
+        $this->given->iAmReadyToRespondWithAnExpiredTokenError($this->mockResponses);
 
         $this->setExpectedException(ExpiredTokenException::class);
 

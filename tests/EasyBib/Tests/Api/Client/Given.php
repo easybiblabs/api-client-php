@@ -44,7 +44,7 @@ class Given
     /**
      * @param MockPlugin $mockResponses
      */
-    public function iAmReadyToReturnAnExpiredTokenError(MockPlugin $mockResponses)
+    public function iAmReadyToRespondWithAnExpiredTokenError(MockPlugin $mockResponses)
     {
         $body = json_encode([
             'error' => 'invalid_grant',
