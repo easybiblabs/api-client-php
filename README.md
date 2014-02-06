@@ -11,6 +11,14 @@ This library requires PHP 5.5 or later.
 Use [Composer](https://getcomposer.org/) to add this project to your project's
 dependencies.
 
+### Once you have composer set up, you can run
+
+```
+composer.phar require easybib/api-client-php:dev-master
+
+composer.phar install
+```
+
 Currently, only read access to the API is supported.
 
 ## Usage
