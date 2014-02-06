@@ -46,17 +46,23 @@ class ApiTraverser
     }
 
     /**
-     * @param $url
+     * @param string $url
      * @param array $resource
      * @return Resource
      */
     public function post($url, array $resource)
     {
-        $payload = json_encode(['data' => $resource]);
-        $request = $this->httpClient->post($url, [], $payload);
-        $dataContainer = ResourceDataContainer::fromResponse($this->send($request));
+        return $this->sendResource('post', $url, $resource);
+    }
 
-        return new Resource($dataContainer, $this);
+    /**
+     * @param string $url
+     * @param array $resource
+     * @return Resource
+     */
+    public function put($url, array $resource)
+    {
+        return $this->sendResource('put', $url, $resource);
     }
 
     /**
@@ -96,5 +102,20 @@ class ApiTraverser
         }
 
         return json_decode($response->getBody(true))->error == 'invalid_grant';
+    }
+
+    /**
+     * @param string $method
+     * @param string $url
+     * @param array $resource
+     * @return Resource
+     */
+    private function sendResource($method, $url, array $resource)
+    {
+        $payload = json_encode(['data' => $resource]);
+        $request = $this->httpClient->$method($url, [], $payload);
+        $dataContainer = ResourceDataContainer::fromResponse($this->send($request));
+
+        return new Resource($dataContainer, $this);
     }
 }

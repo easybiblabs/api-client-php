@@ -10,6 +10,45 @@ use EasyBib\Api\Client\Resource\Resource;
 
 class ApiTraverserTest extends TestCase
 {
+    /**
+     * @return array
+     */
+    public function getValidCitations()
+    {
+        $citation = [
+            'source' => 'book',
+            'pubtype' => ['main' => 'pubnonperiodical'],
+            'contributors' => [
+                [
+                    'last' => 'Salinger',
+                    'first' => 'J. D.',
+                    'function' => 'author',
+                ]
+            ],
+            'pubnonperiodical' => [
+                'title' => 'The Catcher in the Rye',
+                'publisher' => 'Little, Brown',
+                'year' => '1951',
+            ]
+        ];
+
+        $expectedResponseResource = [
+            'links' => [
+                [
+                    'href' => 'http://example.org/projects/123/citations/456',
+                    'rel' => 'me',
+                    'type' => 'application/vnd.com.easybib.data+json',
+                    'title' => 'The Catcher in the Rye',
+                ],
+            ],
+            'data' => $citation,
+        ];
+
+        return [
+            [$citation, $expectedResponseResource],
+        ];
+    }
+
     public function testGetForCollection()
     {
         $collection = [
@@ -124,46 +163,31 @@ class ApiTraverserTest extends TestCase
         $api->get('url placeholder');
     }
 
-    public function testPost()
+    /**
+     * @dataProvider getValidCitations
+     */
+    public function testPost(array $citation, array $expectedResponseResource)
     {
-        $token = 'ABC123';
-
-        $citation = [
-            'source' => 'book',
-            'pubtype' => ['main' => 'pubnonperiodical'],
-            'contributors' => [
-                [
-                    'last' => 'Salinger',
-                    'first' => 'J. D.',
-                    'function' => 'author',
-                ]
-            ],
-            'pubnonperiodical' => [
-                'title' => 'The Catcher in the Rye',
-                'publisher' => 'Little, Brown',
-                'year' => '1951',
-            ]
-        ];
-
-        $expectedResponseResource = [
-            'links' => [
-                [
-                    'href' => 'http://example.org/projects/123/citations/456',
-                    'rel' => 'me',
-                    'type' => 'application/vnd.com.easybib.data+json',
-                    'title' => 'The Catcher in the Rye',
-                ],
-            ],
-            'data' => $citation,
-        ];
-
-        $this->given->iHaveRegisteredWithAJwtSession($token, $this->httpClient);
         $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $expectedResponseResource);
 
         $api = new ApiTraverser($this->httpClient);
         $response = $api->post('/projects/123/citations', $citation);
 
         $this->shouldHaveMadeAnApiRequest('POST');
+        $this->shouldHaveReturnedAResource($expectedResponseResource, $response);
+    }
+
+    /**
+     * @dataProvider getValidCitations
+     */
+    public function testPut(array $citation, array $expectedResponseResource)
+    {
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $expectedResponseResource);
+
+        $api = new ApiTraverser($this->httpClient);
+        $response = $api->put('/projects/123/citations/456', $citation);
+
+        $this->shouldHaveMadeAnApiRequest('PUT');
         $this->shouldHaveReturnedAResource($expectedResponseResource, $response);
     }
 
