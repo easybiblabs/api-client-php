@@ -19,8 +19,6 @@ composer.phar require easybib/api-client-php:dev-master
 composer.phar install
 ```
 
-Currently, only read access to the API is supported.
-
 ## Usage
 
 You will need an OAuth client session configured for the EasyBib Api. You can find
