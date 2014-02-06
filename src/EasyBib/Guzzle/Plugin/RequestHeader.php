@@ -37,9 +37,9 @@ class RequestHeader implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
+        return [
             'request.before_send' => 'onRequestBeforeSend',
-        );
+        ];
     }
 
     /**
