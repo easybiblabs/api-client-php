@@ -11,8 +11,6 @@ This library requires PHP 5.5 or later.
 Use [Composer](https://getcomposer.org/) to add this project to your project's
 dependencies.
 
-Currently, only read access to the API is supported.
-
 ## Usage
 
 You will need an OAuth client session configured for the EasyBib Api. You can find
