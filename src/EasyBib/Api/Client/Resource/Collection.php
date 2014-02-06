@@ -53,6 +53,7 @@ class Collection implements \ArrayAccess
      * @param mixed $offset
      * @param mixed $value
      * @throws \BadMethodCallException
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function offsetSet($offset, $value)
     {
@@ -64,6 +65,7 @@ class Collection implements \ArrayAccess
      *
      * @param mixed $offset
      * @throws \BadMethodCallException
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function offsetUnset($offset)
     {
