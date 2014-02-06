@@ -4,6 +4,7 @@ namespace EasyBib\Api\Client;
 
 use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Resource;
+use EasyBib\Guzzle\Plugin\RequestHeader;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
@@ -22,6 +23,9 @@ class ApiTraverser
     {
         $this->httpClient = $httpClient;
         $this->httpClient->setDefaultOption('exceptions', false);
+        $this->httpClient->addSubscriber(
+            new RequestHeader('Accept', 'application/vnd.com.easybib.data+json')
+        );
     }
 
     /**
@@ -31,7 +35,6 @@ class ApiTraverser
     public function get($url)
     {
         $request = $this->httpClient->get($url);
-        $request->setHeader('Accept', 'application/vnd.com.easybib.data+json');
 
         $dataContainer = ResponseDataContainer::fromResponse($this->send($request));
 
