@@ -5,56 +5,200 @@ namespace EasyBib\Tests\Api\Client;
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\ExpiredTokenException;
 use EasyBib\Api\Client\Resource\Collection;
+use EasyBib\Api\Client\Resource\Reference;
 use EasyBib\Api\Client\Resource\Resource;
+use EasyBib\OAuth2\Client\AuthorizationCodeGrant\Authorization\AuthorizationResponse;
+use EasyBib\OAuth2\Client\AuthorizationCodeGrant\ClientConfig;
+use EasyBib\OAuth2\Client\ServerConfig;
+use EasyBib\OAuth2\Client\TokenStore;
 use Guzzle\Http\Client;
+use Guzzle\Plugin\History\HistoryPlugin;
+use Guzzle\Plugin\Mock\MockPlugin;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
-class ApiTraverserTest extends TestCase
+class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 {
-    public function testGetCorrectAcceptHeader()
+    /**
+     * @var Given
+     */
+    protected $given;
+
+    /**
+     * @var string
+     */
+    protected $apiBaseUrl = 'http://data.easybib.example.com';
+
+    /**
+     * @var HistoryPlugin
+     */
+    protected $history;
+
+    /**
+     * @var Client
+     */
+    protected $httpClient;
+
+    /**
+     * @var MockPlugin
+     */
+    protected $mockResponses;
+
+    /**
+     * @var TokenStore
+     */
+    protected $tokenStore;
+
+    /**
+     * @var ClientConfig
+     */
+    protected $clientConfig;
+
+    /**
+     * @var ServerConfig
+     */
+    protected $serverConfig;
+
+    /**
+     * @var AuthorizationResponse
+     */
+    protected $authorization;
+
+    public function setUp()
     {
-        $this->given->iAmReadyToReturnAResource($this->mockResponses);
+        parent::setUp();
 
-        $api = new ApiTraverser($this->httpClient);
-        $api->get('url placeholder');
+        $this->given = new Given();
 
-        $this->assertTrue(
-            $this->history->getLastRequest()->getHeader('Accept')
-                ->hasValue('application/vnd.com.easybib.data+json')
-        );
+        $this->clientConfig = new ClientConfig([
+            'client_id' => 'client_123',
+            'redirect_url' => 'http://myapp.example.com/',
+        ]);
+
+        $this->serverConfig = new ServerConfig([
+            'authorization_endpoint' => '/oauth/authorize',
+            'token_endpoint' => '/oauth/token',
+        ]);
+
+        $this->httpClient = new Client($this->apiBaseUrl);
+        $this->mockResponses = new MockPlugin();
+        $this->history = new HistoryPlugin();
+        $this->httpClient->addSubscriber($this->mockResponses);
+        $this->httpClient->addSubscriber($this->history);
+
+        $this->tokenStore = new TokenStore(new Session(new MockArraySessionStorage()));
+        $this->authorization = new AuthorizationResponse(['code' => 'ABC123']);
     }
 
-    public function testGetUserReturnsResource()
+    /**
+     * @return array
+     */
+    public function getValidCitations()
     {
-        $resource = ['data' => [
-            'first' => 'Jim',
-            'last' => 'Johnson',
-            'email' => 'jj@example.org',
-            'role' => 'mybib',
-        ]];
+        $citation = [
+            'source' => 'book',
+            'pubtype' => ['main' => 'pubnonperiodical'],
+            'contributors' => [
+                [
+                    'last' => 'Salinger',
+                    'first' => 'J. D.',
+                    'function' => 'author',
+                ]
+            ],
+            'pubnonperiodical' => [
+                'title' => 'The Catcher in the Rye',
+                'publisher' => 'Little, Brown',
+                'year' => '1951',
+            ]
+        ];
 
-        $this->given->iAmReadyToReturnAResource($this->mockResponses, $resource);
+        $expectedResponseResource = [
+            'links' => [
+                [
+                    'href' => 'http://example.org/projects/123/citations/456',
+                    'rel' => 'me',
+                    'type' => 'application/vnd.com.easybib.data+json',
+                    'title' => 'The Catcher in the Rye',
+                ],
+            ],
+            'data' => $citation,
+        ];
+
+        return [
+            [$citation, $expectedResponseResource],
+        ];
+    }
+
+    public function testGetForCollection()
+    {
+        $collection = [
+            'data' => [
+                [
+                    'links' => [],
+                    'data' => [
+                        'href' => 'http://foo.example.com/',
+                        'rel' => 'me',
+                        'type' => 'text',
+                        'title' => 'Bar',
+                    ],
+                ]
+            ],
+            'links' => [
+            ],
+        ];
+
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $collection);
 
         $api = new ApiTraverser($this->httpClient);
+        $response = $api->get('url placeholder');
 
-        $this->assertInstanceOf(Resource::class, $api->getUser());
+        $this->shouldHaveMadeAnApiRequest('GET');
+        $this->shouldHaveReturnedACollection($collection, $response);
+    }
+
+    public function testGetUser()
+    {
+        $user = [
+            'links' => [],
+            'data' => [
+                'first' => 'Jim',
+                'last' => 'Johnson',
+                'email' => 'jj@example.org',
+                'role' => 'mybib',
+            ]
+        ];
+
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $user);
+
+        $api = new ApiTraverser($this->httpClient);
+        $response = $api->getUser();
+
+        $this->shouldHaveMadeAnApiRequest('GET');
+        $this->shouldHaveReturnedAResource($user, $response);
     }
 
     public function testGetCitationsReturnsCollection()
     {
-        $resource = ['data' => [
-            [
-                'data' => [
-                    'source' => 'book',
-                    'pubtype' => ['main' => 'pubnonperiodical'],
+        $collection = [
+            'links' => [],
+            'data' => [
+                [
+                    'links' => [],
+                    'data' => [
+                        'source' => 'book',
+                        'pubtype' => ['main' => 'pubnonperiodical'],
+                    ],
                 ],
-            ],
-        ]];
+            ]
+        ];
 
-        $this->given->iAmReadyToReturnAResource($this->mockResponses, $resource);
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $collection);
 
         $api = new ApiTraverser($this->httpClient);
+        $response = $api->get('citations');
 
-        $this->assertInstanceOf(Collection::class, $api->get('citations'));
+        $this->shouldHaveMadeAnApiRequest('GET');
+        $this->shouldHaveReturnedACollection($collection, $response);
     }
 
     public function testGetPassesTokenInHeaderWithJwt()
@@ -62,15 +206,12 @@ class ApiTraverserTest extends TestCase
         $accessToken = 'ABC123';
 
         $this->given->iHaveRegisteredWithAJwtSession($accessToken, $this->httpClient);
-        $this->given->iAmReadyToReturnAResource($this->mockResponses);
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses);
 
         $api = new ApiTraverser($this->httpClient);
         $api->get('url placeholder');
 
-        $this->assertTrue(
-            $this->history->getLastRequest()->getHeader('Authorization')
-                ->hasValue('Bearer ' . $accessToken)
-        );
+        $this->shouldHaveHadATokenWithLastRequest($accessToken);
     }
 
     public function testGetPassesTokenInHeaderWithAuthCodeGrant()
@@ -78,24 +219,183 @@ class ApiTraverserTest extends TestCase
         $accessToken = 'ABC123';
 
         $this->given->iHaveRegisteredWithAnAuthCodeSession($accessToken, $this->httpClient);
-        $this->given->iAmReadyToReturnAResource($this->mockResponses);
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses);
 
         $api = new ApiTraverser($this->httpClient);
         $api->get('url placeholder');
 
+        $this->shouldHaveHadATokenWithLastRequest($accessToken);
+    }
+
+    public function testGetWithExpiredToken()
+    {
+        $this->given->iAmReadyToRespondWithAnExpiredTokenError($this->mockResponses);
+
+        $this->setExpectedException(ExpiredTokenException::class);
+
+        $api = new ApiTraverser($this->httpClient);
+        $api->get('url placeholder');
+    }
+
+    /**
+     * @dataProvider getValidCitations
+     * @param array $citation
+     * @param array $expectedResponseResource
+     */
+    public function testPost(array $citation, array $expectedResponseResource)
+    {
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $expectedResponseResource);
+
+        $api = new ApiTraverser($this->httpClient);
+        $response = $api->post('/projects/123/citations', $citation);
+
+        $this->shouldHaveMadeAnApiRequest('POST');
+        $this->shouldHaveReturnedAResource($expectedResponseResource, $response);
+    }
+
+    /**
+     * @dataProvider getValidCitations
+     * @param array $citation
+     * @param array $expectedResponseResource
+     */
+    public function testPut(array $citation, array $expectedResponseResource)
+    {
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $expectedResponseResource);
+
+        $api = new ApiTraverser($this->httpClient);
+        $response = $api->put('/projects/123/citations/456', $citation);
+
+        $this->shouldHaveMadeAnApiRequest('PUT');
+        $this->shouldHaveReturnedAResource($expectedResponseResource, $response);
+    }
+
+    public function testDelete()
+    {
+        $expectedResource = [
+            'data' => [],
+        ];
+
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses);
+
+        $api = new ApiTraverser($this->httpClient);
+        $response = $api->delete('/projects/123/citations/456');
+
+        $this->shouldHaveMadeAnApiRequest('DELETE');
+        $this->shouldHaveReturnedADeletedResource($expectedResource, $response);
+    }
+
+    /**
+     * @param string $httpMethod
+     */
+    private function shouldHaveMadeAnApiRequest($httpMethod)
+    {
+        $lastRequest = $this->history->getLastRequest();
+
+        $this->assertEquals($httpMethod, $lastRequest->getMethod());
+
+        $this->assertTrue(
+            $lastRequest->getHeader('Accept')
+                ->hasValue('application/vnd.com.easybib.data+json')
+        );
+    }
+
+    /**
+     * @param array $expectedResponseArray
+     * @param Resource $resource
+     */
+    private function shouldHaveReturnedAResource(
+        array $expectedResponseArray,
+        Resource $resource
+    ) {
+        $this->assertSameData($expectedResponseArray, $resource);
+
+        $this->assertEquals(
+            $this->extractReferences($expectedResponseArray['links']),
+            $resource->getResponseDataContainer()->getReferences()
+        );
+    }
+
+    /**
+     * @param array $expectedResponseArray
+     * @param Resource $resource
+     */
+    private function shouldHaveReturnedADeletedResource(
+        array $expectedResponseArray,
+        Resource $resource
+    ) {
+        $this->assertSameData($expectedResponseArray, $resource);
+    }
+
+    /**
+     * @param array $expectedResponseArray
+     * @param Collection $collection
+     */
+    private function shouldHaveReturnedACollection(
+        array $expectedResponseArray,
+        Collection $collection
+    ) {
+        $this->assertEquals(count($expectedResponseArray['data']), count($collection));
+    }
+
+    /**
+     * @param array $expectedResponseArray
+     * @param Resource $resource
+     */
+    private function assertSameData(array $expectedResponseArray, Resource $resource)
+    {
+        $this->assertEquals(
+            $this->recursiveCastObject($expectedResponseArray['data']),
+            $resource->getResponseDataContainer()->getData()
+        );
+    }
+
+    public function shouldHaveMadeATokenRequest()
+    {
+        $lastRequest = $this->history->getLastRequest();
+
+        $expectedParams = [
+            'grant_type' => 'authorization_code',
+            'code' => $this->authorization->getCode(),
+            'redirect_uri' => $this->clientConfig->getParams()['redirect_url'],
+            'client_id' => $this->clientConfig->getParams()['client_id'],
+        ];
+
+        $this->assertEquals('POST', $lastRequest->getMethod());
+        $this->assertEquals($expectedParams, $lastRequest->getPostFields()->toArray());
+        $this->assertEquals($this->apiBaseUrl . '/oauth/token', $lastRequest->getUrl());
+    }
+
+    /**
+     * @param $accessToken
+     */
+    private function shouldHaveHadATokenWithLastRequest($accessToken)
+    {
         $this->assertTrue(
             $this->history->getLastRequest()->getHeader('Authorization')
                 ->hasValue('Bearer ' . $accessToken)
         );
     }
 
-    public function testGetWithExpiredToken()
+    /**
+     * @param array $array
+     * @return \stdClass
+     */
+    private function recursiveCastObject(array $array)
     {
-        $this->given->iAmReadyToReturnAnExpiredTokenError($this->mockResponses);
+        return json_decode(json_encode($array));
+    }
 
-        $this->setExpectedException(ExpiredTokenException::class);
-
-        $api = new ApiTraverser($this->httpClient);
-        $api->get('url placeholder');
+    /**
+     * @param array $links
+     * @return array
+     */
+    private function extractReferences(array $links)
+    {
+        return array_map(
+            function ($reference) {
+                return new Reference($this->recursiveCastObject($reference));
+            },
+            $links
+        );
     }
 }

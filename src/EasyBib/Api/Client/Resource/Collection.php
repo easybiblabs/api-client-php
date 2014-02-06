@@ -3,14 +3,14 @@
 namespace EasyBib\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiTraverser;
-use EasyBib\Api\Client\ResponseDataContainer;
+use EasyBib\Api\Client\ResourceDataContainer;
 
 class Collection implements \ArrayAccess
 {
     use HasRestfulLinks;
 
     /**
-     * @var ResponseDataContainer
+     * @var ResourceDataContainer
      */
     private $container;
 
@@ -19,7 +19,7 @@ class Collection implements \ArrayAccess
      */
     private $apiTraverser;
 
-    public function __construct(ResponseDataContainer $container, ApiTraverser $apiTraverser)
+    public function __construct(ResourceDataContainer $container, ApiTraverser $apiTraverser)
     {
         $this->container = $container;
         $this->apiTraverser = $apiTraverser;
@@ -40,7 +40,7 @@ class Collection implements \ArrayAccess
      */
     public function offsetGet($offset)
     {
-        $containerForChild = new ResponseDataContainer(
+        $containerForChild = new ResourceDataContainer(
             $this->container->getData()[$offset]
         );
 
@@ -53,6 +53,7 @@ class Collection implements \ArrayAccess
      * @param mixed $offset
      * @param mixed $value
      * @throws \BadMethodCallException
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function offsetSet($offset, $value)
     {
@@ -64,6 +65,7 @@ class Collection implements \ArrayAccess
      *
      * @param mixed $offset
      * @throws \BadMethodCallException
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function offsetUnset($offset)
     {
@@ -79,7 +81,7 @@ class Collection implements \ArrayAccess
     }
 
     /**
-     * @return ResponseDataContainer
+     * @return ResourceDataContainer
      */
     public function getResponseDataContainer()
     {

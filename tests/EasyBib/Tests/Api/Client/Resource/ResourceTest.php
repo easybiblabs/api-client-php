@@ -4,14 +4,55 @@ namespace EasyBib\Tests\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Resource\Reference;
-use EasyBib\Api\Client\ResponseDataContainer;
+use EasyBib\Api\Client\ResourceDataContainer;
 use EasyBib\Api\Client\Resource\Resource;
+use EasyBib\Tests\Api\Client\Given;
 use Guzzle\Http\Client;
-use Guzzle\Http\Message\Request;
 use Guzzle\Http\Message\Response;
+use Guzzle\Plugin\History\HistoryPlugin;
+use Guzzle\Plugin\Mock\MockPlugin;
 
 class ResourceTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Given
+     */
+    private $given;
+
+    /**
+     * @var HistoryPlugin
+     */
+    private $history;
+
+    /**
+     * @var MockPlugin
+     */
+    private $mockResponses;
+
+    /**
+     * @var Client
+     */
+    private $httpClient;
+
+    /**
+     * @var ApiTraverser
+     */
+    private $api;
+
+    public function setUp()
+    {
+        $this->given = new Given();
+
+        $this->history = new HistoryPlugin();
+        $this->mockResponses = new MockPlugin();
+
+        $this->httpClient = new Client();
+        $this->httpClient->addSubscriber($this->history);
+        $this->httpClient->addSubscriber($this->mockResponses);
+
+        $this->api = new ApiTraverser($this->httpClient);
+    }
+
     public function testMagicGet()
     {
         $resource = $this->getResource('{"data":{"foo":"bar"}}');
@@ -27,10 +68,18 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
     public function testGet()
     {
-        $resource = $this->getResource();
+        $firstResource = $this->getResource();
 
-        $goodLinkedResource = $resource->get('foo ref');
-        $nullLinkedResource = $resource->get('no such ref');
+        $nextResource = [
+            'data' => [
+                'foo' => 'bar',
+            ]
+        ];
+
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $nextResource);
+
+        $goodLinkedResource = $firstResource->get('foo rel');
+        $nullLinkedResource = $firstResource->get('no such rel');
 
         $this->assertInstanceOf(Resource::class, $goodLinkedResource);
         $this->assertEquals('bar', $goodLinkedResource->foo);
@@ -41,8 +90,8 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     {
         $resource = $this->getResource();
 
-        $goodLink = $resource->findReference('foo ref');
-        $nullLink = $resource->findReference('no such ref');
+        $goodLink = $resource->findReference('foo rel');
+        $nullLink = $resource->findReference('no such rel');
 
         $this->assertInstanceOf(Reference::class, $goodLink);
         $this->assertEquals('http://foo/', $goodLink->getHref());
@@ -56,66 +105,13 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     private function getResource($body = null)
     {
         if (!$body) {
-            $body = '{"links":[{"href":"http://foo/","ref":"foo ref","type":"text","title":"The Foo"}]}';
+            $body = '{"links":[{"href":"http://foo/","rel":"foo rel","type":"text","title":"The Foo"}]}';
         }
 
         $response = new Response(200);
         $response->setBody($body);
-        $container = ResponseDataContainer::fromResponse($response);
+        $container = ResourceDataContainer::fromResponse($response);
 
-        return new Resource($container, $this->getApiTraverser());
-    }
-
-    private function getResponse()
-    {
-        $response = new Response(200);
-        $response->setBody('{"data":{"foo":"bar"}}');
-
-        return $response;
-    }
-
-    private function getRequest($fakeHttpClient)
-    {
-        $request = new Request('GET', 'http://jim/');
-        $request->setClient($fakeHttpClient);
-
-        return $request;
-    }
-
-    private function getHttpClient()
-    {
-        $previousResponse = $this->getResponse();
-        $fakeHttpClient = $this->getMock(Client::class);
-        $request = $this->getRequest($fakeHttpClient);
-
-        $this->registerStubBehaviorsOnHttpClient(
-            $fakeHttpClient,
-            $request,
-            $previousResponse
-        );
-
-        return $fakeHttpClient;
-    }
-
-    private function registerStubBehaviorsOnHttpClient(
-        $fakeHttpClient,
-        $request,
-        $response
-    ) {
-        $fakeHttpClient->expects($this->any())
-            ->method('get')
-            ->will($this->returnValue($request));
-
-        $fakeHttpClient->expects($this->any())
-            ->method('send')
-            ->will($this->returnValue($response));
-    }
-
-    /**
-     * @return ApiTraverser
-     */
-    private function getApiTraverser()
-    {
-        return new ApiTraverser($this->getHttpClient());
+        return new Resource($container, $this->api);
     }
 }
