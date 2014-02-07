@@ -18,13 +18,13 @@ dependencies.
 "repositories":[
     {
         "type": "vcs",
-        "url": "git@github.com:easybiblabs/oauth2-client-php.git"
-    },
+        "url": "git@github.com:easybib/api-client-php.git"
+    }
 ],
 "require": {
     "php":">=5.5.0",
     "easybib/api-client-php": "dev-master"
-},
+}
 ```
 
 Once your JSON is set, this will install the package
