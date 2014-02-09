@@ -214,6 +214,20 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $this->shouldHaveHadATokenWithLastRequest($accessToken);
     }
 
+    public function testGetWithParams()
+    {
+        $accessToken = 'ABC123';
+        $params = ['filter' => 'XYZ'];
+
+        $this->given->iHaveRegisteredWithAJwtSession($accessToken, $this->httpClient);
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses);
+
+        $api = new ApiTraverser($this->httpClient);
+        $api->get('url placeholder', $params);
+
+        $this->shouldHaveMadeAnApiRequest('GET', $params);
+    }
+
     public function testGetPassesTokenInHeaderWithAuthCodeGrant()
     {
         $accessToken = 'ABC123';
@@ -286,12 +300,14 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $httpMethod
+     * @param array $queryParams
      */
-    private function shouldHaveMadeAnApiRequest($httpMethod)
+    private function shouldHaveMadeAnApiRequest($httpMethod, array $queryParams = [])
     {
         $lastRequest = $this->history->getLastRequest();
 
         $this->assertEquals($httpMethod, $lastRequest->getMethod());
+        $this->assertEquals($queryParams, $lastRequest->getQuery()->toArray());
 
         $this->assertTrue(
             $lastRequest->getHeader('Accept')
