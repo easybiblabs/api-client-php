@@ -83,7 +83,7 @@ class Collection implements \ArrayAccess
     /**
      * @return ResourceDataContainer
      */
-    public function getResponseDataContainer()
+    public function getResourceData()
     {
         return $this->container;
     }
