@@ -32,7 +32,7 @@ trait HasRestfulLinks
      */
     public function findReference($rel)
     {
-        foreach ($this->getResponseDataContainer()->getReferences() as $reference) {
+        foreach ($this->getResourceData()->getReferences() as $reference) {
             if ($reference->getRel() == $rel) {
                 return $reference;
             }
@@ -49,5 +49,5 @@ trait HasRestfulLinks
     /**
      * @return \EasyBib\Api\Client\ResourceDataContainer
      */
-    abstract public function getResponseDataContainer();
+    abstract public function getResourceData();
 }

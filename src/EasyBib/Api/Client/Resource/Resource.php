@@ -54,7 +54,7 @@ class Resource
     /**
      * @return ResourceDataContainer
      */
-    public function getResponseDataContainer()
+    public function getResourceData()
     {
         return $this->container;
     }
