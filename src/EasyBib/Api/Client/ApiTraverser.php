@@ -3,6 +3,7 @@
 namespace EasyBib\Api\Client;
 
 use EasyBib\Api\Client\Resource\Collection;
+use EasyBib\Api\Client\Resource\HasRestfulLinks;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Guzzle\Plugin\RequestHeader;
 use Guzzle\Http\ClientInterface;
@@ -30,11 +31,13 @@ class ApiTraverser
 
     /**
      * @param string $url
+     * @param array $queryParams
      * @return HasRestfulLinks
      */
-    public function get($url)
+    public function get($url, array $queryParams = [])
     {
         $request = $this->httpClient->get($url);
+        $request->getQuery()->replace($queryParams);
 
         $dataContainer = ResourceDataContainer::fromResponse($this->send($request));
 
