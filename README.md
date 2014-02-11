@@ -35,19 +35,24 @@ composer.phar install
 
 ## Usage
 
-You will need an OAuth client session configured for the EasyBib Api. You can find
-an example in [the tests](tests/EasyBib/Tests/Api/Client/Given.php)
-on the `iHaveRegisteredWithAnAuthCodeSession()` method, and much more documentation
-in [the OAuth client repo's documentation](http://github.com/easybiblabs/oauth2-client-php).
+If you are going to use an Authorization Code Grant, you will need an
+implementation of `RedirectorInterface` from the OAuth2 Client library in order
+to allow the API client to redirect the user and get back an authorization code.
+You can find more information at an example in
+[the README for that project](https://github.com/easybiblabs/oauth2-client-php#authorization-code-grant).
 
-With your OAuth client, you can then call the API:
+You can then call the API:
 
 ```php
-// instantiate $oauthSession, and then:
+use EasyBib\Api\Client\ApiBuilder;
 
-$apiHttpClient = new \Guzzle\Http\Client('https://data.easybib.com');
-$oauthSession->addResourceClient($apiHttpClient);
-$api = new ApiTraverser($apiHttpClient);
+// $redirector is your implementation of RedirectorInterface
+$apiBuilder = new ApiBuilder($redirector);
+
+$api = $apiBuilder->createWithAuthorizationCodeGrant([
+    'client_id' => 'client_123',
+    'redirect_url' => 'http://myapp.example.com/handle-token-response',
+]);
 
 $user = $api->getUser();  // user serves as the entry point for traversing resources
 
