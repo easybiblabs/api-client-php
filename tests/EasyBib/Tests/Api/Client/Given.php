@@ -42,6 +42,9 @@ class Given
         return $resource;
     }
 
+    /**
+     * @param MockPlugin $mockResponses
+     */
     public function iAmReadyToRespondWithAToken(MockPlugin $mockResponses)
     {
         $response = new Response(

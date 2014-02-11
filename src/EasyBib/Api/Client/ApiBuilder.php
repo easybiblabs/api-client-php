@@ -13,6 +13,7 @@ use EasyBib\OAuth2\Client\ServerConfig;
 use EasyBib\OAuth2\Client\TokenStore;
 use Guzzle\Http\Client;
 use Guzzle\Http\ClientInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -25,28 +26,31 @@ class ApiBuilder
     private $redirector;
 
     /**
+     * Dependency-injectable for testing
+     *
      * @var ClientInterface
      */
     private $oauthHttpClient;
 
     /**
+     * Dependency-injectable for testing
+     *
      * @var ClientInterface
      */
     private $apiHttpClient;
 
     /**
-     * @var TokenStore
+     * Dependency-injectable for custom session backend, or testing
+     *
+     * @var Session
      */
-    private $tokenStore;
+    private $session;
 
     /**
-     * @param RedirectorInterface $redirector
+     * @param array $params
+     * @param string $url
+     * @return ApiTraverser
      */
-    public function __construct(RedirectorInterface $redirector)
-    {
-        $this->redirector = $redirector;
-    }
-
     public function createWithAuthorizationCodeGrant(array $params, $url = 'https://data.easybib.com')
     {
         $clientConfig = new AuthorizationCodeGrant\ClientConfig([
@@ -64,6 +68,11 @@ class ApiBuilder
         return $this->buildApiTraverser($oauthSession, $url);
     }
 
+    /**
+     * @param array $params
+     * @param string $url
+     * @return ApiTraverser
+     */
     public function createWithJsonWebTokenGrant(array $params, $url = 'https://data.easybib.com')
     {
         $clientConfig = new JsonWebTokenGrant\ClientConfig([
@@ -98,11 +107,19 @@ class ApiBuilder
     }
 
     /**
-     * @param TokenStore $tokenStore
+     * @param Session $session
      */
-    public function setTokenStore(TokenStore $tokenStore)
+    public function setSession(Session $session)
     {
-        $this->tokenStore = $tokenStore;
+        $this->session = $session;
+    }
+
+    /**
+     * @param RedirectorInterface $redirector
+     */
+    public function setRedirector(RedirectorInterface $redirector)
+    {
+        $this->redirector = $redirector;
     }
 
     /**
@@ -112,7 +129,7 @@ class ApiBuilder
      */
     private function buildApiTraverser(AbstractSession $oauthSession, $url)
     {
-        $oauthSession->setTokenStore($this->tokenStore);
+        $oauthSession->setTokenStore($this->getTokenStore());
         $oauthSession->setScope(new Scope(['USER_READ', 'DATA_READ_WRITE']));
         $apiHttpClient = $this->getApiHttpClient($url);
         $oauthSession->addResourceClient($apiHttpClient);
@@ -137,6 +154,7 @@ class ApiBuilder
      */
     private function getOauthHttpClient($url)
     {
+        // if none has been provided for testing, instantiate a blank Client()
         $oauthHttpClient = $this->oauthHttpClient ?: new Client();
         $oauthHttpClient->setBaseUrl($url);
 
@@ -149,9 +167,20 @@ class ApiBuilder
      */
     private function getApiHttpClient($url)
     {
+        // if none has been provided for testing, instantiate a blank Client()
         $oauthHttpClient = $this->apiHttpClient ?: new Client();
         $oauthHttpClient->setBaseUrl($url);
 
         return $oauthHttpClient;
+    }
+
+    /**
+     * @return TokenStore
+     */
+    private function getTokenStore()
+    {
+        // if none has been provided, create one with native PHP sessions
+        $session = $this->session ?: new Session();
+        return new TokenStore($session);
     }
 }

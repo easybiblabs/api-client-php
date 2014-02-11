@@ -83,13 +83,14 @@ class ApiBuilderTest extends \PHPUnit_Framework_TestCase
         $this->oauthHttpClient->addSubscriber(new HistoryPlugin());
         $this->oauthHttpClient->addSubscriber($this->oauthMockResponses);
 
-        $this->tokenStore = new TokenStore(new Session(new MockArraySessionStorage()));
+        $session = new Session(new MockArraySessionStorage());
+        $this->tokenStore = new TokenStore($session);
 
-        $this->builder = new ApiBuilder(new ExceptionMockRedirector());
-
+        $this->builder = new ApiBuilder();
+        $this->builder->setRedirector(new ExceptionMockRedirector());
         $this->builder->setOauthHttpClient($this->oauthHttpClient);
         $this->builder->setApiHttpClient($this->apiHttpClient);
-        $this->builder->setTokenStore($this->tokenStore);
+        $this->builder->setSession($session);
     }
 
     public function testAuthorizationCodeGrant()
