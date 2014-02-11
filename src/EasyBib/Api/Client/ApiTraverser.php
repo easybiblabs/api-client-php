@@ -82,6 +82,16 @@ class ApiTraverser
     }
 
     /**
+     * This bootstraps the session by returning the user's projects Collection
+     *
+     * @return Collection
+     */
+    public function getProjects()
+    {
+        return $this->get('/projects/');
+    }
+
+    /**
      * @param RequestInterface $request
      * @throws ExpiredTokenException
      * @return Response

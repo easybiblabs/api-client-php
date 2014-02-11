@@ -182,6 +182,26 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $this->shouldHaveReturnedAResource($user, $response);
     }
 
+    public function testGetProjects()
+    {
+        $projects = [
+            'links' => [],
+            'data' => [
+                [
+                    'links' => [],
+                    'data' => ['foo' => 'bar'],
+                ]
+            ]
+        ];
+
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $projects);
+
+        $response = $this->api->getProjects();
+
+        $this->shouldHaveMadeAnApiRequest('GET');
+        $this->shouldHaveReturnedACollection($projects, $response);
+    }
+
     public function testGetCitationsReturnsCollection()
     {
         $collection = [
