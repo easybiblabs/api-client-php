@@ -43,6 +43,29 @@ You can find more information at an example in
 
 You can then call the API:
 
+### JSON Web Token Grant
+
+```php
+use EasyBib\Api\Client\ApiBuilder;
+
+// $redirector is your implementation of RedirectorInterface
+$apiBuilder = new ApiBuilder($redirector);
+
+$api = $apiBuilder->createWithJsonWebTokenGrant([
+    'client_id' => 'client_123',
+    'client_secret' => 'secret_987',
+    'subject' => 'user_id_123',
+]);
+
+$user = $api->getUser();  // user serves as the entry point for traversing resources
+
+$titleOfFirstProject = $user->get('projects')[0]->title;
+$citationsFromFirstProject = $user->get('projects')[0]->get('citations');
+$linksForSecondProject = $user->get('projects')[1]->getLinkRefs();
+```
+
+### Authorization Code Grant
+
 ```php
 use EasyBib\Api\Client\ApiBuilder;
 
