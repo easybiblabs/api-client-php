@@ -324,7 +324,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $this->extractReferences($expectedResponseArray['links']),
-            $resource->getResourceData()->getReferences()
+            $resource->getReferences()
         );
     }
 
@@ -358,7 +358,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             $this->recursiveCastObject($expectedResponseArray['data']),
-            $resource->getResourceData()->getData()
+            $resource->getData()
         );
     }
 

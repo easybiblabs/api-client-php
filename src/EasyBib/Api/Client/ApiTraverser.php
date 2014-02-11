@@ -2,8 +2,6 @@
 
 namespace EasyBib\Api\Client;
 
-use EasyBib\Api\Client\Resource\Collection;
-use EasyBib\Api\Client\Resource\HasRestfulLinks;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Guzzle\Plugin\RequestHeader;
 use Guzzle\Http\ClientInterface;
@@ -32,20 +30,14 @@ class ApiTraverser
     /**
      * @param string $url
      * @param array $queryParams
-     * @return HasRestfulLinks
+     * @return Resource
      */
     public function get($url, array $queryParams = [])
     {
         $request = $this->httpClient->get($url);
         $request->getQuery()->replace($queryParams);
 
-        $dataContainer = ResourceDataContainer::fromResponse($this->send($request));
-
-        if ($dataContainer->isList()) {
-            return new Collection($dataContainer, $this);
-        }
-
-        return new Resource($dataContainer, $this);
+        return Resource::fromResponse($this->send($request), $this);
     }
 
     /**
@@ -75,9 +67,8 @@ class ApiTraverser
     public function delete($url)
     {
         $request = $this->httpClient->delete($url);
-        $dataContainer = ResourceDataContainer::fromResponse($this->send($request));
 
-        return new Resource($dataContainer, $this);
+        return Resource::fromResponse($this->send($request), $this);
     }
 
     /**
@@ -93,7 +84,7 @@ class ApiTraverser
     /**
      * @param RequestInterface $request
      * @throws ExpiredTokenException
-     * @return \Guzzle\Http\Message\Response
+     * @return Response
      */
     private function send(RequestInterface $request)
     {
@@ -129,8 +120,7 @@ class ApiTraverser
     {
         $payload = json_encode(['data' => $resource]);
         $request = $this->httpClient->$method($url, [], $payload);
-        $dataContainer = ResourceDataContainer::fromResponse($this->send($request));
 
-        return new Resource($dataContainer, $this);
+        return Resource::fromResponse($this->send($request), $this);
     }
 }

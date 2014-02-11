@@ -5,9 +5,7 @@ namespace EasyBib\Tests\Api\Client\Resource;
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Resource;
-use EasyBib\Api\Client\ResourceDataContainer;
 use Guzzle\Http\Client;
-use Guzzle\Http\Message\Response;
 
 class CollectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,6 +15,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
             [[
                 'data' => [
                     [
+                        'data' => ['foo' => 'bar'],
                         'links' => [
                             0 => [
                                 'title' => 'James',
@@ -27,65 +26,65 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
                         ],
                     ],
                 ],
+                'links' => [],
             ]],
         ];
     }
 
     /**
      * @dataProvider dataProvider
-     * @param array $payload
+     * @param array $data
      */
-    public function testOffsetExists(array $payload)
+    public function testOffsetExists(array $data)
     {
-        $resourceList = $this->getResourceList(json_encode($payload));
-        $this->assertTrue(isset($resourceList[0]));
-        $this->assertFalse(isset($resourceList[1]));
+        $collection = $this->getCollection($data);
+        $this->assertTrue(isset($collection[0]));
+        $this->assertFalse(isset($collection[1]));
     }
 
     /**
      * @dataProvider dataProvider
-     * @param array $payload
+     * @param array $data
      */
-    public function testOffsetGet(array $payload)
+    public function testOffsetGet(array $data)
     {
-        $resourceList = $this->getResourceList(json_encode($payload));
-        $this->assertInstanceOf(Resource::class, $resourceList[0]);
+        $collection = $this->getCollection($data);
+        $this->assertInstanceOf(Resource::class, $collection[0]);
     }
 
     /**
+     * @dataProvider dataProvider
+     * @param array $data
      * @expectedException \BadMethodCallException
      * @expectedExceptionMessage offsetSet() is not supported.
      */
-    public function testOffsetSet()
+    public function testOffsetSet(array $data)
     {
-        $resourceList = $this->getResourceList();
-        $resourceList->offsetSet(0, (object) []);
+        $collection = $this->getCollection($data);
+        $collection->offsetSet(0, (object) []);
     }
 
     /**
+     * @dataProvider dataProvider
+     * @param array $data
      * @expectedException \BadMethodCallException
      * @expectedExceptionMessage offsetUnset() is not supported.
      */
-    public function testOffsetUnset()
+    public function testOffsetUnset(array $data)
     {
-        $resourceList = $this->getResourceList();
-        $resourceList->offsetUnset(0);
+        $collection = $this->getCollection($data);
+        $collection->offsetUnset(0);
     }
 
     /**
-     * @param string $body
+     * @param array $data
      * @return Collection
      */
-    private function getResourceList($body = '')
+    private function getCollection(array $data = [])
     {
-        $response = new Response(200);
-        $response->setBody($body);
-
-        $container = ResourceDataContainer::fromResponse($response);
-
         $apiTraverser = new ApiTraverser(new Client());
-        $resourceList = new Collection($container, $apiTraverser);
+        $data = json_decode(json_encode($data));
 
-        return $resourceList;
+        return Resource::factory($data, $apiTraverser);
     }
 }

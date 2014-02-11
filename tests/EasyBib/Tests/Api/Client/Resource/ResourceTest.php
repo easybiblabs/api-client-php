@@ -3,8 +3,8 @@
 namespace EasyBib\Tests\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiTraverser;
+use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Reference;
-use EasyBib\Api\Client\ResourceDataContainer;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Tests\Api\Client\Given;
 use Guzzle\Http\Client;
@@ -53,19 +53,6 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->api = new ApiTraverser($this->httpClient);
     }
 
-    public function testMagicGet()
-    {
-        $resource = $this->getResource('{"data":{"foo":"bar"}}');
-        $this->assertEquals('bar', $resource->foo);
-    }
-
-    public function testMagicIsset()
-    {
-        $resource = $this->getResource('{"data":{"foo":"bar"}}');
-        $this->assertTrue(isset($resource->foo));
-        $this->assertFalse(isset($resource->baz));
-    }
-
     public function testGet()
     {
         $firstResource = $this->getResource();
@@ -82,8 +69,54 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $nullLinkedResource = $firstResource->get('no such rel');
 
         $this->assertInstanceOf(Resource::class, $goodLinkedResource);
-        $this->assertEquals('bar', $goodLinkedResource->foo);
+        $this->assertEquals('bar', $goodLinkedResource->getData()->foo);
         $this->assertNull($nullLinkedResource);
+    }
+
+    public function testGetData()
+    {
+        $resource = $this->getResource('{"data":{"foo":"bar"}}');
+        $this->assertEquals((object) ['foo' => 'bar'], $resource->getData());
+    }
+
+    public function testGetReferences()
+    {
+        $resource = $this->getResource(
+            '{"data":{"foo":"bar"},"links":[{"href":"http://api.example.org/foo/bar/","rel":"foo",
+                "type":"application/vnd.com.easybib.data+json","title":"Some link"}]}'
+        );
+
+        $this->assertInternalType('array', $resource->getReferences());
+        $this->assertInstanceOf(Reference::class, $resource->getReferences()[0]);
+
+        $this->assertEquals(
+            [
+                new Reference(
+                    (object) [
+                        'href' => 'http://api.example.org/foo/bar/',
+                        'rel' => 'foo',
+                        'type' => 'application/vnd.com.easybib.data+json',
+                        'title' => 'Some link',
+                    ]
+                )
+            ],
+            $resource->getReferences()
+        );
+    }
+
+    public function testToArray()
+    {
+        $resource = $this->getResource('{"data":{"foo":"bar"}}');
+        $this->assertEquals(['data' => ['foo' => 'bar']], $resource->toArray());
+    }
+
+    public function testFactory()
+    {
+        $listData = '{"data":[{"foo":"bar"}],"links":[]}';
+        $hashData = '{"data":{"foo":"bar"},"links":[]}';
+
+        $this->assertInstanceOf(Collection::class, $this->getResource($listData));
+        $this->assertNotInstanceOf(Collection::class, $this->getResource($hashData));
     }
 
     public function testFindLink()
@@ -105,13 +138,22 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     private function getResource($body = null)
     {
         if (!$body) {
-            $body = '{"links":[{"href":"http://foo/","rel":"foo rel","type":"text","title":"The Foo"}]}';
+            $body = json_encode([
+                'data' => ['foo' => 'bar'],
+                'links' => [
+                    [
+                        'href' => 'http://foo/',
+                        'rel' => 'foo rel',
+                        'type' => 'text',
+                        'title' => 'The Foo',
+                    ]
+                ],
+            ]);
         }
 
         $response = new Response(200);
         $response->setBody($body);
-        $container = ResourceDataContainer::fromResponse($response);
 
-        return new Resource($container, $this->api);
+        return Resource::fromResponse($response, $this->api);
     }
 }
