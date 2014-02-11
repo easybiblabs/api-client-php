@@ -11,13 +11,13 @@ class ResourceDataContainerTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetData()
     {
-        $container = $this->getResponseContainer('{"data":{"foo":"bar"}}');
+        $container = $this->getResourceContainer('{"data":{"foo":"bar"}}');
         $this->assertEquals((object) ['foo' => 'bar'], $container->getData());
     }
 
     public function testGetLinks()
     {
-        $container = $this->getResponseContainer(
+        $container = $this->getResourceContainer(
             '{"links":[{"href":"http://api.example.org/foo/bar/","rel":"foo",
                 "type":"application/vnd.com.easybib.data+json","title":"Some link"}]}'
         );
@@ -42,7 +42,7 @@ class ResourceDataContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testToArray()
     {
-        $container = $this->getResponseContainer('{"data":{"foo":"bar"}}');
+        $container = $this->getResourceContainer('{"data":{"foo":"bar"}}');
         $this->assertEquals(['data' => ['foo' => 'bar']], $container->toArray());
     }
 
@@ -51,15 +51,15 @@ class ResourceDataContainerTest extends \PHPUnit_Framework_TestCase
         $hashData = '{"data":{"foo":"bar"}}';
         $listData = '{"data":[{"foo":"bar"}]}';
 
-        $this->assertFalse($this->getResponseContainer($hashData)->isList());
-        $this->assertTrue($this->getResponseContainer($listData)->isList());
+        $this->assertFalse($this->getResourceContainer($hashData)->isList());
+        $this->assertTrue($this->getResourceContainer($listData)->isList());
     }
 
     /**
      * @param string $body A string of JSON
      * @return ResourceDataContainer
      */
-    private function getResponseContainer($body)
+    private function getResourceContainer($body)
     {
         $response = new Response(200);
         $response->setBody($body);
