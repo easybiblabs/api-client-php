@@ -40,6 +40,12 @@ class ResourceDataContainerTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testToArray()
+    {
+        $container = $this->getResponseContainer('{"data":{"foo":"bar"}}');
+        $this->assertEquals(['data' => ['foo' => 'bar']], $container->toArray());
+    }
+
     public function testIsList()
     {
         $hashData = '{"data":{"foo":"bar"}}';
