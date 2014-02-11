@@ -34,18 +34,13 @@ class ApiBuilder
             'redirect_url' => $params['redirect_url'],
         ]);
 
-        $serverConfig = new ServerConfig([
-            'authorize_endpoint' => '/oauth/authorize',
-            'token_endpoint' => '/oauth/token',
-        ]);
-
         $oauthHttpClient = new Client($url);
 
         $oauthSession = new AuthorizationCodeSession(
             $oauthHttpClient,
             $this->redirector,
             $clientConfig,
-            $serverConfig
+            $this->getServerConfig()
         );
 
         return $this->buildApiTraverser($oauthSession);
@@ -59,18 +54,13 @@ class ApiBuilder
             'subject' => $params['user_id'],
         ]);
 
-        $serverConfig = new ServerConfig([
-            'authorize_endpoint' => '/oauth/authorize',
-            'token_endpoint' => '/oauth/token',
-        ]);
-
         $oauthHttpClient = new Client($url);
 
         $oauthSession = new JsonWebTokenSession(
             $oauthHttpClient,
             $this->redirector,
             $clientConfig,
-            $serverConfig
+            $this->getServerConfig()
         );
 
         return $this->buildApiTraverser($oauthSession, $url);
@@ -88,5 +78,16 @@ class ApiBuilder
         $oauthSession->addResourceClient($apiHttpClient);
 
         return new ApiTraverser($apiHttpClient);
+    }
+
+    /**
+     * @return ServerConfig
+     */
+    private function getServerConfig()
+    {
+        return new ServerConfig([
+            'authorize_endpoint' => '/oauth/authorize',
+            'token_endpoint' => '/oauth/token',
+        ]);
     }
 }
