@@ -42,6 +42,14 @@ class ResourceDataContainer
     }
 
     /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return json_decode(json_encode($this->rawData), true);
+    }
+
+    /**
      * Whether the data contained is an indexed array, as opposed to key-value
      * pairs, a.k.a. associative array. This mirrors an ambiguity in the API
      * payloads. The `data` section can contain either a set of key-value
