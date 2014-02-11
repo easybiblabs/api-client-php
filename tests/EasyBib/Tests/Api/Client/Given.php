@@ -2,6 +2,7 @@
 
 namespace EasyBib\Tests\Api\Client;
 
+use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\AuthorizationCodeSession;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\ClientConfig as AuthCodeClientConfig;
 use EasyBib\OAuth2\Client\JsonWebTokenGrant\ClientConfig as JwtClientConfig;
@@ -39,6 +40,20 @@ class Given
         );
 
         return $resource;
+    }
+
+    public function iAmReadyToRespondWithAToken(MockPlugin $mockResponses)
+    {
+        $response = new Response(
+            200,
+            [],
+            json_encode([
+                'access_token' => 'token_ABC123',
+                'token_type' => 'bearer',
+            ])
+        );
+
+        $mockResponses->addResponse($response);
     }
 
     /**

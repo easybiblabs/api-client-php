@@ -10,14 +10,34 @@ use EasyBib\OAuth2\Client\JsonWebTokenGrant\JsonWebTokenSession;
 use EasyBib\OAuth2\Client\RedirectorInterface;
 use EasyBib\OAuth2\Client\Scope;
 use EasyBib\OAuth2\Client\ServerConfig;
+use EasyBib\OAuth2\Client\TokenStore;
 use Guzzle\Http\Client;
+use Guzzle\Http\ClientInterface;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class ApiBuilder
 {
     /**
      * @var RedirectorInterface
      */
     private $redirector;
+
+    /**
+     * @var ClientInterface
+     */
+    private $oauthHttpClient;
+
+    /**
+     * @var ClientInterface
+     */
+    private $apiHttpClient;
+
+    /**
+     * @var TokenStore
+     */
+    private $tokenStore;
 
     /**
      * @param RedirectorInterface $redirector
@@ -34,16 +54,14 @@ class ApiBuilder
             'redirect_url' => $params['redirect_url'],
         ]);
 
-        $oauthHttpClient = new Client($url);
-
         $oauthSession = new AuthorizationCodeSession(
-            $oauthHttpClient,
+            $this->getOauthHttpClient($url),
             $this->redirector,
             $clientConfig,
             $this->getServerConfig()
         );
 
-        return $this->buildApiTraverser($oauthSession);
+        return $this->buildApiTraverser($oauthSession, $url);
     }
 
     public function createWithJsonWebTokenGrant(array $params, $url = 'https://data.easybib.com')
@@ -54,16 +72,37 @@ class ApiBuilder
             'subject' => $params['user_id'],
         ]);
 
-        $oauthHttpClient = new Client($url);
-
         $oauthSession = new JsonWebTokenSession(
-            $oauthHttpClient,
-            $this->redirector,
+            $this->getOauthHttpClient($url),
             $clientConfig,
             $this->getServerConfig()
         );
 
         return $this->buildApiTraverser($oauthSession, $url);
+    }
+
+    /**
+     * @param ClientInterface $httpClient
+     */
+    public function setOauthHttpClient(ClientInterface $httpClient)
+    {
+        $this->oauthHttpClient = $httpClient;
+    }
+
+    /**
+     * @param ClientInterface $httpClient
+     */
+    public function setApiHttpClient(ClientInterface $httpClient)
+    {
+        $this->apiHttpClient = $httpClient;
+    }
+
+    /**
+     * @param TokenStore $tokenStore
+     */
+    public function setTokenStore(TokenStore $tokenStore)
+    {
+        $this->tokenStore = $tokenStore;
     }
 
     /**
@@ -73,8 +112,9 @@ class ApiBuilder
      */
     private function buildApiTraverser(AbstractSession $oauthSession, $url)
     {
+        $oauthSession->setTokenStore($this->tokenStore);
         $oauthSession->setScope(new Scope(['USER_READ', 'DATA_READ_WRITE']));
-        $apiHttpClient = new Client($url);
+        $apiHttpClient = $this->getApiHttpClient($url);
         $oauthSession->addResourceClient($apiHttpClient);
 
         return new ApiTraverser($apiHttpClient);
@@ -86,8 +126,32 @@ class ApiBuilder
     private function getServerConfig()
     {
         return new ServerConfig([
-            'authorize_endpoint' => '/oauth/authorize',
+            'authorization_endpoint' => '/oauth/authorize',
             'token_endpoint' => '/oauth/token',
         ]);
+    }
+
+    /**
+     * @param string $url
+     * @return ClientInterface
+     */
+    private function getOauthHttpClient($url)
+    {
+        $oauthHttpClient = $this->oauthHttpClient ?: new Client();
+        $oauthHttpClient->setBaseUrl($url);
+
+        return $oauthHttpClient;
+    }
+
+    /**
+     * @param string $url
+     * @return ClientInterface
+     */
+    private function getApiHttpClient($url)
+    {
+        $oauthHttpClient = $this->apiHttpClient ?: new Client();
+        $oauthHttpClient->setBaseUrl($url);
+
+        return $oauthHttpClient;
     }
 }
