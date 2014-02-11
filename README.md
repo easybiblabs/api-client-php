@@ -104,7 +104,9 @@ which would return a `Collection` of citations. Some more examples:
 ```php
 $titleOfFirstProject = $user->get('projects')[0]->title;
 $citationsFromFirstProject = $user->get('projects')[0]->get('citations');
-$linksForSecondProject = $user->get('projects')[1]->getLinkRefs();
+$linksForSecondProject = $user->get('projects')[1]->getReferences();
+$linksForSecondProject = $user->get('projects')[1]->listReferences();
+$linksForSecondProject = $user->get('projects')[1]->hasReference('citations');
 ```
 
 ### Session backend
