@@ -45,6 +45,28 @@ class Resource
     }
 
     /**
+     * @return array
+     */
+    public function listReferences()
+    {
+        return array_map(
+            function ($link) {
+                return $link->rel;
+            },
+            $this->rawData->links
+        );
+    }
+
+    /**
+     * @param string $rel
+     * @return bool
+     */
+    public function hasReference($rel)
+    {
+        return in_array($rel, $this->listReferences());
+    }
+
+    /**
      * @return ApiTraverser
      */
     public function getApiTraverser()

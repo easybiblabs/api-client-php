@@ -53,6 +53,17 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->api = new ApiTraverser($this->httpClient);
     }
 
+    /**
+     * @return array
+     */
+    public function dataProviderForReferences()
+    {
+        return [
+            ['{"data":{"foo":"bar"},"links":[{"href":"http://api.example.org/foo/bar/","rel":"foo",
+                "type":"application/vnd.com.easybib.data+json","title":"Some link"}]}']
+        ];
+    }
+
     public function testGet()
     {
         $firstResource = $this->getResource();
@@ -79,12 +90,13 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals((object) ['foo' => 'bar'], $resource->getData());
     }
 
-    public function testGetReferences()
+    /**
+     * @dataProvider dataProviderForReferences
+     * @param string $json
+     */
+    public function testGetReferences($json)
     {
-        $resource = $this->getResource(
-            '{"data":{"foo":"bar"},"links":[{"href":"http://api.example.org/foo/bar/","rel":"foo",
-                "type":"application/vnd.com.easybib.data+json","title":"Some link"}]}'
-        );
+        $resource = $this->getResource($json);
 
         $this->assertInternalType('array', $resource->getReferences());
         $this->assertInstanceOf(Reference::class, $resource->getReferences()[0]);
@@ -102,6 +114,29 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ],
             $resource->getReferences()
         );
+    }
+
+    /**
+     * @dataProvider dataProviderForReferences
+     * @param string $json
+     */
+    public function testListReferences($json)
+    {
+        $resource = $this->getResource($json);
+
+        $this->assertEquals(['foo'], $resource->listReferences());
+    }
+
+    /**
+     * @dataProvider dataProviderForReferences
+     * @param string $json
+     */
+    public function testHasReference($json)
+    {
+        $resource = $this->getResource($json);
+
+        $this->assertTrue($resource->hasReference('foo'));
+        $this->assertFalse($resource->hasReference('bar'));
     }
 
     public function testToArray()
