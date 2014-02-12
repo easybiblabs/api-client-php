@@ -2,36 +2,16 @@
 
 namespace EasyBib\Api\Client\Resource;
 
-use EasyBib\Api\Client\ApiTraverser;
-use EasyBib\Api\Client\ResourceDataContainer;
 
-class Collection implements \ArrayAccess
+class Collection extends Resource implements \ArrayAccess
 {
-    use HasRestfulLinks;
-
-    /**
-     * @var ResourceDataContainer
-     */
-    private $container;
-
-    /**
-     * @var \EasyBib\Api\Client\ApiTraverser
-     */
-    private $apiTraverser;
-
-    public function __construct(ResourceDataContainer $container, ApiTraverser $apiTraverser)
-    {
-        $this->container = $container;
-        $this->apiTraverser = $apiTraverser;
-    }
-
     /**
      * @param mixed $offset
      * @return bool
      */
     public function offsetExists($offset)
     {
-        return isset($this->container->getData()[$offset]);
+        return isset($this->getData()[$offset]);
     }
 
     /**
@@ -40,11 +20,9 @@ class Collection implements \ArrayAccess
      */
     public function offsetGet($offset)
     {
-        $containerForChild = new ResourceDataContainer(
-            $this->container->getData()[$offset]
-        );
+        $childData = $this->getData()[$offset];
 
-        return new Resource($containerForChild, $this->apiTraverser);
+        return Resource::factory($childData, $this->getApiTraverser());
     }
 
     /**
@@ -70,21 +48,5 @@ class Collection implements \ArrayAccess
     public function offsetUnset($offset)
     {
         throw new \BadMethodCallException('offsetUnset() is not supported.');
-    }
-
-    /**
-     * @return ApiTraverser
-     */
-    public function getApiTraverser()
-    {
-        return $this->apiTraverser;
-    }
-
-    /**
-     * @return ResourceDataContainer
-     */
-    public function getResourceData()
-    {
-        return $this->container;
     }
 }

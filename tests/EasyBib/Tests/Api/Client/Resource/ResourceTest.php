@@ -3,8 +3,8 @@
 namespace EasyBib\Tests\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiTraverser;
-use EasyBib\Api\Client\Resource\Reference;
-use EasyBib\Api\Client\ResourceDataContainer;
+use EasyBib\Api\Client\Resource\Collection;
+use EasyBib\Api\Client\Resource\Relation;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Tests\Api\Client\Given;
 use Guzzle\Http\Client;
@@ -53,17 +53,15 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->api = new ApiTraverser($this->httpClient);
     }
 
-    public function testMagicGet()
+    /**
+     * @return array
+     */
+    public function dataProviderForRelations()
     {
-        $resource = $this->getResource('{"data":{"foo":"bar"}}');
-        $this->assertEquals('bar', $resource->foo);
-    }
-
-    public function testMagicIsset()
-    {
-        $resource = $this->getResource('{"data":{"foo":"bar"}}');
-        $this->assertTrue(isset($resource->foo));
-        $this->assertFalse(isset($resource->baz));
+        return [
+            ['{"data":{"foo":"bar"},"links":[{"href":"http://api.example.org/foo/bar/","rel":"foo",
+                "type":"application/vnd.com.easybib.data+json","title":"Some link"}]}']
+        ];
     }
 
     public function testGet()
@@ -82,18 +80,88 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $nullLinkedResource = $firstResource->get('no such rel');
 
         $this->assertInstanceOf(Resource::class, $goodLinkedResource);
-        $this->assertEquals('bar', $goodLinkedResource->foo);
+        $this->assertEquals('bar', $goodLinkedResource->getData()->foo);
         $this->assertNull($nullLinkedResource);
+    }
+
+    public function testGetData()
+    {
+        $resource = $this->getResource('{"data":{"foo":"bar"}}');
+        $this->assertEquals((object) ['foo' => 'bar'], $resource->getData());
+    }
+
+    /**
+     * @dataProvider dataProviderForRelations
+     * @param string $json
+     */
+    public function testGetRelations($json)
+    {
+        $resource = $this->getResource($json);
+
+        $this->assertInternalType('array', $resource->getRelations());
+        $this->assertInstanceOf(Relation::class, $resource->getRelations()[0]);
+
+        $this->assertEquals(
+            [
+                new Relation(
+                    (object) [
+                        'href' => 'http://api.example.org/foo/bar/',
+                        'rel' => 'foo',
+                        'type' => 'application/vnd.com.easybib.data+json',
+                        'title' => 'Some link',
+                    ]
+                )
+            ],
+            $resource->getRelations()
+        );
+    }
+
+    /**
+     * @dataProvider dataProviderForRelations
+     * @param string $json
+     */
+    public function testListRelations($json)
+    {
+        $resource = $this->getResource($json);
+
+        $this->assertEquals(['foo'], $resource->listRelations());
+    }
+
+    /**
+     * @dataProvider dataProviderForRelations
+     * @param string $json
+     */
+    public function testHasRelation($json)
+    {
+        $resource = $this->getResource($json);
+
+        $this->assertTrue($resource->hasRelation('foo'));
+        $this->assertFalse($resource->hasRelation('bar'));
+    }
+
+    public function testToArray()
+    {
+        $resource = $this->getResource('{"data":{"foo":"bar"}}');
+        $this->assertEquals(['data' => ['foo' => 'bar']], $resource->toArray());
+    }
+
+    public function testFactory()
+    {
+        $listData = '{"data":[{"foo":"bar"}],"links":[]}';
+        $hashData = '{"data":{"foo":"bar"},"links":[]}';
+
+        $this->assertInstanceOf(Collection::class, $this->getResource($listData));
+        $this->assertNotInstanceOf(Collection::class, $this->getResource($hashData));
     }
 
     public function testFindLink()
     {
         $resource = $this->getResource();
 
-        $goodLink = $resource->findReference('foo rel');
-        $nullLink = $resource->findReference('no such rel');
+        $goodLink = $resource->findRelation('foo rel');
+        $nullLink = $resource->findRelation('no such rel');
 
-        $this->assertInstanceOf(Reference::class, $goodLink);
+        $this->assertInstanceOf(Relation::class, $goodLink);
         $this->assertEquals('http://foo/', $goodLink->getHref());
         $this->assertNull($nullLink);
     }
@@ -105,13 +173,22 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     private function getResource($body = null)
     {
         if (!$body) {
-            $body = '{"links":[{"href":"http://foo/","rel":"foo rel","type":"text","title":"The Foo"}]}';
+            $body = json_encode([
+                'data' => ['foo' => 'bar'],
+                'links' => [
+                    [
+                        'href' => 'http://foo/',
+                        'rel' => 'foo rel',
+                        'type' => 'text',
+                        'title' => 'The Foo',
+                    ]
+                ],
+            ]);
         }
 
         $response = new Response(200);
         $response->setBody($body);
-        $container = ResourceDataContainer::fromResponse($response);
 
-        return new Resource($container, $this->api);
+        return Resource::fromResponse($response, $this->api);
     }
 }
