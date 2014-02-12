@@ -91,7 +91,7 @@ Once you have an API object, you can use it to traverse the API.
 The two entry points are `$api->getUser()` and `$api->getProjects()`.
 
 `getUser()` will return a `Resource` representing the user; calling
-`getResourceData()->getReferences()` on the user resource will return a set
+`getResourceData()->getRelations()` on the user resource will return a set
 of available references which can be called from the user. So the call chain
 for a particular project's citations might be
 
@@ -104,9 +104,9 @@ which would return a `Collection` of citations. Some more examples:
 ```php
 $titleOfFirstProject = $user->get('projects')[0]->title;
 $citationsFromFirstProject = $user->get('projects')[0]->get('citations');
-$linksForSecondProject = $user->get('projects')[1]->getReferences();
-$linksForSecondProject = $user->get('projects')[1]->listReferences();
-$linksForSecondProject = $user->get('projects')[1]->hasReference('citations');
+$linksForSecondProject = $user->get('projects')[1]->getRelations();
+$linksForSecondProject = $user->get('projects')[1]->listRelations();
+$linksForSecondProject = $user->get('projects')[1]->hasRelation('citations');
 ```
 
 ### Session backend

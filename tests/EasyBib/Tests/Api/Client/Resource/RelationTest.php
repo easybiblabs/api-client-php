@@ -2,9 +2,9 @@
 
 namespace EasyBib\Tests\Api\Client\Resource;
 
-use EasyBib\Api\Client\Resource\Reference;
+use EasyBib\Api\Client\Resource\Relation;
 
-class ReferenceTest extends \PHPUnit_Framework_TestCase
+class RelationTest extends \PHPUnit_Framework_TestCase
 {
     public function dataProviderValid()
     {
@@ -29,7 +29,7 @@ class ReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetHref($data)
     {
-        $reference = new Reference(json_decode($data));
+        $reference = new Relation(json_decode($data));
         $this->assertEquals('http://foo/bar/', $reference->getHref());
     }
 
@@ -39,7 +39,7 @@ class ReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetRel($data)
     {
-        $reference = new Reference(json_decode($data));
+        $reference = new Relation(json_decode($data));
         $this->assertEquals('some rel', $reference->getRel());
     }
 
@@ -49,7 +49,7 @@ class ReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetType($data)
     {
-        $reference = new Reference(json_decode($data));
+        $reference = new Relation(json_decode($data));
         $this->assertEquals('text/html', $reference->getType());
     }
 
@@ -59,7 +59,7 @@ class ReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetTitle($data)
     {
-        $reference = new Reference(json_decode($data));
+        $reference = new Relation(json_decode($data));
         $this->assertEquals('James', $reference->getTitle());
     }
 
@@ -70,6 +70,6 @@ class ReferenceTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidData($data)
     {
-        new Reference(json_decode($data));
+        new Relation(json_decode($data));
     }
 }

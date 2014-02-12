@@ -4,7 +4,7 @@ namespace EasyBib\Tests\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Resource\Collection;
-use EasyBib\Api\Client\Resource\Reference;
+use EasyBib\Api\Client\Resource\Relation;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Tests\Api\Client\Given;
 use Guzzle\Http\Client;
@@ -56,7 +56,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function dataProviderForReferences()
+    public function dataProviderForRelations()
     {
         return [
             ['{"data":{"foo":"bar"},"links":[{"href":"http://api.example.org/foo/bar/","rel":"foo",
@@ -91,19 +91,19 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider dataProviderForReferences
+     * @dataProvider dataProviderForRelations
      * @param string $json
      */
-    public function testGetReferences($json)
+    public function testGetRelations($json)
     {
         $resource = $this->getResource($json);
 
-        $this->assertInternalType('array', $resource->getReferences());
-        $this->assertInstanceOf(Reference::class, $resource->getReferences()[0]);
+        $this->assertInternalType('array', $resource->getRelations());
+        $this->assertInstanceOf(Relation::class, $resource->getRelations()[0]);
 
         $this->assertEquals(
             [
-                new Reference(
+                new Relation(
                     (object) [
                         'href' => 'http://api.example.org/foo/bar/',
                         'rel' => 'foo',
@@ -112,31 +112,31 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
                     ]
                 )
             ],
-            $resource->getReferences()
+            $resource->getRelations()
         );
     }
 
     /**
-     * @dataProvider dataProviderForReferences
+     * @dataProvider dataProviderForRelations
      * @param string $json
      */
-    public function testListReferences($json)
+    public function testListRelations($json)
     {
         $resource = $this->getResource($json);
 
-        $this->assertEquals(['foo'], $resource->listReferences());
+        $this->assertEquals(['foo'], $resource->listRelations());
     }
 
     /**
-     * @dataProvider dataProviderForReferences
+     * @dataProvider dataProviderForRelations
      * @param string $json
      */
-    public function testHasReference($json)
+    public function testHasRelation($json)
     {
         $resource = $this->getResource($json);
 
-        $this->assertTrue($resource->hasReference('foo'));
-        $this->assertFalse($resource->hasReference('bar'));
+        $this->assertTrue($resource->hasRelation('foo'));
+        $this->assertFalse($resource->hasRelation('bar'));
     }
 
     public function testToArray()
@@ -158,10 +158,10 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     {
         $resource = $this->getResource();
 
-        $goodLink = $resource->findReference('foo rel');
-        $nullLink = $resource->findReference('no such rel');
+        $goodLink = $resource->findRelation('foo rel');
+        $nullLink = $resource->findRelation('no such rel');
 
-        $this->assertInstanceOf(Reference::class, $goodLink);
+        $this->assertInstanceOf(Relation::class, $goodLink);
         $this->assertEquals('http://foo/', $goodLink->getHref());
         $this->assertNull($nullLink);
     }

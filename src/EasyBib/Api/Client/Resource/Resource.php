@@ -34,11 +34,11 @@ class Resource
     /**
      * @return array Reference[]
      */
-    public function getReferences()
+    public function getRelations()
     {
         return array_map(
             function ($reference) {
-                return new Reference($reference);
+                return new Relation($reference);
             },
             $this->rawData->links
         );
@@ -47,7 +47,7 @@ class Resource
     /**
      * @return array
      */
-    public function listReferences()
+    public function listRelations()
     {
         return array_map(
             function ($link) {
@@ -61,9 +61,9 @@ class Resource
      * @param string $rel
      * @return bool
      */
-    public function hasReference($rel)
+    public function hasRelation($rel)
     {
-        return in_array($rel, $this->listReferences());
+        return in_array($rel, $this->listRelations());
     }
 
     /**
@@ -82,7 +82,7 @@ class Resource
      */
     public function get($ref)
     {
-        $link = $this->findReference($ref);
+        $link = $this->findRelation($ref);
 
         if (!$link) {
             return null;
@@ -96,11 +96,11 @@ class Resource
      * documents
      *
      * @param string $rel
-     * @return Reference
+     * @return Relation
      */
-    public function findReference($rel)
+    public function findRelation($rel)
     {
-        foreach ($this->getReferences() as $reference) {
+        foreach ($this->getRelations() as $reference) {
             if ($reference->getRel() == $rel) {
                 return $reference;
             }

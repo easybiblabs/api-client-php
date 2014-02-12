@@ -5,7 +5,7 @@ namespace EasyBib\Tests\Api\Client;
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\ExpiredTokenException;
 use EasyBib\Api\Client\Resource\Collection;
-use EasyBib\Api\Client\Resource\Reference;
+use EasyBib\Api\Client\Resource\Relation;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\Authorization\AuthorizationResponse;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\ClientConfig;
@@ -343,8 +343,8 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $this->assertSameData($expectedResponseArray, $resource);
 
         $this->assertEquals(
-            $this->extractReferences($expectedResponseArray['links']),
-            $resource->getReferences()
+            $this->extractRelations($expectedResponseArray['links']),
+            $resource->getRelations()
         );
     }
 
@@ -422,11 +422,11 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
      * @param array $links
      * @return array
      */
-    private function extractReferences(array $links)
+    private function extractRelations(array $links)
     {
         return array_map(
             function ($reference) {
-                return new Reference($this->recursiveCastObject($reference));
+                return new Relation($this->recursiveCastObject($reference));
             },
             $links
         );
