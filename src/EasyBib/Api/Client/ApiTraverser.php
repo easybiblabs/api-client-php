@@ -84,11 +84,12 @@ class ApiTraverser
     /**
      * This bootstraps the session by returning the user's projects Collection
      *
+     * @param array $queryParams
      * @return Collection
      */
-    public function getProjects()
+    public function getProjects(array $queryParams = [])
     {
-        return $this->get('/projects/');
+        return $this->get('/projects/', $queryParams);
     }
 
     /**
