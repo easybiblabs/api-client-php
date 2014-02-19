@@ -1,5 +1,5 @@
 {
-    "name": "easybib/api-client-php",
+    "name": "easybiblabs/easybib-api-client-php",
     "description": "Client for EasyBib API, implemented in PHP",
     "license": "BSD-2-Clause",
     "authors": [
