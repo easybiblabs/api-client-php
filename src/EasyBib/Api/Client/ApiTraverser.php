@@ -101,8 +101,8 @@ class ApiTraverser
     {
         $response = $request->send();
 
-        $validator = new ResponseValidator();
-        $validator->validate($response);
+        $validator = new ResponseValidator($response);
+        $validator->validate();
 
         return $response;
     }

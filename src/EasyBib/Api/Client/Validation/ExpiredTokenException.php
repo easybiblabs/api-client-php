@@ -2,6 +2,6 @@
 
 namespace EasyBib\Api\Client\Validation;
 
-class ExpiredTokenException extends AbstractValidationException
+class ExpiredTokenException extends \RuntimeException
 {
 }

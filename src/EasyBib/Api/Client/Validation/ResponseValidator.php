@@ -6,38 +6,75 @@ use Guzzle\Http\Message\Response;
 
 class ResponseValidator
 {
-    public function validate(Response $response)
-    {
-        if ($this->isTokenExpired($response)) {
-            throw new ExpiredTokenException();
-        }
+    /**
+     * @var Response
+     */
+    private $response;
 
-        if ($this->isInvalidJson($response)) {
-            $message = sprintf('Invalid JSON: "%s"', $response->getBody(true));
+    /**
+     * @param Response $response
+     */
+    public function __construct(Response $response)
+    {
+        $this->response = $response;
+    }
+
+    public function validate()
+    {
+        $this->checkInvalidJson();
+        $this->checkTokenExpiration();
+        $this->checkApiError();
+    }
+
+    private function checkInvalidJson()
+    {
+        $body = $this->response->getBody(true);
+        json_decode($body, true);
+
+        if (json_last_error() != JSON_ERROR_NONE) {
+            $message = sprintf('Invalid JSON: "%s"', $body);
             throw new InvalidJsonException($message);
         }
     }
 
-    /**
-     * @param Response $response
-     * @return bool
-     */
-    private function isTokenExpired(Response $response)
+    private function checkTokenExpiration()
     {
-        if ($response->getStatusCode() != 400) {
-            return false;
+        $payload = $this->getPayload();
+
+        if (empty($payload['error'])) {
+            return;
         }
 
-        return json_decode($response->getBody(true))->error == 'invalid_grant';
+        if ($payload['error'] == 'invalid_grant') {
+            throw new ExpiredTokenException();
+        }
+    }
+
+    private function checkApiError()
+    {
+        $payload = $this->getPayload();
+
+        if (isset($payload['error']) && isset($payload['error_description'])) {
+            throw new ApiErrorException(
+                $payload['error_description'],
+                $this->response->getStatusCode()
+            );
+        }
+
+        if (isset($payload['msg'])) {
+            throw new ApiErrorException(
+                $payload['msg'],
+                $this->response->getStatusCode()
+            );
+        }
     }
 
     /**
-     * @param Response $response
-     * @return bool
+     * @return array
      */
-    private function isInvalidJson(Response $response)
+    private function getPayload()
     {
-        json_decode($response->getBody(true));
-        return json_last_error() != JSON_ERROR_NONE;
+        $body = $this->response->getBody(true);
+        return json_decode($body, true);
     }
 }

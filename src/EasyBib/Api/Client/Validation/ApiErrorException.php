@@ -2,6 +2,6 @@
 
 namespace EasyBib\Api\Client\Validation;
 
-class InvalidJsonException extends \RuntimeException
+class ApiErrorException extends \RuntimeException
 {
 }
