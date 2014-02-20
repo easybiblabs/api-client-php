@@ -3,6 +3,7 @@
 namespace EasyBib\Api\Client;
 
 use EasyBib\Api\Client\Resource\Resource;
+use EasyBib\Api\Client\Validation\ResponseValidator;
 use EasyBib\Guzzle\Plugin\RequestHeader;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\RequestInterface;
@@ -94,31 +95,16 @@ class ApiTraverser
 
     /**
      * @param RequestInterface $request
-     * @throws ExpiredTokenException
      * @return Response
      */
     private function send(RequestInterface $request)
     {
         $response = $request->send();
 
-        if ($this->isTokenExpired($response)) {
-            throw new ExpiredTokenException();
-        }
+        $validator = new ResponseValidator($response);
+        $validator->validate();
 
         return $response;
-    }
-
-    /**
-     * @param Response $response
-     * @return bool
-     */
-    private function isTokenExpired(Response $response)
-    {
-        if ($response->getStatusCode() != 400) {
-            return false;
-        }
-
-        return json_decode($response->getBody(true))->error == 'invalid_grant';
     }
 
     /**

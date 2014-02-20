@@ -75,6 +75,44 @@ class Given
     }
 
     /**
+     * @param MockPlugin $mockResponses
+     */
+    public function iAmReadyToRespondWithInvalidJson(MockPlugin $mockResponses)
+    {
+        $body = 'blah';
+
+        $mockResponses->addResponse(
+            new Response(200, [], $body)
+        );
+    }
+
+    /**
+     * @param MockPlugin $mockResponses
+     * @param array $error
+     */
+    public function iAmReadyToRespondWithAnApiError(MockPlugin $mockResponses, array $error)
+    {
+        $body = json_encode($error);
+
+        $mockResponses->addResponse(
+            new Response(400, [], $body)
+        );
+    }
+
+    /**
+     * @param MockPlugin $mockResponses
+     * @param string $message
+     */
+    public function iAmReadyToRespondWithAnApiMsg(MockPlugin $mockResponses, $message)
+    {
+        $body = json_encode(['msg' => $message]);
+
+        $mockResponses->addResponse(
+            new Response(400, [], $body)
+        );
+    }
+
+    /**
      * @param $accessToken
      * @param ClientInterface $resourceHttpClient
      */

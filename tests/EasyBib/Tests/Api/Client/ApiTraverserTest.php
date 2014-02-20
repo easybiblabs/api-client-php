@@ -3,10 +3,13 @@
 namespace EasyBib\Tests\Api\Client;
 
 use EasyBib\Api\Client\ApiTraverser;
-use EasyBib\Api\Client\ExpiredTokenException;
 use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Relation;
 use EasyBib\Api\Client\Resource\Resource;
+use EasyBib\Api\Client\Validation\ApiErrorException;
+use EasyBib\Api\Client\Validation\ExpiredTokenException;
+use EasyBib\Api\Client\Validation\InvalidJsonException;
+use EasyBib\Api\Client\Validation\ApiException;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\Authorization\AuthorizationResponse;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\ClientConfig;
 use EasyBib\OAuth2\Client\ServerConfig;
@@ -289,6 +292,65 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $this->given->iAmReadyToRespondWithAnExpiredTokenError($this->mockResponses);
 
         $this->setExpectedException(ExpiredTokenException::class);
+
+        $this->api->get('url placeholder');
+    }
+
+    public function testGetWithInvalidJson()
+    {
+        $this->given->iAmReadyToRespondWithInvalidJson($this->mockResponses);
+
+        $this->setExpectedException(InvalidJsonException::class);
+
+        $this->api->get('url placeholder');
+    }
+
+    public function testGetWithErrorMessageInJson()
+    {
+        $response = [
+            'error' => 'fail',
+            'error_description' => 'You done messed up good.',
+        ];
+
+        $this->given->iAmReadyToRespondWithAnApiError($this->mockResponses, $response);
+
+        $this->setExpectedException(
+            ApiErrorException::class,
+            $response['error_description'],
+            400
+        );
+
+        $this->api->get('url placeholder');
+    }
+
+    public function testGetWithMsgInJson()
+    {
+        $message = 'What you done now?';
+
+        $this->given->iAmReadyToRespondWithAnApiMsg($this->mockResponses, $message);
+
+        $this->setExpectedException(
+            ApiErrorException::class,
+            $message,
+            400
+        );
+
+        $this->api->get('url placeholder');
+    }
+
+    public function testGetWithGenericHttpError()
+    {
+        $response = [
+            'foo' => 'bar',
+        ];
+
+        $this->given->iAmReadyToRespondWithAnApiError($this->mockResponses, $response);
+
+        $this->setExpectedException(
+            ApiException::class,
+            var_export($response, true),
+            500
+        );
 
         $this->api->get('url placeholder');
     }
