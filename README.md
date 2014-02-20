@@ -18,12 +18,12 @@ dependencies.
 "repositories":[
     {
         "type": "vcs",
-        "url": "git@github.com:easybib/api-client-php.git"
+        "url": "git@github.com:easybiblabs/api-client-php.git"
     }
 ],
 "require": {
     "php":">=5.5.0",
-    "easybib/api-client-php": "dev-master"
+    "easybib/api-client-php": "~0.2"
 }
 ```
 
