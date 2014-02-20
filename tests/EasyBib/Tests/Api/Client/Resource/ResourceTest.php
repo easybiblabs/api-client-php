@@ -150,8 +150,12 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $listData = '{"data":[{"foo":"bar"}],"links":[]}';
         $hashData = '{"data":{"foo":"bar"},"links":[]}';
 
+        // used with responses to DELETE requests
+        $noData = '{"links":[]}';
+
         $this->assertInstanceOf(Collection::class, $this->getResource($listData));
         $this->assertNotInstanceOf(Collection::class, $this->getResource($hashData));
+        $this->assertNotInstanceOf(Collection::class, $this->getResource($noData));
     }
 
     public function testFindLink()

@@ -127,7 +127,7 @@ class Resource
      */
     public static function isList(\stdClass $data)
     {
-        return is_array($data->data);
+        return isset($data->data) && is_array($data->data);
     }
 
     /**
