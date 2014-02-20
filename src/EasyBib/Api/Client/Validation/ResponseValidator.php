@@ -24,6 +24,7 @@ class ResponseValidator
         $this->checkInvalidJson();
         $this->checkTokenExpiration();
         $this->checkApiError();
+        $this->checkMiscError();
     }
 
     private function checkInvalidJson()
@@ -66,6 +67,14 @@ class ResponseValidator
                 $payload['msg'],
                 $this->response->getStatusCode()
             );
+        }
+    }
+
+    private function checkMiscError()
+    {
+        if ($this->response->isError()) {
+            $message = sprintf('Could not complete request: %s', var_export($this->getPayload(), true));
+            throw new MiscApiException($message, 500);
         }
     }
 

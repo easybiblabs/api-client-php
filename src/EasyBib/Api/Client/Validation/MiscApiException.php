@@ -2,6 +2,6 @@
 
 namespace EasyBib\Api\Client\Validation;
 
-class MiscApiException
+class MiscApiException extends \RuntimeException
 {
-} 
+}
