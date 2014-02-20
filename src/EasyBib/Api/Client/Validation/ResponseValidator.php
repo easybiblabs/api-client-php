@@ -12,6 +12,11 @@ class ResponseValidator
     private $response;
 
     /**
+     * @var array
+     */
+    private $payload;
+
+    /**
      * @param Response $response
      */
     public function __construct(Response $response)
@@ -83,7 +88,12 @@ class ResponseValidator
      */
     private function getPayload()
     {
+        if ($this->payload) {
+            return $this->payload;
+        }
+
         $body = $this->response->getBody(true);
-        return json_decode($body, true);
+
+        return $this->payload = json_decode($body, true);
     }
 }
