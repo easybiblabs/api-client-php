@@ -32,6 +32,9 @@ class ResponseValidator
         $this->checkMiscError();
     }
 
+    /**
+     * @throws InvalidJsonException
+     */
     private function checkInvalidJson()
     {
         $body = $this->response->getBody(true);
@@ -43,6 +46,9 @@ class ResponseValidator
         }
     }
 
+    /**
+     * @throws ExpiredTokenException
+     */
     private function checkTokenExpiration()
     {
         $payload = $this->getPayload();
@@ -56,6 +62,9 @@ class ResponseValidator
         }
     }
 
+    /**
+     * @throws ApiErrorException
+     */
     private function checkApiError()
     {
         $payload = $this->getPayload();
@@ -75,6 +84,9 @@ class ResponseValidator
         }
     }
 
+    /**
+     * @throws MiscApiException
+     */
     private function checkMiscError()
     {
         if ($this->response->isError()) {
