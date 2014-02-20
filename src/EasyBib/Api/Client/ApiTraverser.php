@@ -94,31 +94,16 @@ class ApiTraverser
 
     /**
      * @param RequestInterface $request
-     * @throws ExpiredTokenException
      * @return Response
      */
     private function send(RequestInterface $request)
     {
         $response = $request->send();
 
-        if ($this->isTokenExpired($response)) {
-            throw new ExpiredTokenException();
-        }
+        $validator = new ResponseValidator();
+        $validator->validate($response);
 
         return $response;
-    }
-
-    /**
-     * @param Response $response
-     * @return bool
-     */
-    private function isTokenExpired(Response $response)
-    {
-        if ($response->getStatusCode() != 400) {
-            return false;
-        }
-
-        return json_decode($response->getBody(true))->error == 'invalid_grant';
     }
 
     /**

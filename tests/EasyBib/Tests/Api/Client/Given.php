@@ -75,6 +75,18 @@ class Given
     }
 
     /**
+     * @param MockPlugin $mockResponses
+     */
+    public function iAmReadyToRespondWithInvalidJson(MockPlugin $mockResponses)
+    {
+        $body = 'blah';
+
+        $mockResponses->addResponse(
+            new Response(200, [], $body)
+        );
+    }
+
+    /**
      * @param $accessToken
      * @param ClientInterface $resourceHttpClient
      */

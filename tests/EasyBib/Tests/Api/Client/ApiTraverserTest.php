@@ -4,6 +4,7 @@ namespace EasyBib\Tests\Api\Client;
 
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\ExpiredTokenException;
+use EasyBib\Api\Client\InvalidJsonException;
 use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Relation;
 use EasyBib\Api\Client\Resource\Resource;
@@ -289,6 +290,15 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $this->given->iAmReadyToRespondWithAnExpiredTokenError($this->mockResponses);
 
         $this->setExpectedException(ExpiredTokenException::class);
+
+        $this->api->get('url placeholder');
+    }
+
+    public function testGetWithInvalidJson()
+    {
+        $this->given->iAmReadyToRespondWithInvalidJson($this->mockResponses);
+
+        $this->setExpectedException(InvalidJsonException::class);
 
         $this->api->get('url placeholder');
     }
