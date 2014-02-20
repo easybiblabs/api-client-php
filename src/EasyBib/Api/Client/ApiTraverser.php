@@ -3,6 +3,7 @@
 namespace EasyBib\Api\Client;
 
 use EasyBib\Api\Client\Resource\Resource;
+use EasyBib\Api\Client\Validation\ResponseValidator;
 use EasyBib\Guzzle\Plugin\RequestHeader;
 use Guzzle\Http\ClientInterface;
 use Guzzle\Http\Message\RequestInterface;

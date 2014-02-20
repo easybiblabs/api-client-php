@@ -1,6 +1,6 @@
 <?php
 
-namespace EasyBib\Api\Client;
+namespace EasyBib\Api\Client\Validation;
 
 use Guzzle\Http\Message\Response;
 

@@ -3,11 +3,11 @@
 namespace EasyBib\Tests\Api\Client;
 
 use EasyBib\Api\Client\ApiTraverser;
-use EasyBib\Api\Client\ExpiredTokenException;
-use EasyBib\Api\Client\InvalidJsonException;
 use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Relation;
 use EasyBib\Api\Client\Resource\Resource;
+use EasyBib\Api\Client\Validation\ExpiredTokenException;
+use EasyBib\Api\Client\Validation\InvalidJsonException;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\Authorization\AuthorizationResponse;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\ClientConfig;
 use EasyBib\OAuth2\Client\ServerConfig;
