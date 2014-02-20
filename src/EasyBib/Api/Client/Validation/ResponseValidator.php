@@ -85,13 +85,13 @@ class ResponseValidator
     }
 
     /**
-     * @throws MiscApiException
+     * @throws ApiException
      */
     private function checkMiscError()
     {
         if ($this->response->isError()) {
             $message = sprintf('Could not complete request: %s', var_export($this->getPayload(), true));
-            throw new MiscApiException($message, 500);
+            throw new ApiException($message, 500);
         }
     }
 

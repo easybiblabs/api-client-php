@@ -9,7 +9,7 @@ use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Api\Client\Validation\ApiErrorException;
 use EasyBib\Api\Client\Validation\ExpiredTokenException;
 use EasyBib\Api\Client\Validation\InvalidJsonException;
-use EasyBib\Api\Client\Validation\MiscApiException;
+use EasyBib\Api\Client\Validation\ApiException;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\Authorization\AuthorizationResponse;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\ClientConfig;
 use EasyBib\OAuth2\Client\ServerConfig;
@@ -347,7 +347,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $this->given->iAmReadyToRespondWithAnApiError($this->mockResponses, $response);
 
         $this->setExpectedException(
-            MiscApiException::class,
+            ApiException::class,
             var_export($response, true),
             500
         );
