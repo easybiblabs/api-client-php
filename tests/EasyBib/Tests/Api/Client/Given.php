@@ -77,6 +77,20 @@ class Given
     /**
      * @param MockPlugin $mockResponses
      */
+    public function iAmReadyToRespondWithAnUnauthorizedTokenError(MockPlugin $mockResponses)
+    {
+        $body = json_encode([
+            'msg' => 'The project you requested is not valid for this token.',
+        ]);
+
+        $mockResponses->addResponse(
+            new Response(403, [], $body)
+        );
+    }
+
+    /**
+     * @param MockPlugin $mockResponses
+     */
     public function iAmReadyToRespondWithInvalidJson(MockPlugin $mockResponses)
     {
         $body = 'blah';
