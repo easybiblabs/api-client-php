@@ -10,6 +10,7 @@ use EasyBib\Api\Client\Validation\ApiErrorException;
 use EasyBib\Api\Client\Validation\ExpiredTokenException;
 use EasyBib\Api\Client\Validation\InvalidJsonException;
 use EasyBib\Api\Client\Validation\ApiException;
+use EasyBib\Api\Client\Validation\UnauthorizedActionException;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\Authorization\AuthorizationResponse;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\ClientConfig;
 use EasyBib\OAuth2\Client\ServerConfig;
@@ -292,6 +293,18 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $this->given->iAmReadyToRespondWithAnExpiredTokenError($this->mockResponses);
 
         $this->setExpectedException(ExpiredTokenException::class);
+
+        $this->api->get('url placeholder');
+    }
+
+    public function testGetWithUnauthorizedProject()
+    {
+        $this->given->iAmReadyToRespondWithAnUnauthorizedTokenError($this->mockResponses);
+
+        $this->setExpectedException(
+            UnauthorizedActionException::class,
+            'for this token'
+        );
 
         $this->api->get('url placeholder');
     }

@@ -28,6 +28,7 @@ class ResponseValidator
     {
         $this->checkInvalidJson();
         $this->checkTokenExpiration();
+        $this->checkUnauthorized();
         $this->checkApiError();
         $this->checkMiscError();
     }
@@ -43,6 +44,16 @@ class ResponseValidator
         if (json_last_error() != JSON_ERROR_NONE) {
             $message = sprintf('Invalid JSON: "%s"', $body);
             throw new InvalidJsonException($message);
+        }
+    }
+
+    /**
+     * @throws UnauthorizedActionException
+     */
+    private function checkUnauthorized()
+    {
+        if ($this->response->getStatusCode() == 403) {
+            throw new UnauthorizedActionException($this->getPayload()['msg']);
         }
     }
 
