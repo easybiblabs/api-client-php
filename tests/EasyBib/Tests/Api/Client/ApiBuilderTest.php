@@ -23,6 +23,11 @@ class ApiBuilderTest extends \PHPUnit_Framework_TestCase
     /**
      * @var string
      */
+    protected $idBaseUrl = 'http://id.easybib.example.com';
+
+    /**
+     * @var string
+     */
     protected $apiBaseUrl = 'http://data.easybib.example.com';
 
     /**
@@ -79,7 +84,7 @@ class ApiBuilderTest extends \PHPUnit_Framework_TestCase
 
         $this->oauthMockResponses = new MockPlugin();
 
-        $this->oauthHttpClient = new Client($this->apiBaseUrl);
+        $this->oauthHttpClient = new Client($this->idBaseUrl);
         $this->oauthHttpClient->addSubscriber(new HistoryPlugin());
         $this->oauthHttpClient->addSubscriber($this->oauthMockResponses);
 

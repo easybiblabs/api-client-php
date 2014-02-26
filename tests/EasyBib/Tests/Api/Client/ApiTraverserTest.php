@@ -41,7 +41,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
     /**
      * @var Client
      */
-    protected $httpClient;
+    protected $resourceHttpClient;
 
     /**
      * @var ApiTraverser
@@ -84,21 +84,16 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             'redirect_url' => 'http://myapp.example.com/',
         ]);
 
-        $this->serverConfig = new ServerConfig([
-            'authorization_endpoint' => '/oauth/authorize',
-            'token_endpoint' => '/oauth/token',
-        ]);
-
-        $this->httpClient = new Client($this->apiBaseUrl);
+        $this->resourceHttpClient = new Client($this->apiBaseUrl);
         $this->mockResponses = new MockPlugin();
         $this->history = new HistoryPlugin();
-        $this->httpClient->addSubscriber($this->mockResponses);
-        $this->httpClient->addSubscriber($this->history);
+        $this->resourceHttpClient->addSubscriber($this->mockResponses);
+        $this->resourceHttpClient->addSubscriber($this->history);
 
         $this->tokenStore = new TokenStore(new Session(new MockArraySessionStorage()));
         $this->authorization = new AuthorizationResponse(['code' => 'ABC123']);
 
-        $this->api = new ApiTraverser($this->httpClient);
+        $this->api = new ApiTraverser($this->resourceHttpClient);
     }
 
     /**
@@ -255,7 +250,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
     {
         $accessToken = 'ABC123';
 
-        $this->given->iHaveRegisteredWithAJwtSession($accessToken, $this->httpClient);
+        $this->given->iHaveRegisteredWithAJwtSession($accessToken, $this->resourceHttpClient);
         $this->given->iAmReadyToRespondWithAResource($this->mockResponses);
 
         $this->api->get('url placeholder');
@@ -268,7 +263,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $accessToken = 'ABC123';
         $params = ['filter' => 'XYZ'];
 
-        $this->given->iHaveRegisteredWithAJwtSession($accessToken, $this->httpClient);
+        $this->given->iHaveRegisteredWithAJwtSession($accessToken, $this->resourceHttpClient);
         $this->given->iAmReadyToRespondWithAResource($this->mockResponses);
 
         $this->api->get('url placeholder', $params);
@@ -280,7 +275,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
     {
         $accessToken = 'ABC123';
 
-        $this->given->iHaveRegisteredWithAnAuthCodeSession($accessToken, $this->httpClient);
+        $this->given->iHaveRegisteredWithAnAuthCodeSession($accessToken, $this->resourceHttpClient);
         $this->given->iAmReadyToRespondWithAResource($this->mockResponses);
 
         $this->api->get('url placeholder');
@@ -477,22 +472,6 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             $this->recursiveCastObject($expectedResponseArray['data']),
             $resource->getData()
         );
-    }
-
-    public function shouldHaveMadeATokenRequest()
-    {
-        $lastRequest = $this->history->getLastRequest();
-
-        $expectedParams = [
-            'grant_type' => 'authorization_code',
-            'code' => $this->authorization->getCode(),
-            'redirect_uri' => $this->clientConfig->getParams()['redirect_url'],
-            'client_id' => $this->clientConfig->getParams()['client_id'],
-        ];
-
-        $this->assertEquals('POST', $lastRequest->getMethod());
-        $this->assertEquals($expectedParams, $lastRequest->getPostFields()->toArray());
-        $this->assertEquals($this->apiBaseUrl . '/oauth/token', $lastRequest->getUrl());
     }
 
     /**
