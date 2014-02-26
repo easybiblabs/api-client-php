@@ -3,12 +3,13 @@
 namespace EasyBib\Tests\Api\Client;
 
 use EasyBib\Api\Client\Resource\Resource;
+use EasyBib\OAuth2\Client\AuthorizationCodeGrant;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\AuthorizationCodeSession;
-use EasyBib\OAuth2\Client\AuthorizationCodeGrant\ClientConfig as AuthCodeClientConfig;
-use EasyBib\OAuth2\Client\JsonWebTokenGrant\ClientConfig as JwtClientConfig;
-use EasyBib\OAuth2\Client\JsonWebTokenGrant\JsonWebTokenSession;
+use EasyBib\OAuth2\Client\JsonWebTokenGrant;
+use EasyBib\OAuth2\Client\JsonWebTokenGrant\TokenRequestFactory;
 use EasyBib\OAuth2\Client\Scope;
 use EasyBib\OAuth2\Client\ServerConfig;
+use EasyBib\OAuth2\Client\SimpleSession;
 use EasyBib\OAuth2\Client\TokenStore;
 use EasyBib\Tests\Mocks\OAuth2\Client\ExceptionMockRedirector;
 use Guzzle\Http\Client;
@@ -135,29 +136,29 @@ class Given
         $session = new Session(new MockArraySessionStorage());
         $session->set(TokenStore::KEY_ACCESS_TOKEN, $accessToken);
 
-        $tokenStore = new TokenStore($session);
-
-        $clientConfig = new JwtClientConfig([
+        $clientConfig = new JsonWebTokenGrant\ClientConfig([
             'client_id' => 'client_123',
             'client_secret' => 'secret_123',
             'subject' => 'user_123',
         ]);
 
         $serverConfig = new ServerConfig([
-            'authorize_endpoint' => '/oauth/authorize',
             'token_endpoint' => '/oauth/token',
         ]);
 
-        $oauthHttpClient = new Client('http://data.easybib.com');
+        $oauthHttpClient = new Client('http://id.easybib.example.com');
 
-        $oauthSession = new JsonWebTokenSession(
-            $oauthHttpClient,
+        $tokenRequestFactory = new TokenRequestFactory(
             $clientConfig,
-            $serverConfig
+            $serverConfig,
+            $oauthHttpClient,
+            new Scope(['USER_READ', 'DATA_READ_WRITE'])
         );
 
+        $tokenStore = new TokenStore($session);
+
+        $oauthSession = new SimpleSession($tokenRequestFactory);
         $oauthSession->setTokenStore($tokenStore);
-        $oauthSession->setScope(new Scope(['USER_READ', 'DATA_READ_WRITE']));
         $oauthSession->addResourceClient($resourceHttpClient);
     }
 
@@ -172,16 +173,16 @@ class Given
 
         $tokenStore = new TokenStore($session);
 
-        $clientConfig = new AuthCodeClientConfig([
+        $clientConfig = new AuthorizationCodeGrant\ClientConfig([
             'client_id' => 'client_123',
         ]);
 
-        $serverConfig = new ServerConfig([
-            'authorize_endpoint' => '/oauth/authorize',
+        $serverConfig = new AuthorizationCodeGrant\ServerConfig([
+            'authorization_endpoint' => '/oauth/authorize',
             'token_endpoint' => '/oauth/token',
         ]);
 
-        $oauthHttpClient = new Client('http://data.easybib.com');
+        $oauthHttpClient = new Client('http://id.easybib.example.com');
 
         $oauthSession = new AuthorizationCodeSession(
             $oauthHttpClient,
