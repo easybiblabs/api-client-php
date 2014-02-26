@@ -28,7 +28,7 @@ class ApiBuilderTest extends \PHPUnit_Framework_TestCase
     /**
      * @var string
      */
-    protected $apiBaseUrl = 'http://data.easybib.example.com';
+    protected $dataBaseUrl = 'http://data.easybib.example.com';
 
     /**
      * @var HistoryPlugin
@@ -76,7 +76,7 @@ class ApiBuilderTest extends \PHPUnit_Framework_TestCase
 
         $this->given = new Given();
 
-        $this->apiHttpClient = new Client($this->apiBaseUrl);
+        $this->apiHttpClient = new Client($this->dataBaseUrl);
         $this->apiMockResponses = new MockPlugin();
         $this->history = new HistoryPlugin();
         $this->apiHttpClient->addSubscriber($this->apiMockResponses);

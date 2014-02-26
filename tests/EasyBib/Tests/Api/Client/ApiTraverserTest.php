@@ -31,7 +31,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
     /**
      * @var string
      */
-    protected $apiBaseUrl = 'http://data.easybib.example.com';
+    protected $dataBaseUrl = 'http://data.easybib.example.com';
 
     /**
      * @var HistoryPlugin
@@ -84,7 +84,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             'redirect_url' => 'http://myapp.example.com/',
         ]);
 
-        $this->resourceHttpClient = new Client($this->apiBaseUrl);
+        $this->resourceHttpClient = new Client($this->dataBaseUrl);
         $this->mockResponses = new MockPlugin();
         $this->history = new HistoryPlugin();
         $this->resourceHttpClient->addSubscriber($this->mockResponses);
