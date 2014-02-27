@@ -13,6 +13,11 @@ class Resource
     private $rawData;
 
     /**
+     * @var string
+     */
+    private $location;
+
+    /**
      * @var ApiTraverser
      */
     private $apiTraverser;
@@ -108,6 +113,28 @@ class Resource
 
         return null;
     }
+
+    /**
+     * @return string
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * @param string $location
+     * @throws \InvalidArgumentException
+     */
+    public function setLocation($location)
+    {
+        if (!is_string($location)) {
+            throw new \InvalidArgumentException('Location must be a string');
+        }
+
+        $this->location = $location;
+    }
+
     /**
      * @return array
      */
@@ -138,8 +165,13 @@ class Resource
     public static function fromResponse(Response $response, ApiTraverser $apiTraverser)
     {
         $data = json_decode($response->getBody(true));
+        $resource = self::factory($data, $apiTraverser);
 
-        return self::factory($data, $apiTraverser);
+        if ($locationHeaders = $response->getHeader('Location')) {
+            $resource->setLocation($locationHeaders->toArray()[0]);
+        }
+
+        return $resource;
     }
 
     /**
