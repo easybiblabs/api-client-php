@@ -179,10 +179,10 @@ class ApiBuilder
     private function getApiHttpClient($url)
     {
         // if none has been provided for testing, instantiate a blank Client()
-        $oauthHttpClient = $this->apiHttpClient ?: new Client();
-        $oauthHttpClient->setBaseUrl($url);
+        $apiHttpClient = $this->apiHttpClient ?: new Client();
+        $apiHttpClient->setBaseUrl($url);
 
-        return $oauthHttpClient;
+        return $apiHttpClient;
     }
 
     /**

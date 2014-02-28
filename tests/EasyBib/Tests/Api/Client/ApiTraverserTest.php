@@ -16,6 +16,7 @@ use EasyBib\OAuth2\Client\AuthorizationCodeGrant\ClientConfig;
 use EasyBib\OAuth2\Client\ServerConfig;
 use EasyBib\OAuth2\Client\TokenStore;
 use Guzzle\Http\Client;
+use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\History\HistoryPlugin;
 use Guzzle\Plugin\Mock\MockPlugin;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -405,6 +406,16 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
         $this->shouldHaveMadeAnApiRequest('DELETE');
         $this->shouldHaveReturnedADeletedResource($expectedResource, $response);
+    }
+
+    public function testGetDoesNotFollowRedirects()
+    {
+        $this->mockResponses->addResponse(new Response(302, ['Location' => 'http://foo.example.com/'], '{}'));
+        $this->mockResponses->addResponse(new Response(200, [], '{}'));
+
+        $this->api->getUser();
+
+        $this->assertEquals(1, count($this->history));
     }
 
     /**
