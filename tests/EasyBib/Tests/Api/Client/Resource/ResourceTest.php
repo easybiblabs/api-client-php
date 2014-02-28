@@ -90,6 +90,25 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals((object) ['foo' => 'bar'], $resource->getData());
     }
 
+    public function testGetLocation()
+    {
+        $location = 'http://example.com/foo/bar.doc';
+
+        $resource = $this->getResource(
+            '{"data":{"foo":"bar"}}',
+            ['Location' => $location]
+        );
+
+        $this->assertEquals($location, $resource->getLocation());
+    }
+
+    public function testSetLocationWhereInvalid()
+    {
+        $this->setExpectedException(\InvalidArgumentException::class);
+        $resource = new Resource(new \stdClass(), $this->api);
+        $resource->setLocation([]);
+    }
+
     /**
      * @dataProvider dataProviderForRelations
      * @param string $json
@@ -172,9 +191,10 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $body
+     * @param array $headers
      * @return Resource
      */
-    private function getResource($body = null)
+    private function getResource($body = null, array $headers = [])
     {
         if (!$body) {
             $body = json_encode([
@@ -192,6 +212,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
         $response = new Response(200);
         $response->setBody($body);
+        $response->setHeaders($headers);
 
         return Resource::fromResponse($response, $this->api);
     }

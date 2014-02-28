@@ -23,6 +23,7 @@ class ApiTraverser
     {
         $this->httpClient = $httpClient;
         $this->httpClient->setDefaultOption('exceptions', false);
+        $this->httpClient->setDefaultOption('allow_redirects', false);
         $this->httpClient->addSubscriber(
             new RequestHeader('Accept', 'application/vnd.com.easybib.data+json')
         );
