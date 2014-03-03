@@ -198,7 +198,7 @@ class ApiBuilder
     }
 
     /**
-     * @return TokenStore
+     * @return StateStore
      */
     private function getStateStore()
     {
