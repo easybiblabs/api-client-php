@@ -107,7 +107,7 @@ class ApiBuilder
             $clientConfig,
             $serverConfig,
             $this->getOauthHttpClient($idBaseUrl),
-            new Scope(['USER_READ', 'DATA_READ_WRITE'])
+            new Scope(['USER_READ', 'DATA_READ_WRITE', 'GUEST_READ_WRITE'])
         );
 
         $oauthSession = new SimpleSession($tokenRequestFactory);
