@@ -45,7 +45,7 @@ class Resource
             function ($reference) {
                 return new Relation($reference);
             },
-            $this->rawData->links
+            $this->getRawLinks()
         );
     }
 
@@ -58,8 +58,17 @@ class Resource
             function ($link) {
                 return $link->rel;
             },
-            $this->rawData->links
+            $this->getRawLinks()
         );
+    }
+
+    public function addRelation(\stdClass $data)
+    {
+        if (isset($this->rawData->links)) {
+            $this->rawData->links[] = $data;
+        }
+
+        $this->rawData->links = [$data];
     }
 
     /**
@@ -186,5 +195,13 @@ class Resource
         }
 
         return new Resource($data, $apiTraverser);
+    }
+
+    /**
+     * @return array
+     */
+    private function getRawLinks()
+    {
+        return isset($this->rawData->links) ? $this->rawData->links : [];
     }
 }

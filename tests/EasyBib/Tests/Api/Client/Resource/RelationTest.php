@@ -6,18 +6,24 @@ use EasyBib\Api\Client\Resource\Relation;
 
 class RelationTest extends \PHPUnit_Framework_TestCase
 {
-    public function dataProviderValid()
+    public function dataProviderFull()
     {
         return [
             ['{"href":"http://foo/bar/","rel":"some rel","type":"text/html","title":"James"}'],
         ];
     }
 
-    public function dataProviderInvalid()
+    public function dataProviderValid()
     {
         return [
             ['{"href":"http://foo/bar/","rel":"some rel","type":"text/html"}'],
             ['{"href":"http://foo/bar/","rel":"some rel","title":"James"}'],
+        ];
+    }
+
+    public function dataProviderInvalid()
+    {
+        return [
             ['{"href":"http://foo/bar/","type":"text/html","title":"James"}'],
             ['{"rel":"some rel","type":"text/html","title":"James"}'],
         ];
@@ -25,7 +31,7 @@ class RelationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $data
-     * @dataProvider dataProviderValid
+     * @dataProvider dataProviderFull
      */
     public function testGetHref($data)
     {
@@ -35,7 +41,7 @@ class RelationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $data
-     * @dataProvider dataProviderValid
+     * @dataProvider dataProviderFull
      */
     public function testGetRel($data)
     {
@@ -45,7 +51,7 @@ class RelationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $data
-     * @dataProvider dataProviderValid
+     * @dataProvider dataProviderFull
      */
     public function testGetType($data)
     {
@@ -55,12 +61,21 @@ class RelationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $data
-     * @dataProvider dataProviderValid
+     * @dataProvider dataProviderFull
      */
     public function testGetTitle($data)
     {
         $reference = new Relation(json_decode($data));
         $this->assertEquals('James', $reference->getTitle());
+    }
+
+    /**
+     * @param string $data
+     * @dataProvider dataProviderValid
+     */
+    public function testValidData($data)
+    {
+        new Relation(json_decode($data));
     }
 
     /**
