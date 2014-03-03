@@ -6,6 +6,7 @@ use EasyBib\OAuth2\Client\AbstractSession;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\AuthorizationCodeSession;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\RedirectorInterface;
+use EasyBib\OAuth2\Client\AuthorizationCodeGrant\State\StateStore;
 use EasyBib\OAuth2\Client\JsonWebTokenGrant;
 use EasyBib\OAuth2\Client\JsonWebTokenGrant\TokenRequestFactory;
 use EasyBib\OAuth2\Client\Scope;
@@ -76,6 +77,7 @@ class ApiBuilder
         );
 
         $oauthSession->setScope(new Scope(['USER_READ', 'DATA_READ_WRITE']));
+        $oauthSession->setStateStore($this->getStateStore());
 
         return $this->buildApiTraverser($oauthSession, $dataBaseUrl);
     }
@@ -193,5 +195,15 @@ class ApiBuilder
         // if none has been provided, create one with native PHP sessions
         $session = $this->session ?: new Session();
         return new TokenStore($session);
+    }
+
+    /**
+     * @return StateStore
+     */
+    private function getStateStore()
+    {
+        // if none has been provided, create one with native PHP sessions
+        $session = $this->session ?: new Session();
+        return new StateStore($session);
     }
 }
