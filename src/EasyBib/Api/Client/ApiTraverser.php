@@ -64,6 +64,16 @@ class ApiTraverser
 
     /**
      * @param $url
+     * @param array $resource
+     * @return Resource
+     */
+    public function patch($url, array $resource)
+    {
+        return $this->sendResource('patch', $url, $resource);
+    }
+
+    /**
+     * @param $url
      * @return Resource
      */
     public function delete($url)
@@ -116,7 +126,7 @@ class ApiTraverser
      */
     private function sendResource($method, $url, array $resource)
     {
-        $payload = json_encode(['data' => $resource]);
+        $payload = json_encode($resource);
         $request = $this->httpClient->$method($url, [], $payload);
 
         return Resource::fromResponse($this->send($request), $this);

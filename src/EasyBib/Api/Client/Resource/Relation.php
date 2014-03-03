@@ -15,8 +15,6 @@ class Relation
     private static $requiredKeys = [
         'href',
         'rel',
-        'type',
-        'title',
     ];
 
     /**

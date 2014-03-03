@@ -56,11 +56,28 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function dataProviderForRelations()
+    public function dataProviderResourceWithRelations()
     {
         return [
             ['{"data":{"foo":"bar"},"links":[{"href":"http://api.example.org/foo/bar/","rel":"foo",
                 "type":"application/vnd.com.easybib.data+json","title":"Some link"}]}']
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function dataProviderRelationsToAdd()
+    {
+        return [
+            [
+                '{}',
+                (object) ['href' => 'http://foo.example.com/user/123', 'rel' => 'author']
+            ],
+            [
+                '{"links":[{"href":"foo","rel":"bar"}]}',
+                (object) ['href' => 'http://foo.example.com/user/123', 'rel' => 'author']
+            ],
         ];
     }
 
@@ -110,7 +127,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider dataProviderForRelations
+     * @dataProvider dataProviderResourceWithRelations
      * @param string $json
      */
     public function testGetRelations($json)
@@ -136,7 +153,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider dataProviderForRelations
+     * @dataProvider dataProviderResourceWithRelations
      * @param string $json
      */
     public function testListRelations($json)
@@ -147,7 +164,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider dataProviderForRelations
+     * @dataProvider dataProviderResourceWithRelations
      * @param string $json
      */
     public function testHasRelation($json)
@@ -156,6 +173,19 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($resource->hasRelation('foo'));
         $this->assertFalse($resource->hasRelation('bar'));
+    }
+
+    /**
+     * @dataProvider dataProviderRelationsToAdd
+     * @param string $resourceData
+     * @param \stdClass $data
+     */
+    public function testAddRelation($resourceData, \stdClass $data)
+    {
+        $resource = $this->getResource($resourceData);
+        $resource->addRelation($data);
+
+        $this->assertEquals(new Relation($data), $resource->findRelation($data->rel));
     }
 
     public function testToArray()
