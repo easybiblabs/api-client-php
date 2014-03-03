@@ -408,6 +408,27 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $this->shouldHaveReturnedADeletedResource($expectedResource, $response);
     }
 
+    public function testPatch()
+    {
+        $project = [
+            'links' => [],
+            'data' => [
+                'name' => 'Some project',
+            ],
+        ];
+
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $project);
+
+        $resourcePatch = [
+            'href' => 'http://foo.example.com/user/456',
+            'rel' => 'author',
+        ];
+
+        $this->api->patch('/projects/123', $resourcePatch);
+
+        $this->shouldHaveMadeAnApiRequest('PATCH');
+    }
+
     public function testGetDoesNotFollowRedirects()
     {
         $this->mockResponses->addResponse(new Response(302, ['Location' => 'http://foo.example.com/'], '{}'));
