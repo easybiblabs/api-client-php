@@ -71,8 +71,7 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
      */
     public function current()
     {
-        $data = json_decode(json_encode($this->iterator->current()));
-        return new Resource($data, $this->getApiTraverser());
+        return Resource::factory($this->iterator->current(), $this->getApiTraverser());
     }
 
     /**
