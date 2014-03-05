@@ -2,12 +2,20 @@
 
 namespace EasyBib\Api\Client\Resource;
 
+use EasyBib\Api\Client\LinkTransformer\LinkTransformerInterface;
+use EasyBib\Api\Client\LinkTransformer\NullLinkTransformer;
+
 class Relation
 {
     /**
      * @var \stdClass
      */
     private $rawData;
+
+    /**
+     * @var LinkTransformerInterface
+     */
+    private $linkTransformer;
 
     /**
      * @var array
@@ -25,6 +33,7 @@ class Relation
         self::validate($rawData);
 
         $this->rawData = $rawData;
+        $this->linkTransformer = new NullLinkTransformer();
     }
 
     /**
@@ -32,7 +41,7 @@ class Relation
      */
     public function getHref()
     {
-        return $this->rawData->href;
+        return $this->linkTransformer->transform($this->rawData->href);
     }
 
     /**
@@ -57,6 +66,16 @@ class Relation
     public function getTitle()
     {
         return $this->rawData->title;
+    }
+
+    /**
+     * @param LinkTransformerInterface $linkTransformer
+     * @return self
+     */
+    public function setLinkTransformer(LinkTransformerInterface $linkTransformer)
+    {
+        $this->linkTransformer = $linkTransformer;
+        return $this;
     }
 
     /**

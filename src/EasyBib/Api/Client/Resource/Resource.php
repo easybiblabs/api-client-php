@@ -37,16 +37,34 @@ class Resource
     }
 
     /**
-     * @return array Reference[]
+     * @return array Relation[]
      */
     public function getRelations()
     {
         return array_map(
-            function ($reference) {
-                return new Relation($reference);
+            function ($relation) {
+                return new Relation($relation);
             },
             $this->getRawLinks()
         );
+    }
+
+    /**
+     * Allows retrieval of the URL; useful e.g. when GETting exported
+     * documents
+     *
+     * @param string $rel
+     * @return Relation
+     */
+    public function findRelation($rel)
+    {
+        foreach ($this->getRelations() as $relation) {
+            if ($relation->getRel() == $rel) {
+                return $relation;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -103,24 +121,6 @@ class Resource
         }
 
         return $this->apiTraverser->get($link->getHref());
-    }
-
-    /**
-     * Allows retrieval of the URL; useful e.g. when GETting exported
-     * documents
-     *
-     * @param string $rel
-     * @return Relation
-     */
-    public function findRelation($rel)
-    {
-        foreach ($this->getRelations() as $reference) {
-            if ($reference->getRel() == $rel) {
-                return $reference;
-            }
-        }
-
-        return null;
     }
 
     /**

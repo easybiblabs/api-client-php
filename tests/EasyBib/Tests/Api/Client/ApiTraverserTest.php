@@ -533,8 +533,8 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
     private function extractRelations(array $links)
     {
         return array_map(
-            function ($reference) {
-                return new Relation($this->recursiveCastObject($reference));
+            function ($relation) {
+                return new Relation($this->recursiveCastObject($relation));
             },
             $links
         );
