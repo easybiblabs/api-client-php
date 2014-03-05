@@ -84,9 +84,9 @@ class Resource
     {
         if (isset($this->rawData->links)) {
             $this->rawData->links[] = $data;
+        } else {
+            $this->rawData->links = [$data];
         }
-
-        $this->rawData->links = [$data];
     }
 
     /**
