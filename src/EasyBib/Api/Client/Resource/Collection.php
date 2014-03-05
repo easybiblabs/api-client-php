@@ -2,9 +2,25 @@
 
 namespace EasyBib\Api\Client\Resource;
 
+use EasyBib\Api\Client\ApiTraverser;
 
-class Collection extends Resource implements \ArrayAccess
+/**
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ */
+class Collection extends Resource implements \ArrayAccess, \Iterator
 {
+    /**
+     * @var \ArrayIterator
+     */
+    private $iterator;
+
+    public function __construct(\stdClass $data, ApiTraverser $apiTraverser)
+    {
+        parent::__construct($data, $apiTraverser);
+
+        $this->iterator = new \ArrayIterator($this->getData());
+    }
+
     /**
      * @param mixed $offset
      * @return bool
@@ -48,5 +64,50 @@ class Collection extends Resource implements \ArrayAccess
     public function offsetUnset($offset)
     {
         throw new \BadMethodCallException('offsetUnset() is not supported.');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function current()
+    {
+        return Resource::factory($this->iterator->current(), $this->getApiTraverser());
+    }
+
+    /**
+     * @return scalar
+     */
+    public function key()
+    {
+        return $this->iterator->key();
+    }
+
+    public function next()
+    {
+        return $this->iterator->next();
+    }
+
+    /**
+     * @return bool
+     */
+    public function valid()
+    {
+        return $this->iterator->valid();
+    }
+
+    public function rewind()
+    {
+        return $this->iterator->rewind();
+    }
+
+    public function map(callable $callback)
+    {
+        $output = [];
+
+        foreach ($this as $resource) {
+            $output[] = call_user_func($callback, $resource);
+        }
+
+        return $output;
     }
 }

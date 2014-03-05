@@ -77,6 +77,21 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @dataProvider dataProvider
+     * @param array $data
+     */
+    public function testMap(array $data)
+    {
+        $collection = $this->getCollection($data);
+
+        $callback = function ($resource) {
+            return $resource->getData()->foo;
+        };
+
+        $this->assertEquals(['bar'], $collection->map($callback));
+    }
+
+    /**
      * @param array $data
      * @return Collection
      */
