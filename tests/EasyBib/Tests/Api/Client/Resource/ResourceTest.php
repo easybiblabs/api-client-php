@@ -178,14 +178,17 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataProviderRelationsToAdd
      * @param string $resourceData
-     * @param \stdClass $data
+     * @param \stdClass $relationToAdd
      */
-    public function testAddRelation($resourceData, \stdClass $data)
+    public function testAddRelation($resourceData, \stdClass $relationToAdd)
     {
         $resource = $this->getResource($resourceData);
-        $resource->addRelation($data);
+        $originalRelations = $resource->getRelations();
 
-        $this->assertEquals(new Relation($data), $resource->findRelation($data->rel));
+        $resource->addRelation($relationToAdd);
+
+        $expectedRelations = array_merge($originalRelations, [new Relation($relationToAdd)]);
+        $this->assertEquals($expectedRelations, $resource->getRelations());
     }
 
     public function testToArray()
