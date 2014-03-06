@@ -49,7 +49,7 @@ class Relation
      */
     public function getRel()
     {
-        return $this->rawData->rel;
+        return trim($this->rawData->rel);
     }
 
     /**
@@ -57,7 +57,7 @@ class Relation
      */
     public function getType()
     {
-        return $this->rawData->type;
+        return isset($this->rawData->type) ? trim($this->rawData->type) : null;
     }
 
     /**
@@ -65,7 +65,20 @@ class Relation
      */
     public function getTitle()
     {
-        return $this->rawData->title;
+        return isset($this->rawData->title) ? trim($this->rawData->title) : null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return [
+            'href' => $this->getHref(),
+            'rel' => $this->getRel(),
+            'type' => $this->getType(),
+            'title' => $this->getTitle(),
+        ];
     }
 
     /**
