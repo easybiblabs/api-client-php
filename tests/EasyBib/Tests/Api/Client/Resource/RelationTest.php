@@ -5,6 +5,9 @@ namespace EasyBib\Tests\Api\Client\Resource;
 use EasyBib\Api\Client\Resource\Relation;
 use EasyBib\Tests\Mocks\Api\Client\LinkTransformer\MockLinkTransformer;
 
+/**
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ */
 class RelationTest extends \PHPUnit_Framework_TestCase
 {
     public function dataProviderFull()
@@ -13,10 +16,10 @@ class RelationTest extends \PHPUnit_Framework_TestCase
             [
                 (object) [
                     'href' => 'http://foo/bar/',
-                    'rel' => 'some rel',
-                    'type' => 'text/html',
-                    'title' => 'James',
-                ]
+                    'rel' => 'some rel ',
+                    'type' => 'text/html ',
+                    'title' => 'James ',
+                ],
             ],
         ];
     }
@@ -24,8 +27,24 @@ class RelationTest extends \PHPUnit_Framework_TestCase
     public function dataProviderValid()
     {
         return [
-            ['{"href":"http://foo/bar/","rel":"some rel","type":"text/html"}'],
-            ['{"href":"http://foo/bar/","rel":"some rel","title":"James"}'],
+            [
+                '{"href":"http://foo/bar/","rel":"some rel ","type":"text/html "}',
+                [
+                    'href' => 'http://foo/bar/',
+                    'rel' => 'some rel',
+                    'type' => 'text/html',
+                    'title' => null,
+                ],
+            ],
+            [
+                '{"href":"http://foo/bar/","rel":"some rel ","title":"James "}',
+                [
+                    'href' => 'http://foo/bar/',
+                    'rel' => 'some rel',
+                    'title' => 'James',
+                    'type' => null,
+                ],
+            ],
         ];
     }
 
@@ -93,6 +112,17 @@ class RelationTest extends \PHPUnit_Framework_TestCase
     {
         $relation = new Relation($data);
         $this->assertEquals('James', $relation->getTitle());
+    }
+
+    /**
+     * @param \stdClass $data
+     * @param array $expectedOutput
+     * @dataProvider dataProviderValid
+     */
+    public function testGetAttributes($data, array $expectedOutput)
+    {
+        $relation = new Relation(json_decode($data));
+        $this->assertEquals($expectedOutput, $relation->getAttributes());
     }
 
     /**
