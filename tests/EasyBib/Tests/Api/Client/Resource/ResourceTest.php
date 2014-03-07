@@ -222,6 +222,15 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($nullLink);
     }
 
+    public function testIsError()
+    {
+        $errorResource = $this->getResource('{"status":"error","message":"It broke."}');
+        $okResource = $this->getResource('{"status":"ok","data":{"foo":"bar"}}');
+
+        $this->assertTrue($errorResource->isError());
+        $this->assertFalse($okResource->isError());
+    }
+
     /**
      * @param string $body
      * @param array $headers
