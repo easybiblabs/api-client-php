@@ -24,9 +24,9 @@ class Resource
      */
     private $apiTraverser;
 
-    public function __construct(\stdClass $data, ApiTraverser $apiTraverser)
+    public function __construct(\stdClass $rawData, ApiTraverser $apiTraverser)
     {
-        $this->rawData = $data;
+        $this->rawData = $rawData;
         $this->apiTraverser = $apiTraverser;
     }
 

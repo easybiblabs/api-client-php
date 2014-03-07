@@ -14,11 +14,30 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
      */
     private $iterator;
 
-    public function __construct(\stdClass $data, ApiTraverser $apiTraverser)
-    {
-        parent::__construct($data, $apiTraverser);
+    /**
+     * @var \stdClass
+     */
+    private $rawData;
 
-        $this->iterator = new \ArrayIterator($this->getData());
+    /**
+     * @param \stdClass $rawData
+     * @param ApiTraverser $apiTraverser
+     */
+    public function __construct(\stdClass $rawData, ApiTraverser $apiTraverser)
+    {
+        parent::__construct($rawData, $apiTraverser);
+
+        $this->rawData = $rawData;
+
+        $filtered = array_filter(array_map(function ($resourceData) {
+            try {
+                return Resource::factory($resourceData, $this->getApiTraverser());
+            } catch (ResourceErrorException $e) {
+                return null;
+            }
+        }, $rawData->data));
+
+        $this->iterator = new \ArrayIterator($filtered);
     }
 
     /**
@@ -71,7 +90,7 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
      */
     public function current()
     {
-        return Resource::factory($this->iterator->current(), $this->getApiTraverser());
+        return $this->iterator->current();
     }
 
     /**
@@ -100,6 +119,27 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
         return $this->iterator->rewind();
     }
 
+    /**
+     * @return bool
+     */
+    public function hasResourceError()
+    {
+        $initial = false;
+
+        return array_reduce($this->rawData->data, function ($carry, $resourceData) {
+            try {
+                Resource::factory($resourceData, $this->getApiTraverser());
+                return $carry;
+            } catch (ResourceErrorException $e) {
+                return true;
+            }
+        }, $initial);
+    }
+
+    /**
+     * @param callable $callback
+     * @return array
+     */
     public function map(callable $callback)
     {
         $output = [];
