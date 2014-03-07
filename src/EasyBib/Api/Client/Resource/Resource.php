@@ -7,6 +7,8 @@ use Guzzle\Http\Message\Response;
 
 class Resource
 {
+    const STATUS_ERROR = 'error';
+
     /**
      * @var \stdClass
      */
@@ -26,6 +28,14 @@ class Resource
     {
         $this->rawData = $data;
         $this->apiTraverser = $apiTraverser;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isError()
+    {
+        return isset($this->rawData->status) && $this->rawData->status == self::STATUS_ERROR;
     }
 
     /**
