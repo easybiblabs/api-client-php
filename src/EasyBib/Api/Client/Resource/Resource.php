@@ -7,6 +7,8 @@ use Guzzle\Http\Message\Response;
 
 class Resource
 {
+    const STATUS_ERROR = 'error';
+
     /**
      * @var \stdClass
      */
@@ -22,9 +24,9 @@ class Resource
      */
     private $apiTraverser;
 
-    public function __construct(\stdClass $data, ApiTraverser $apiTraverser)
+    public function __construct(\stdClass $rawData, ApiTraverser $apiTraverser)
     {
-        $this->rawData = $data;
+        $this->rawData = $rawData;
         $this->apiTraverser = $apiTraverser;
     }
 
@@ -186,10 +188,16 @@ class Resource
     /**
      * @param \stdClass $data
      * @param ApiTraverser $apiTraverser
+     * @throws ResourceErrorException
      * @return Resource
      */
     public static function factory(\stdClass $data, ApiTraverser $apiTraverser)
     {
+        if (isset($data->status) && $data->status == self::STATUS_ERROR) {
+            $message = isset($data->message) ? $data->message : 'Unspecified resource error';
+            throw new ResourceErrorException($message);
+        }
+
         if (self::isList($data)) {
             return new Collection($data, $apiTraverser);
         }

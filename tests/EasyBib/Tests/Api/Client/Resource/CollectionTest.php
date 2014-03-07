@@ -91,6 +91,47 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['bar'], $collection->map($callback));
     }
 
+    public function testHavingResourceError()
+    {
+        $message = 'Somn done gone wrong';
+
+        $data = [
+            'data' => [
+                [
+                    'status' => 'error',
+                    'message' => $message,
+                ],
+                [
+                    'data' => ['foo' => 'bar'],
+                    'links' => [],
+                ],
+            ],
+            'links' => [],
+        ];
+
+        $collection = $this->getCollection($data);
+
+        $collection->map(function () {
+            // ensure this does not throw an exception
+        });
+
+        $this->assertInstanceOf(Collection::class, $collection);
+        $this->assertTrue($collection->hasResourceError());
+        $this->assertCount(1, $collection);
+    }
+
+    /**
+     * @dataProvider dataProvider
+     * @param array $data
+     */
+    public function testNotHavingResourceError(array $data)
+    {
+        $collection = $this->getCollection($data);
+
+        $this->assertInstanceOf(Collection::class, $collection);
+        $this->assertFalse($collection->hasResourceError());
+    }
+
     /**
      * @param array $data
      * @return Collection

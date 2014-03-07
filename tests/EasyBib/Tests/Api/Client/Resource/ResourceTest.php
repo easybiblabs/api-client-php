@@ -6,6 +6,7 @@ use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Relation;
 use EasyBib\Api\Client\Resource\Resource;
+use EasyBib\Api\Client\Resource\ResourceErrorException;
 use EasyBib\Tests\Api\Client\Given;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\Response;
@@ -208,6 +209,23 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Collection::class, $this->getResource($listData));
         $this->assertNotInstanceOf(Collection::class, $this->getResource($hashData));
         $this->assertNotInstanceOf(Collection::class, $this->getResource($noData));
+    }
+
+    public function testFactoryWithError()
+    {
+        $message = 'somn done messed up';
+
+        $data = (object) [
+            'status' => 'error',
+            'message' => $message,
+        ];
+
+        $this->setExpectedException(
+            ResourceErrorException::class,
+            $message
+        );
+
+        Resource::factory($data, $this->api);
     }
 
     public function testFindLink()
