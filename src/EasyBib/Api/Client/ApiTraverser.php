@@ -157,12 +157,14 @@ class ApiTraverser
 
     private function cache(callable $callback, CacheKey $cacheKey)
     {
-        if ($this->cache->contains($cacheKey->toString())) {
-            return $this->cache->fetch($cacheKey->toString());
+        $keyString = $cacheKey->toString();
+
+        if ($this->cache->contains($keyString)) {
+            return $this->cache->fetch($keyString);
         }
 
         $value = $callback();
-        $this->cache->save($cacheKey->toString(), $value);
+        $this->cache->save($keyString, $value);
 
         return $value;
     }
