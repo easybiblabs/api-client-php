@@ -45,10 +45,12 @@ class ApiTraverser
      */
     public function get($url, array $queryParams = [])
     {
-        $request = $this->httpClient->get($url);
-        $request->getQuery()->replace($queryParams);
+        return $this->cache(function () use ($url, $queryParams) {
+            $request = $this->httpClient->get($url);
+            $request->getQuery()->replace($queryParams);
 
-        return Resource::fromResponse($this->send($request), $this);
+            return Resource::fromResponse($this->send($request), $this);
+        }, new CacheKey([$url, $queryParams]));
     }
 
     /**
@@ -147,5 +149,17 @@ class ApiTraverser
         $request = $this->httpClient->$method($url, [], $payload);
 
         return Resource::fromResponse($this->send($request), $this);
+    }
+
+    private function cache(callable $callback, CacheKey $cacheKey)
+    {
+        if ($this->cache->contains($cacheKey->toString())) {
+            return $this->cache->fetch($cacheKey->toString());
+        }
+
+        $value = $callback();
+        $this->cache->save($cacheKey->toString(), $value);
+
+        return $value;
     }
 }

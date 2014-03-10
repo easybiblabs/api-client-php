@@ -439,6 +439,21 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($this->history));
     }
 
+    public function testGetSetsToCache()
+    {
+        $cache = new ArrayCache();
+        $this->api->setCache($cache);
+
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses);
+
+        $url = '/';
+        $arguments = ['jim' => 'bob'];
+        $key = (new CacheKey([$url, $arguments]))->toString();
+
+        $this->api->get($url, $arguments);
+        $this->assertTrue($cache->contains($key));
+    }
+
     /**
      * @param string $httpMethod
      * @param array $queryParams
