@@ -60,7 +60,7 @@ class ApiTraverser
      */
     public function post($url, array $resource)
     {
-        $this->cache->flushAll();
+        $this->cache->deleteAll();
         return $this->sendResource('post', $url, $resource);
     }
 
@@ -71,7 +71,7 @@ class ApiTraverser
      */
     public function put($url, array $resource)
     {
-        $this->cache->flushAll();
+        $this->cache->deleteAll();
         return $this->sendResource('put', $url, $resource);
     }
 
@@ -82,7 +82,7 @@ class ApiTraverser
      */
     public function patch($url, array $resource)
     {
-        $this->cache->flushAll();
+        $this->cache->deleteAll();
         return $this->sendResource('patch', $url, $resource);
     }
 
@@ -92,7 +92,7 @@ class ApiTraverser
      */
     public function delete($url)
     {
-        $this->cache->flushAll();
+        $this->cache->deleteAll();
         $request = $this->httpClient->delete($url);
 
         return Resource::fromResponse($this->send($request), $this);
