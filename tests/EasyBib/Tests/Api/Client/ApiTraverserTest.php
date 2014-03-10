@@ -454,7 +454,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($this->history));
     }
 
-    public function testGetSetsToCache()
+    public function testGetWritesToCache()
     {
         $cache = new ArrayCache();
         $this->api->setCache($cache);
