@@ -2,6 +2,8 @@
 
 namespace EasyBib\Api\Client;
 
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\Cache;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Api\Client\Validation\ResponseValidator;
 use EasyBib\Guzzle\Plugin\RequestHeader;
@@ -17,6 +19,11 @@ class ApiTraverser
     private $httpClient;
 
     /**
+     * @var Cache
+     */
+    private $cache;
+
+    /**
      * @param ClientInterface $httpClient
      */
     public function __construct(ClientInterface $httpClient)
@@ -27,6 +34,8 @@ class ApiTraverser
         $this->httpClient->addSubscriber(
             new RequestHeader('Accept', 'application/vnd.com.easybib.data+json')
         );
+
+        $this->cache = new ArrayCache();
     }
 
     /**
@@ -102,6 +111,14 @@ class ApiTraverser
     public function getProjects(array $queryParams = [])
     {
         return $this->get('/projects/', $queryParams);
+    }
+
+    /**
+     * @param Cache $cache
+     */
+    public function setCache(Cache $cache)
+    {
+        $this->cache = $cache;
     }
 
     /**
