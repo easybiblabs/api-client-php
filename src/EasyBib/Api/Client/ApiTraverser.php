@@ -3,7 +3,7 @@
 namespace EasyBib\Api\Client;
 
 use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\CacheProvider;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Api\Client\Validation\ResponseValidator;
 use EasyBib\Guzzle\Plugin\RequestHeader;
@@ -19,7 +19,7 @@ class ApiTraverser
     private $httpClient;
 
     /**
-     * @var Cache
+     * @var CacheProvider
      */
     private $cache;
 
@@ -60,6 +60,7 @@ class ApiTraverser
      */
     public function post($url, array $resource)
     {
+        $this->cache->flushAll();
         return $this->sendResource('post', $url, $resource);
     }
 
@@ -70,6 +71,7 @@ class ApiTraverser
      */
     public function put($url, array $resource)
     {
+        $this->cache->flushAll();
         return $this->sendResource('put', $url, $resource);
     }
 
@@ -80,6 +82,7 @@ class ApiTraverser
      */
     public function patch($url, array $resource)
     {
+        $this->cache->flushAll();
         return $this->sendResource('patch', $url, $resource);
     }
 
@@ -89,6 +92,7 @@ class ApiTraverser
      */
     public function delete($url)
     {
+        $this->cache->flushAll();
         $request = $this->httpClient->delete($url);
 
         return Resource::fromResponse($this->send($request), $this);
@@ -116,9 +120,9 @@ class ApiTraverser
     }
 
     /**
-     * @param Cache $cache
+     * @param CacheProvider $cache
      */
-    public function setCache(Cache $cache)
+    public function setCache(CacheProvider $cache)
     {
         $this->cache = $cache;
     }
