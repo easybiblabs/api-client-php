@@ -467,6 +467,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
         $this->api->get($url, $arguments);
         $this->assertTrue($cache->contains($key));
+        $this->assertInstanceOf(Resource::class, $cache->fetch($key));
     }
 
     /**
