@@ -6,6 +6,7 @@ use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Api\Client\Resource\ResourceErrorException;
+use EasyBib\Api\Client\Validation\ResourceNotFoundException;
 use EasyBib\Tests\Api\Client\Given;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\Response;
@@ -73,11 +74,12 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ->method('get');
 
         $goodLinkedResource = $firstResource->get('foo rel');
-        $nullLinkedResource = $firstResource->get('no such rel');
 
         $this->assertInstanceOf(Resource::class, $goodLinkedResource);
         $this->assertEquals('bar', $goodLinkedResource->getData()->foo);
-        $this->assertNull($nullLinkedResource);
+
+        $this->setExpectedException(ResourceNotFoundException::class);
+        $firstResource->get('no such rel');
     }
 
     public function testPost()
@@ -100,11 +102,12 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ->method('post');
 
         $goodLinkedResource = $firstResource->post('foo rel', $nextResource);
-        $nullLinkedResource = $firstResource->post('no such rel', $nextResource);
 
         $this->assertInstanceOf(Resource::class, $goodLinkedResource);
         $this->assertEquals('bar', $goodLinkedResource->getData()->foo);
-        $this->assertNull($nullLinkedResource);
+
+        $this->setExpectedException(ResourceNotFoundException::class);
+        $firstResource->post('no such rel', []);
     }
 
     public function testPut()
@@ -127,11 +130,12 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ->method('put');
 
         $goodLinkedResource = $firstResource->put('foo rel', $nextResource);
-        $nullLinkedResource = $firstResource->put('no such rel', $nextResource);
 
         $this->assertInstanceOf(Resource::class, $goodLinkedResource);
         $this->assertEquals('bar', $goodLinkedResource->getData()->foo);
-        $this->assertNull($nullLinkedResource);
+
+        $this->setExpectedException(ResourceNotFoundException::class);
+        $firstResource->put('no such rel', []);
     }
 
     /**

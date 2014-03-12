@@ -3,6 +3,7 @@
 namespace EasyBib\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiTraverser;
+use EasyBib\Api\Client\Validation\ResourceNotFoundException;
 use Guzzle\Http\Message\Response;
 
 class Resource
@@ -86,13 +87,7 @@ class Resource
      */
     public function get($rel)
     {
-        $link = $this->relationsContainer->get($rel);
-
-        if (!$link) {
-            return null;
-        }
-
-        return $this->apiTraverser->get($link->getHref());
+        return $this->requestRelation('get', $rel);
     }
 
     /**
@@ -102,13 +97,7 @@ class Resource
      */
     public function post($rel, array $data)
     {
-        $link = $this->relationsContainer->get($rel);
-
-        if (!$link) {
-            return null;
-        }
-
-        return $this->apiTraverser->post($link->getHref(), $data);
+        return $this->requestRelation('post', $rel, $data);
     }
 
     /**
@@ -118,13 +107,7 @@ class Resource
      */
     public function put($rel, array $data)
     {
-        $link = $this->relationsContainer->get($rel);
-
-        if (!$link) {
-            return null;
-        }
-
-        return $this->apiTraverser->put($link->getHref(), $data);
+        return $this->requestRelation('put', $rel, $data);
     }
 
     /**
@@ -205,6 +188,27 @@ class Resource
         }
 
         return new Resource($data, $apiTraverser);
+    }
+
+    /**
+     * @param string $method
+     * @param string $rel
+     * @param array $data
+     * @throws ResourceNotFoundException
+     * @return Resource
+     */
+    private function requestRelation($method, $rel, array $data = [])
+    {
+        $relation = $this->relationsContainer->get($rel);
+
+        if (!$relation) {
+            throw new ResourceNotFoundException(
+                sprintf('Not Found: relation "%s"', $rel),
+                404
+            );
+        }
+
+        return $this->apiTraverser->$method($relation->getHref(), $data);
     }
 
     /**
