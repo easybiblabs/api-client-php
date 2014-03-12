@@ -2,7 +2,9 @@
 
 namespace EasyBib\Tests\Api\Client;
 
+use Doctrine\Common\Cache\ArrayCache;
 use EasyBib\Api\Client\ApiTraverser;
+use EasyBib\Api\Client\CacheKey;
 use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Relation;
 use EasyBib\Api\Client\Resource\Resource;
@@ -133,6 +135,19 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
         return [
             [$citation, $expectedResponseResource],
+        ];
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getWriteMethods()
+    {
+        return [
+            ['put'],
+            ['post'],
+            ['patch'],
+            ['delete'],
         ];
     }
 
@@ -437,6 +452,43 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $this->api->getUser();
 
         $this->assertEquals(1, count($this->history));
+    }
+
+    public function testGetWritesToCache()
+    {
+        $cache = new ArrayCache();
+        $this->api->setCache($cache);
+
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses);
+
+        $url = '/';
+        $arguments = ['jim' => 'bob'];
+        $key = (new CacheKey([$url, $arguments]))->toString();
+
+        $this->api->get($url, $arguments);
+        $this->assertTrue($cache->contains($key));
+        $this->assertInstanceOf(Resource::class, $cache->fetch($key));
+    }
+
+    /**
+     * @dataProvider getWriteMethods
+     * @param string $method
+     */
+    public function testWritesClearCache($method)
+    {
+        $cache = new ArrayCache();
+        $this->api->setCache($cache);
+
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses);
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses);
+
+        $url = '/';
+        $arguments = ['jim' => 'bob'];
+        $key = (new CacheKey([$url, $arguments]))->toString();
+
+        $this->api->get($url, $arguments);
+        $this->api->$method('/', ['foo' => 'bar']);
+        $this->assertFalse($cache->contains($key));
     }
 
     /**

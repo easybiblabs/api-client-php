@@ -2,6 +2,8 @@
 
 namespace EasyBib\Api\Client;
 
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\CacheProvider;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Api\Client\Validation\ResponseValidator;
 use EasyBib\Guzzle\Plugin\RequestHeader;
@@ -17,6 +19,11 @@ class ApiTraverser
     private $httpClient;
 
     /**
+     * @var CacheProvider
+     */
+    private $cache;
+
+    /**
      * @param ClientInterface $httpClient
      */
     public function __construct(ClientInterface $httpClient)
@@ -27,6 +34,8 @@ class ApiTraverser
         $this->httpClient->addSubscriber(
             new RequestHeader('Accept', 'application/vnd.com.easybib.data+json')
         );
+
+        $this->cache = new ArrayCache();
     }
 
     /**
@@ -36,10 +45,12 @@ class ApiTraverser
      */
     public function get($url, array $queryParams = [])
     {
-        $request = $this->httpClient->get($url);
-        $request->getQuery()->replace($queryParams);
+        return $this->cache(function () use ($url, $queryParams) {
+            $request = $this->httpClient->get($url);
+            $request->getQuery()->replace($queryParams);
 
-        return Resource::fromResponse($this->send($request), $this);
+            return Resource::fromResponse($this->send($request), $this);
+        }, new CacheKey([$url, $queryParams]));
     }
 
     /**
@@ -49,6 +60,7 @@ class ApiTraverser
      */
     public function post($url, array $resource)
     {
+        $this->cache->deleteAll();
         return $this->sendResource('post', $url, $resource);
     }
 
@@ -59,6 +71,7 @@ class ApiTraverser
      */
     public function put($url, array $resource)
     {
+        $this->cache->deleteAll();
         return $this->sendResource('put', $url, $resource);
     }
 
@@ -69,6 +82,7 @@ class ApiTraverser
      */
     public function patch($url, array $resource)
     {
+        $this->cache->deleteAll();
         return $this->sendResource('patch', $url, $resource);
     }
 
@@ -78,6 +92,7 @@ class ApiTraverser
      */
     public function delete($url)
     {
+        $this->cache->deleteAll();
         $request = $this->httpClient->delete($url);
 
         return Resource::fromResponse($this->send($request), $this);
@@ -102,6 +117,14 @@ class ApiTraverser
     public function getProjects(array $queryParams = [])
     {
         return $this->get('/projects/', $queryParams);
+    }
+
+    /**
+     * @param CacheProvider $cache
+     */
+    public function setCache(CacheProvider $cache)
+    {
+        $this->cache = $cache;
     }
 
     /**
@@ -130,5 +153,19 @@ class ApiTraverser
         $request = $this->httpClient->$method($url, [], $payload);
 
         return Resource::fromResponse($this->send($request), $this);
+    }
+
+    private function cache(callable $callback, CacheKey $cacheKey)
+    {
+        $keyString = $cacheKey->toString();
+
+        if ($this->cache->contains($keyString)) {
+            return $this->cache->fetch($keyString);
+        }
+
+        $value = $callback();
+        $this->cache->save($keyString, $value);
+
+        return $value;
     }
 }
