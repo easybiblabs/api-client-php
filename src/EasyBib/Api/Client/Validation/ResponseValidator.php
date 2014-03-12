@@ -29,6 +29,7 @@ class ResponseValidator
         $this->checkInvalidJson();
         $this->checkTokenExpiration();
         $this->checkUnauthorized();
+        $this->checkNotFoundError();
         $this->checkApiError();
         $this->checkMiscError();
     }
@@ -70,6 +71,18 @@ class ResponseValidator
 
         if ($payload['error'] == 'invalid_grant') {
             throw new ExpiredTokenException();
+        }
+    }
+
+    private function checkNotFoundError()
+    {
+        $payload = $this->getPayload();
+
+        if (isset($payload['msg']) && $payload['msg'] == 'Not Found') {
+            throw new ResourceNotFoundException(
+                $payload['msg'],
+                $this->response->getStatusCode()
+            );
         }
     }
 

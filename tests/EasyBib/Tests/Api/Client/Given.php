@@ -104,13 +104,14 @@ class Given
     /**
      * @param MockPlugin $mockResponses
      * @param array $error
+     * @param int $code
      */
-    public function iAmReadyToRespondWithAnApiError(MockPlugin $mockResponses, array $error)
+    public function iAmReadyToRespondWithAnApiError(MockPlugin $mockResponses, array $error, $code = 400)
     {
         $body = json_encode($error);
 
         $mockResponses->addResponse(
-            new Response(400, [], $body)
+            new Response($code, [], $body)
         );
     }
 
