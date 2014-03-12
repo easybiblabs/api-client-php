@@ -4,7 +4,6 @@ namespace EasyBib\Tests\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Resource\Collection;
-use EasyBib\Api\Client\Resource\Relation;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Api\Client\Resource\ResourceErrorException;
 use EasyBib\Tests\Api\Client\Given;

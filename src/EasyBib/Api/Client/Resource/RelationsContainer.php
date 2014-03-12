@@ -5,30 +5,30 @@ namespace EasyBib\Api\Client\Resource;
 class RelationsContainer
 {
     /**
-     * @var \stdData[]
+     * @var Relation[]
      */
-    private $rawLinks;
+    private $relations;
 
     /**
      * @param \stdData[] $rawLinks
      */
     public function __construct(array $rawLinks)
     {
-        $this->rawLinks = $rawLinks;
+        $this->relations = array_map(function ($relationData) {
+            return new Relation($relationData);
+        }, $rawLinks);
     }
 
     public function getAll()
     {
-        return array_map(function ($relationData) {
-            return new Relation($relationData);
-        }, $this->rawLinks);
+        return $this->relations;
     }
 
     public function listAll()
     {
         return array_map(function ($relation) {
-            return $relation->rel;
-        }, $this->rawLinks);
+            return $relation->getRel();
+        }, $this->relations);
     }
 
     public function contains($rel)
@@ -53,6 +53,6 @@ class RelationsContainer
 
     public function add(\stdClass $data)
     {
-        $this->rawLinks[] = $data;
+        $this->relations[] = new Relation($data);
     }
 }
