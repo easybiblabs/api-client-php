@@ -559,7 +559,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             $this->extractRelations($expectedResponseArray['links']),
-            $resource->getRelations()
+            $resource->getRelationsContainer()->getAll()
         );
     }
 
