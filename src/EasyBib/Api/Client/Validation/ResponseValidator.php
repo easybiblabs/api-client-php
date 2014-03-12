@@ -74,6 +74,9 @@ class ResponseValidator
         }
     }
 
+    /**
+     * @throws ResourceNotFoundException
+     */
     private function checkNotFoundError()
     {
         $payload = $this->getPayload();
