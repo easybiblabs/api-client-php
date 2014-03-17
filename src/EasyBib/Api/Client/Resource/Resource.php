@@ -52,6 +52,26 @@ class Resource
     }
 
     /**
+     * @return string
+     */
+    public function getId()
+    {
+        $me = $this->findRelation('me');
+
+        if (!$me) {
+            return null;
+        }
+
+        preg_match('_([^/]+)$_', $me->getHref(), $matches);
+
+        if ($matches) {
+            return $matches[1];
+        }
+
+        return null;
+    }
+
+    /**
      * Allows retrieval of the URL; useful e.g. when GETting exported
      * documents
      *

@@ -95,6 +95,44 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    /**
+     * @return array
+     */
+    public function dataProviderGetId()
+    {
+        return [
+            [
+                json_decode(json_encode([
+                    'links' => [
+                    ]
+                ])),
+                null,
+            ],
+            [
+                json_decode(json_encode([
+                    'links' => [
+                        [
+                            'rel' => 'me',
+                            'href' => 'http://foo/bar/baz/',
+                        ]
+                    ]
+                ])),
+                null,
+            ],
+            [
+                json_decode(json_encode([
+                    'links' => [
+                        [
+                            'rel' => 'me',
+                            'href' => 'http://foo/bar/baz/123',
+                        ]
+                    ]
+                ])),
+                '123',
+            ],
+        ];
+    }
+
     public function testGet()
     {
         $firstResource = $this->getResource();
@@ -113,6 +151,17 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Resource::class, $goodLinkedResource);
         $this->assertEquals('bar', $goodLinkedResource->getData()->foo);
         $this->assertNull($nullLinkedResource);
+    }
+
+    /**
+     * @dataProvider dataProviderGetId
+     * @param \stdClass $data
+     * @param mixed $expectedValue
+     */
+    public function testGetId(\stdClass $data, $expectedValue)
+    {
+        $resource = Resource::factory($data, $this->api);
+        $this->assertSame($expectedValue, $resource->getId());
     }
 
     public function testGetData()
