@@ -60,8 +60,21 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     public function dataProviderResourceWithRelations()
     {
         return [
-            ['{"data":{"foo":"bar"},"links":[{"href":"http://api.example.org/foo/bar/","rel":"foo",
-                "type":"application/vnd.com.easybib.data+json","title":"Some link"}]}']
+            [
+                json_decode(json_encode([
+                    'data' => [
+                        'foo' => 'bar',
+                    ],
+                    'links' => [
+                        [
+                            'href' => 'http://api.example.org/foo/bar/',
+                            'rel' => 'foo',
+                            'type' => 'application/vnd.com.easybib.data+json',
+                            'title' => 'Some link',
+                        ]
+                    ]
+                ]))
+            ]
         ];
     }
 
@@ -72,11 +85,11 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                '{}',
+                (object) [],
                 (object) ['href' => 'http://foo.example.com/user/123', 'rel' => 'author']
             ],
             [
-                '{"links":[{"href":"foo","rel":"bar"}]}',
+                (object) ['links' => [ (object) ['href' => 'foo', 'rel' => 'bar'] ]],
                 (object) ['href' => 'http://foo.example.com/user/123', 'rel' => 'author']
             ],
         ];
@@ -104,7 +117,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
     public function testGetData()
     {
-        $resource = $this->getResource('{"data":{"foo":"bar"}}');
+        $resource = $this->getResource(json_decode(json_encode(['data' => ['foo' => 'bar']])));
         $this->assertEquals((object) ['foo' => 'bar'], $resource->getData());
     }
 
@@ -112,7 +125,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     {
         $location = 'http://example.com/foo/bar.doc';
 
-        $resource = $this->getResource(
+        $resource = $this->getResourceFromResponse(
             '{"data":{"foo":"bar"}}',
             ['Location' => $location]
         );
@@ -194,17 +207,30 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
     public function testToArray()
     {
-        $resource = $this->getResource('{"data":{"foo":"bar"}}');
+        $resource = $this->getResource((object) ['data' => (object) ['foo' => 'bar']]);
         $this->assertEquals(['data' => ['foo' => 'bar']], $resource->toArray());
     }
 
     public function testFactory()
     {
-        $listData = '{"data":[{"foo":"bar"}],"links":[]}';
-        $hashData = '{"data":{"foo":"bar"},"links":[]}';
+        $listData = json_decode(json_encode([
+            'data' => [
+                [
+                    'foo' => 'bar',
+                ],
+            ],
+            'links' => [],
+        ]));
+
+        $hashData = json_decode(json_encode([
+            'data' => [
+                'foo' => 'bar',
+            ],
+            'links' => [],
+        ]));
 
         // used with responses to DELETE requests
-        $noData = '{"links":[]}';
+        $noData = (object) ['links' => []];
 
         $this->assertInstanceOf(Collection::class, $this->getResource($listData));
         $this->assertNotInstanceOf(Collection::class, $this->getResource($hashData));
@@ -240,12 +266,31 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($nullLink);
     }
 
+    private function getResource(\stdClass $data = null)
+    {
+        if (!$data) {
+            $data = (object) [
+                'data' => (object) ['foo' => 'bar'],
+                'links' => [
+                    (object) [
+                        'href' => 'http://foo/',
+                        'rel' => 'foo rel',
+                        'type' => 'text',
+                        'title' => 'The Foo',
+                    ]
+                ],
+            ];
+        }
+
+        return Resource::factory($data, $this->api);
+    }
+
     /**
      * @param string $body
      * @param array $headers
      * @return Resource
      */
-    private function getResource($body = null, array $headers = [])
+    private function getResourceFromResponse($body = null, array $headers = [])
     {
         if (!$body) {
             $body = json_encode([
