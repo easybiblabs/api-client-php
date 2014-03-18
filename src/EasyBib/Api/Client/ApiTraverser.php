@@ -19,7 +19,7 @@ class ApiTraverser
     private $httpClient;
 
     /**
-     * @var CacheProvider
+     * @var Cache
      */
     private $cache;
 
@@ -35,7 +35,7 @@ class ApiTraverser
             new RequestHeader('Accept', 'application/vnd.com.easybib.data+json')
         );
 
-        $this->cache = new ArrayCache();
+        $this->cache = new Cache(new ArrayCache());
     }
 
     /**
@@ -45,7 +45,7 @@ class ApiTraverser
      */
     public function get($url, array $queryParams = [])
     {
-        return $this->cache(function () use ($url, $queryParams) {
+        return $this->cache->getValue(function () use ($url, $queryParams) {
             $request = $this->httpClient->get($url);
             $request->getQuery()->replace($queryParams);
 
@@ -60,7 +60,7 @@ class ApiTraverser
      */
     public function post($url, array $resource)
     {
-        $this->cache->deleteAll();
+        $this->cache->clear();
         return $this->sendResource('post', $url, $resource);
     }
 
@@ -71,7 +71,7 @@ class ApiTraverser
      */
     public function put($url, array $resource)
     {
-        $this->cache->deleteAll();
+        $this->cache->clear();
         return $this->sendResource('put', $url, $resource);
     }
 
@@ -82,7 +82,7 @@ class ApiTraverser
      */
     public function patch($url, array $resource)
     {
-        $this->cache->deleteAll();
+        $this->cache->clear();
         return $this->sendResource('patch', $url, $resource);
     }
 
@@ -92,7 +92,7 @@ class ApiTraverser
      */
     public function delete($url)
     {
-        $this->cache->deleteAll();
+        $this->cache->clear();
         $request = $this->httpClient->delete($url);
 
         return Resource::fromResponse($this->send($request), $this);
@@ -128,11 +128,11 @@ class ApiTraverser
     }
 
     /**
-     * @param CacheProvider $cache
+     * @param CacheProvider $cacheProvider
      */
-    public function setCache(CacheProvider $cache)
+    public function setCache(CacheProvider $cacheProvider)
     {
-        $this->cache = $cache;
+        $this->cache = new Cache($cacheProvider);
     }
 
     /**
@@ -161,19 +161,5 @@ class ApiTraverser
         $request = $this->httpClient->$method($url, [], $payload);
 
         return Resource::fromResponse($this->send($request), $this);
-    }
-
-    private function cache(callable $callback, CacheKey $cacheKey)
-    {
-        $keyString = $cacheKey->toString();
-
-        if ($this->cache->contains($keyString)) {
-            return $this->cache->fetch($keyString);
-        }
-
-        $value = $callback();
-        $this->cache->save($keyString, $value);
-
-        return $value;
     }
 }
