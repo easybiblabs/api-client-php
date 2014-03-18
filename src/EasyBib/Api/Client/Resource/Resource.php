@@ -56,13 +56,13 @@ class Resource
      */
     public function getId()
     {
-        $meLink = $this->findRelation('me');
+        $meRelation = $this->findRelation('me');
 
-        if (!$meLink) {
+        if (!$meRelation) {
             return null;
         }
 
-        preg_match('_([^/]+)$_', $meLink->getHref(), $matches);
+        preg_match('_([^/]+)$_', $meRelation->getHref(), $matches);
 
         if ($matches) {
             return $matches[1];
