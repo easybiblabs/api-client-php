@@ -45,7 +45,7 @@ class ApiTraverser
      */
     public function get($url, array $queryParams = [])
     {
-        return $this->cache->getValue(function () use ($url, $queryParams) {
+        return $this->cache->cacheAndReturn(function () use ($url, $queryParams) {
             $request = $this->httpClient->get($url);
             $request->getQuery()->replace($queryParams);
 

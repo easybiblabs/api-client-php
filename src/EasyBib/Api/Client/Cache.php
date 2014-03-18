@@ -18,7 +18,7 @@ class Cache
         $this->cacheProvider = $cacheProvider;
     }
 
-    public function getValue(callable $callback, CacheKey $cacheKey)
+    public function cacheAndReturn(callable $callback, CacheKey $cacheKey)
     {
         $cacheKeyString = $cacheKey->toString();
 
