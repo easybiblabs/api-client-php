@@ -120,6 +120,14 @@ class ApiTraverser
     }
 
     /**
+     * @return string
+     */
+    public function getUserBaseUrl()
+    {
+        return $this->httpClient->getBaseUrl() . '/user/';
+    }
+
+    /**
      * @param CacheProvider $cache
      */
     public function setCache(CacheProvider $cache)
