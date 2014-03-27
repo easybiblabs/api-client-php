@@ -12,12 +12,20 @@ class Cache
      */
     private $cacheProvider;
 
+    /**
+     * @param CacheProvider $cacheProvider
+     */
     public function __construct(CacheProvider $cacheProvider)
     {
         self::assertCacheProviderIsSafe($cacheProvider);
         $this->cacheProvider = $cacheProvider;
     }
 
+    /**
+     * @param callable $callback
+     * @param CacheKey $cacheKey
+     * @return mixed
+     */
     public function cacheAndReturn(callable $callback, CacheKey $cacheKey)
     {
         $cacheKeyString = $cacheKey->toString();
@@ -37,6 +45,10 @@ class Cache
         $this->cacheProvider->deleteAll();
     }
 
+    /**
+     * @param CacheProvider $cacheProvider
+     * @throws \RuntimeException
+     */
     private static function assertCacheProviderIsSafe(CacheProvider $cacheProvider)
     {
         if ($cacheProvider instanceof ArrayCache) {
