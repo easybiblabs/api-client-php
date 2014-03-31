@@ -117,6 +117,20 @@ class Given
 
     /**
      * @param MockPlugin $mockResponses
+     * @param int $code
+     */
+    public function iAmReadyToRespondWithAnInfrastructureError(MockPlugin $mockResponses, $code)
+    {
+        $headers = ['Content-Type' => 'text/html'];
+        $body = '<html><head></head><body>Some error</body></html>';
+
+        $mockResponses->addResponse(
+            new Response($code, $headers, $body)
+        );
+    }
+
+    /**
+     * @param MockPlugin $mockResponses
      * @param string $message
      */
     public function iAmReadyToRespondWithAnApiMsg(MockPlugin $mockResponses, $message)

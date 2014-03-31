@@ -10,6 +10,7 @@ use EasyBib\Api\Client\Resource\Relation;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Api\Client\Validation\ApiErrorException;
 use EasyBib\Api\Client\Validation\ExpiredTokenException;
+use EasyBib\Api\Client\Validation\InfrastructureErrorException;
 use EasyBib\Api\Client\Validation\InvalidJsonException;
 use EasyBib\Api\Client\Validation\ApiException;
 use EasyBib\Api\Client\Validation\ResourceNotFoundException;
@@ -326,6 +327,15 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $this->given->iAmReadyToRespondWithInvalidJson($this->mockResponses);
 
         $this->setExpectedException(InvalidJsonException::class);
+
+        $this->api->get('url placeholder');
+    }
+
+    public function testGetWithInfrastructureError()
+    {
+        $this->given->iAmReadyToRespondWithAnInfrastructureError($this->mockResponses, 504);
+
+        $this->setExpectedException(InfrastructureErrorException::class, 504);
 
         $this->api->get('url placeholder');
     }

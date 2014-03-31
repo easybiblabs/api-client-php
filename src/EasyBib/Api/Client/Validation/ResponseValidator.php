@@ -26,6 +26,7 @@ class ResponseValidator
 
     public function validate()
     {
+        $this->checkInfrastructureError();
         $this->checkInvalidJson();
         $this->checkTokenExpiration();
         $this->checkUnauthorized();
@@ -108,6 +109,18 @@ class ResponseValidator
                 $payload['msg'],
                 $this->response->getStatusCode()
             );
+        }
+    }
+
+    /**
+     * @throws InfrastructureErrorException
+     */
+    private function checkInfrastructureError()
+    {
+        $statusCode = $this->response->getStatusCode();
+
+        if (in_array($statusCode, [502, 503, 504])) {
+            throw new InfrastructureErrorException($statusCode);
         }
     }
 
