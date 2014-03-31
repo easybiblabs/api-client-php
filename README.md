@@ -122,6 +122,19 @@ $session = new Session($myCustomBackend);
 $apiBuilder->setSession($session);
 ```
 
+### Resetting the session
+
+It is possible to reset the token store of the OAuth2 client, such as when
+a guest user registers or logs in, and needs a new token which will be
+associated with the permanent user account. In this case, the application
+consuming the API **must** instantiate a new `ApiTraverser` or call `setCache()`,
+with a new cache or cache namespace, to ensure that the `ApiTraverser` will
+not return resources cached during the original session.
+
+By default, `ApiTraverser` uses a PHP-array-based cache, so unless you have
+implemented a different caching backend, you can simply instantiate a new
+`ApiTraverser`, either directly or via the `ApiBuilder`.
+
 ## License
 
 This library is licensed under the BSD 2-Clause License. Enjoy!
