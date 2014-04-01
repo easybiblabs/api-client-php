@@ -525,6 +525,11 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->dataBaseUrl . '/user/', $this->api->getUserBaseUrl());
     }
 
+    public function testGetProjectsBaseUrl()
+    {
+        $this->assertEquals($this->dataBaseUrl . '/projects/', $this->api->getProjectsBaseUrl());
+    }
+
     /**
      * @param string $httpMethod
      * @param array $queryParams
