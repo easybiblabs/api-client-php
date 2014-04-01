@@ -105,7 +105,7 @@ class ApiTraverser
      */
     public function getUser()
     {
-        return $this->get('/user/');
+        return $this->get($this->getUserBaseUrl());
     }
 
     /**
@@ -116,7 +116,7 @@ class ApiTraverser
      */
     public function getProjects(array $queryParams = [])
     {
-        return $this->get('/projects/', $queryParams);
+        return $this->get($this->getProjectsBaseUrl(), $queryParams);
     }
 
     /**
@@ -125,6 +125,14 @@ class ApiTraverser
     public function getUserBaseUrl()
     {
         return $this->httpClient->getBaseUrl() . '/user/';
+    }
+
+    /**
+     * @return string
+     */
+    public function getProjectsBaseUrl()
+    {
+        return $this->httpClient->getBaseUrl() . '/projects/';
     }
 
     /**
