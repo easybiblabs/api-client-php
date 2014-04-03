@@ -19,11 +19,17 @@ class RelationsContainer
         }, $rawLinks);
     }
 
+    /**
+     * @return Relation[]
+     */
     public function getAll()
     {
         return $this->relations;
     }
 
+    /**
+     * @return string[]
+     */
     public function listAll()
     {
         return array_map(function ($relation) {
@@ -31,11 +37,19 @@ class RelationsContainer
         }, $this->relations);
     }
 
+    /**
+     * @param string $rel
+     * @return bool
+     */
     public function contains($rel)
     {
         return in_array($rel, $this->listAll());
     }
 
+    /**
+     * @param string $rel
+     * @return Resource
+     */
     public function get($rel)
     {
         return array_reduce(
@@ -51,6 +65,9 @@ class RelationsContainer
         );
     }
 
+    /**
+     * @param \stdClass $data
+     */
     public function add(\stdClass $data)
     {
         $this->relations[] = new Relation($data);
