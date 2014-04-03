@@ -95,7 +95,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     {
         $collection = $this->getCollection(['data' => []]);
         $this->assertEquals([], $collection->map(function ($item) {
-            // do nothing
+            throw new \Exception('This should never get called');
         }));
     }
 
