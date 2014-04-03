@@ -3,8 +3,12 @@
 namespace EasyBib\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiTraverser;
+use EasyBib\Api\Client\Validation\ResourceNotFoundException;
 use Guzzle\Http\Message\Response;
 
+/**
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ */
 class Resource
 {
     const STATUS_ERROR = 'error';
@@ -20,13 +24,23 @@ class Resource
     private $location;
 
     /**
+     * @var RelationsContainer
+     */
+    private $relationsContainer;
+
+    /**
      * @var ApiTraverser
      */
     private $apiTraverser;
 
+    /**
+     * @param \stdClass $rawData
+     * @param ApiTraverser $apiTraverser
+     */
     public function __construct(\stdClass $rawData, ApiTraverser $apiTraverser)
     {
         $this->rawData = $rawData;
+        $this->relationsContainer = new RelationsContainer($this->getRawLinks());
         $this->apiTraverser = $apiTraverser;
     }
 
@@ -39,16 +53,11 @@ class Resource
     }
 
     /**
-     * @return array Relation[]
+     * @return RelationsContainer
      */
-    public function getRelations()
+    public function getRelationsContainer()
     {
-        return array_map(
-            function ($relation) {
-                return new Relation($relation);
-            },
-            $this->getRawLinks()
-        );
+        return $this->relationsContainer;
     }
 
     /**
@@ -56,7 +65,7 @@ class Resource
      */
     public function getId()
     {
-        $meRelation = $this->findRelation('me');
+        $meRelation = $this->relationsContainer->get('me');
 
         if (!$meRelation) {
             return null;
@@ -72,55 +81,6 @@ class Resource
     }
 
     /**
-     * Allows retrieval of the URL; useful e.g. when GETting exported
-     * documents
-     *
-     * @param string $rel
-     * @return Relation
-     */
-    public function findRelation($rel)
-    {
-        foreach ($this->getRelations() as $relation) {
-            if ($relation->getRel() == $rel) {
-                return $relation;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @return array
-     */
-    public function listRelations()
-    {
-        return array_map(
-            function ($link) {
-                return $link->rel;
-            },
-            $this->getRawLinks()
-        );
-    }
-
-    public function addRelation(\stdClass $data)
-    {
-        if (isset($this->rawData->links)) {
-            $this->rawData->links[] = $data;
-        } else {
-            $this->rawData->links = [$data];
-        }
-    }
-
-    /**
-     * @param string $rel
-     * @return bool
-     */
-    public function hasRelation($rel)
-    {
-        return in_array($rel, $this->listRelations());
-    }
-
-    /**
      * @return ApiTraverser
      */
     public function getApiTraverser()
@@ -129,20 +89,79 @@ class Resource
     }
 
     /**
-     * Convenience method to follow RESTful links
-     *
-     * @param string $ref
+     * @param string $rel
      * @return Resource
      */
-    public function get($ref)
+    public function get($rel)
     {
-        $link = $this->findRelation($ref);
+        return $this->requestRelation('get', $rel);
+    }
 
-        if (!$link) {
-            return null;
-        }
+    /**
+     * @param string $rel
+     * @param array $data
+     * @return Resource
+     */
+    public function post($rel, array $data)
+    {
+        return $this->requestRelation('post', $rel, $data);
+    }
 
-        return $this->apiTraverser->get($link->getHref());
+    /**
+     * @param string $rel
+     * @param array $data
+     * @return Resource
+     */
+    public function put($rel, array $data)
+    {
+        return $this->requestRelation('put', $rel, $data);
+    }
+
+    /**
+     * @deprecated
+     * @return Relation[]
+     */
+    public function getRelations()
+    {
+        return $this->relationsContainer->getAll();
+    }
+
+    /**
+     * @deprecated
+     * @param string $rel
+     * @return Resource
+     */
+    public function findRelation($rel)
+    {
+        return $this->relationsContainer->get($rel);
+    }
+
+    /**
+     * @deprecated
+     * @return string[]
+     */
+    public function listRelations()
+    {
+        return $this->relationsContainer->listAll();
+    }
+
+    /**
+     * @deprecated
+     * @param \stdClass $data
+     */
+    public function addRelation(\stdClass $data)
+    {
+        return $this->relationsContainer->add($data);
+    }
+
+    /**
+     * @deprecated
+     * @param string $rel
+     * @return bool
+     */
+    public function hasRelation($rel)
+    {
+        return $this->relationsContainer->contains($rel);
     }
 
     /**
@@ -223,6 +242,27 @@ class Resource
         }
 
         return new Resource($data, $apiTraverser);
+    }
+
+    /**
+     * @param string $method
+     * @param string $rel
+     * @param array $data
+     * @throws ResourceNotFoundException
+     * @return Resource
+     */
+    private function requestRelation($method, $rel, array $data = [])
+    {
+        $relation = $this->relationsContainer->get($rel);
+
+        if (!$relation) {
+            throw new ResourceNotFoundException(
+                sprintf('Not Found: relation "%s"', $rel),
+                404
+            );
+        }
+
+        return $this->apiTraverser->$method($relation->getHref(), $data);
     }
 
     /**

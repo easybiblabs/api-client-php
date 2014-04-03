@@ -17,11 +17,11 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
                     [
                         'data' => ['foo' => 'bar'],
                         'links' => [
-                            0 => [
+                            (object) [
                                 'title' => 'James',
                                 'type' => 'text/html',
                                 'href' => 'http://api.example.org/foo/',
-                                'ref' => 'foo resource',
+                                'rel' => 'foo resource',
                             ],
                         ],
                     ],
