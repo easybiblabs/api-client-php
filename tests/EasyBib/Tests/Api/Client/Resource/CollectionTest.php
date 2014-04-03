@@ -91,6 +91,14 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['bar'], $collection->map($callback));
     }
 
+    public function testMapWithEmptyData()
+    {
+        $collection = $this->getCollection(['data' => []]);
+        $this->assertEquals([], $collection->map(function ($item) {
+            throw new \Exception('This should never get called');
+        }));
+    }
+
     public function testHavingResourceError()
     {
         $message = 'Somn done gone wrong';
@@ -133,13 +141,13 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param array $data
+     * @param array $rawData
      * @return Collection
      */
-    private function getCollection(array $data = [])
+    private function getCollection(array $rawData = [])
     {
         $apiTraverser = new ApiTraverser(new Client());
-        $data = json_decode(json_encode($data));
+        $data = json_decode(json_encode($rawData));
 
         return Resource::factory($data, $apiTraverser);
     }
