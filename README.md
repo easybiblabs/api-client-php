@@ -107,6 +107,12 @@ $citationsFromFirstProject = $user->get('projects')[0]->get('citations');
 $linksForSecondProject = $user->get('projects')[1]->getRelations();
 $linksForSecondProject = $user->get('projects')[1]->listRelations();
 $linksForSecondProject = $user->get('projects')[1]->hasRelation('citations');
+$newProject = $user->post('projects', [
+    'data' => [
+        'name' => 'Some project',
+        'defaultstyle' => 'mla',
+    ]
+]);
 ```
 
 ### Session backend
