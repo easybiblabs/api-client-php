@@ -6,6 +6,9 @@ use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Validation\ResourceNotFoundException;
 use Guzzle\Http\Message\Response;
 
+/**
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ */
 class Resource
 {
     const STATUS_ERROR = 'error';
@@ -30,6 +33,10 @@ class Resource
      */
     private $apiTraverser;
 
+    /**
+     * @param \stdClass $rawData
+     * @param ApiTraverser $apiTraverser
+     */
     public function __construct(\stdClass $rawData, ApiTraverser $apiTraverser)
     {
         $this->rawData = $rawData;
@@ -108,6 +115,52 @@ class Resource
     public function put($rel, array $data)
     {
         return $this->requestRelation('put', $rel, $data);
+    }
+
+    /**
+     * @deprecated
+     * @return Relation[]
+     */
+    public function getRelations()
+    {
+        return $this->relationsContainer->getAll();
+    }
+
+    /**
+     * @deprecated
+     * @param string $rel
+     * @return Resource
+     */
+    public function findRelation($rel)
+    {
+        return $this->relationsContainer->get($rel);
+    }
+
+    /**
+     * @deprecated
+     * @return string[]
+     */
+    public function listRelations()
+    {
+        return $this->relationsContainer->listAll();
+    }
+
+    /**
+     * @deprecated
+     * @param \stdClass $data
+     */
+    public function addRelation(\stdClass $data)
+    {
+        return $this->relationsContainer->add($data);
+    }
+
+    /**
+     * @param string $rel
+     * @return bool
+     */
+    public function hasRelation($rel)
+    {
+        return $this->relationsContainer->contains($rel);
     }
 
     /**
