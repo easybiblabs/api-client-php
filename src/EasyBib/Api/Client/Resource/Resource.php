@@ -155,6 +155,7 @@ class Resource
     }
 
     /**
+     * @deprecated
      * @param string $rel
      * @return bool
      */
