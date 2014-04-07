@@ -47,11 +47,11 @@ class Resource
     }
 
     /**
-     * @return RelationsContainer
+     * @return array
      */
-    public function getRelationsContainer()
+    public function toArray()
     {
-        return $this->relationsContainer;
+        return json_decode(json_encode($this->rawData), true);
     }
 
     /**
@@ -72,6 +72,35 @@ class Resource
         }
 
         return null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * @param string $location
+     * @throws \InvalidArgumentException
+     */
+    public function setLocation($location)
+    {
+        if (!is_string($location)) {
+            throw new \InvalidArgumentException('Location must be a string');
+        }
+
+        $this->location = $location;
+    }
+
+    /**
+     * @return RelationsContainer
+     */
+    public function getRelationsContainer()
+    {
+        return $this->relationsContainer;
     }
 
     /**
@@ -109,35 +138,6 @@ class Resource
     public function delete($rel)
     {
         $this->requestRelation('delete', $rel);
-    }
-
-    /**
-     * @return string
-     */
-    public function getLocation()
-    {
-        return $this->location;
-    }
-
-    /**
-     * @param string $location
-     * @throws \InvalidArgumentException
-     */
-    public function setLocation($location)
-    {
-        if (!is_string($location)) {
-            throw new \InvalidArgumentException('Location must be a string');
-        }
-
-        $this->location = $location;
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        return json_decode(json_encode($this->rawData), true);
     }
 
     /**
