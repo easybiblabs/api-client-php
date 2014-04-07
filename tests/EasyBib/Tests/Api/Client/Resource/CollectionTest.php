@@ -150,6 +150,6 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $data = json_decode(json_encode($rawData));
         $resourceFactory = new ResourceFactory(new ApiTraverser(new Client()));
 
-        return $resourceFactory->fromData($data);
+        return $resourceFactory->createFromData($data);
     }
 }

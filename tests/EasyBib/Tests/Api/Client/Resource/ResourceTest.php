@@ -225,7 +225,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetId(\stdClass $data, $expectedValue)
     {
-        $resource = $this->getResourceFactory()->fromData($data);
+        $resource = $this->getResourceFactory()->createFromData($data);
         $this->assertSame($expectedValue, $resource->getId());
     }
 
@@ -280,7 +280,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ];
         }
 
-        return $this->getResourceFactory()->fromData($data);
+        return $this->getResourceFactory()->createFromData($data);
     }
 
     /**
@@ -308,7 +308,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $response->setBody($body);
         $response->setHeaders($headers);
 
-        return $this->getResourceFactory()->fromResponse($response);
+        return $this->getResourceFactory()->createFromResponse($response);
     }
 
     /**

@@ -42,9 +42,9 @@ class ResourceFactoryTest extends \PHPUnit_Framework_TestCase
         // used with responses to DELETE requests
         $noData = (object) ['links' => []];
 
-        $this->assertInstanceOf(Collection::class, $this->factory->fromData($listData));
-        $this->assertNotInstanceOf(Collection::class, $this->factory->fromData($hashData));
-        $this->assertNotInstanceOf(Collection::class, $this->factory->fromData($noData));
+        $this->assertInstanceOf(Collection::class, $this->factory->createFromData($listData));
+        $this->assertNotInstanceOf(Collection::class, $this->factory->createFromData($hashData));
+        $this->assertNotInstanceOf(Collection::class, $this->factory->createFromData($noData));
     }
 
     public function testFromDataWithError()
@@ -61,6 +61,6 @@ class ResourceFactoryTest extends \PHPUnit_Framework_TestCase
             $message
         );
 
-        $this->factory->fromData($data);
+        $this->factory->createFromData($data);
     }
 }

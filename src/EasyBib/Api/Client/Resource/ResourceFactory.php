@@ -19,7 +19,7 @@ class ResourceFactory
         $this->apiTraverser = $apiTraverser;
     }
 
-    public function fromData(\stdClass $data)
+    public function createFromData(\stdClass $data)
     {
         if (isset($data->status) && $data->status == self::STATUS_ERROR) {
             $message = isset($data->message) ? $data->message : 'Unspecified resource error';
@@ -37,10 +37,10 @@ class ResourceFactory
      * @param Response $response
      * @return Resource
      */
-    public function fromResponse(Response $response)
+    public function createFromResponse(Response $response)
     {
         $data = json_decode($response->getBody(true));
-        $resource = $this->fromData($data, $this->apiTraverser);
+        $resource = $this->createFromData($data, $this->apiTraverser);
 
         if ($locationHeaders = $response->getHeader('Location')) {
             $resource->setLocation($locationHeaders->toArray()[0]);
