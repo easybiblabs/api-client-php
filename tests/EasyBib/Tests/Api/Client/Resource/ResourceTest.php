@@ -138,6 +138,26 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $firstResource->put('no such rel', []);
     }
 
+    public function testDelete()
+    {
+        $firstResource = $this->getResource();
+
+        $nextResource = ['status' => 'ok'];
+        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $nextResource);
+
+        $this->api = $this->getMockBuilder(ApiTraverser::class)
+            ->setConstructorArgs([$this->httpClient])
+            ->getMock();
+
+        $firstResource->delete('foo rel', $nextResource);
+        $lastRequest = $this->history->getLastRequest();
+        $this->assertEquals('DELETE', $lastRequest->getMethod());
+        $this->assertEquals('http://foo/', $lastRequest->getUrl());
+
+        $this->setExpectedException(ResourceNotFoundException::class);
+        $firstResource->delete('no such rel', []);
+    }
+
     /**
      * @return array
      */

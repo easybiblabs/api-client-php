@@ -118,6 +118,14 @@ class Resource
     }
 
     /**
+     * @param string $rel
+     */
+    public function delete($rel)
+    {
+        $this->requestRelation('delete', $rel);
+    }
+
+    /**
      * @deprecated
      * @return Relation[]
      */
