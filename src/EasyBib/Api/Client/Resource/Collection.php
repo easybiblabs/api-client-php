@@ -125,6 +125,8 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
     }
 
     /**
+     * @deprecated It seems like this was added to support functionality that
+     *             is no longer used
      * @return bool
      */
     public function hasResourceError()
