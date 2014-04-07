@@ -10,6 +10,9 @@ use Guzzle\Http\Client;
 
 class ResourceFactoryTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var ResourceFactory
+     */
     private $factory;
 
     public function setUp()

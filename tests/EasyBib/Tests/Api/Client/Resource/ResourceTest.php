@@ -260,6 +260,10 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['data' => ['foo' => 'bar']], $resource->toArray());
     }
 
+    /**
+     * @param \stdClass $data
+     * @return Resource
+     */
     private function getResource(\stdClass $data = null)
     {
         if (!$data) {
@@ -307,6 +311,9 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         return $this->getResourceFactory()->fromResponse($response);
     }
 
+    /**
+     * @return ResourceFactory
+     */
     private function getResourceFactory()
     {
         return new ResourceFactory($this->api);
