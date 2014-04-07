@@ -20,6 +20,11 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
     private $rawData;
 
     /**
+     * @var ResourceFactory
+     */
+    private $resourceFactory;
+
+    /**
      * @param \stdClass $rawData
      * @param ApiTraverser $apiTraverser
      */
@@ -28,10 +33,11 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
         parent::__construct($rawData, $apiTraverser);
 
         $this->rawData = $rawData;
+        $this->resourceFactory = new ResourceFactory($apiTraverser);
 
         $filtered = array_filter(array_map(function ($resourceData) {
             try {
-                return $this->getResourceFactory()->createFromData($resourceData);
+                return $this->resourceFactory->createFromData($resourceData);
             } catch (ResourceErrorException $e) {
                 return null;
             }
@@ -56,7 +62,7 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
     public function offsetGet($offset)
     {
         $childData = $this->getData()[$offset];
-        return $this->getResourceFactory()->createFromData($childData);
+        return $this->resourceFactory->createFromData($childData);
     }
 
     /**
@@ -127,7 +133,7 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
 
         return array_reduce($this->rawData->data, function ($carry, $resourceData) {
             try {
-                $this->getResourceFactory()->createFromData($resourceData);
+                $this->resourceFactory->createFromData($resourceData);
                 return $carry;
             } catch (ResourceErrorException $e) {
                 return true;
@@ -148,13 +154,5 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
         }
 
         return $output;
-    }
-
-    /**
-     * @return ResourceFactory
-     */
-    private function getResourceFactory()
-    {
-        return new ResourceFactory($this->getApiTraverser());
     }
 }

@@ -78,14 +78,6 @@ class Resource
     }
 
     /**
-     * @return ApiTraverser
-     */
-    public function getApiTraverser()
-    {
-        return $this->apiTraverser;
-    }
-
-    /**
      * @param string $rel
      * @return Resource
      */
