@@ -83,6 +83,10 @@ class Resource
     }
 
     /**
+     * This is a customized location for a resource. In practice it is passed
+     * from the EasyBib API in a Location header. The only current use case
+     * is for the location of created documents on a remote filestore.
+     *
      * @param string $location
      * @throws \InvalidArgumentException
      */
