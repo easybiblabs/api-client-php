@@ -25,6 +25,11 @@ class ApiTraverser
     private $cache;
 
     /**
+     * @var ResourceFactory
+     */
+    private $resourceFactory;
+
+    /**
      * @param ClientInterface $httpClient
      */
     public function __construct(ClientInterface $httpClient)
@@ -37,6 +42,7 @@ class ApiTraverser
         );
 
         $this->cache = new Cache(new ArrayCache());
+        $this->resourceFactory = new ResourceFactory($this);
     }
 
     /**
@@ -50,7 +56,7 @@ class ApiTraverser
             $request = $this->httpClient->get($url);
             $request->getQuery()->replace($queryParams);
 
-            return $this->getResourceFactory()->createFromResponse($this->send($request));
+            return $this->resourceFactory->createFromResponse($this->send($request));
         }, new CacheKey([$url, $queryParams]));
     }
 
@@ -96,7 +102,7 @@ class ApiTraverser
         $this->cache->clear();
         $request = $this->httpClient->delete($url);
 
-        return $this->getResourceFactory()->createFromResponse($this->send($request));
+        return $this->resourceFactory->createFromResponse($this->send($request));
     }
 
     /**
@@ -169,14 +175,6 @@ class ApiTraverser
         $payload = json_encode($resource);
         $request = $this->httpClient->$method($url, [], $payload);
 
-        return $this->getResourceFactory()->createFromResponse($this->send($request));
-    }
-
-    /**
-     * @return ResourceFactory
-     */
-    private function getResourceFactory()
-    {
-        return new ResourceFactory($this);
+        return $this->resourceFactory->createFromResponse($this->send($request));
     }
 }
