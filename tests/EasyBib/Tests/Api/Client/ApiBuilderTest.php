@@ -119,7 +119,7 @@ class ApiBuilderTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $this->prepareTokenResponse();
-        $this->apiResponses->resource(
+        $this->apiResponses->prepareResource(
             ['data' => ['foo' => 'bar']]
         );
 

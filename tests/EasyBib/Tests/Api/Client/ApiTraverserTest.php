@@ -170,7 +170,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $this->apiResponses->resource($collection);
+        $this->apiResponses->prepareResource($collection);
 
         $response = $this->api->get('url placeholder');
 
@@ -190,7 +190,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->apiResponses->resource($user);
+        $this->apiResponses->prepareResource($user);
 
         $response = $this->api->getUser();
 
@@ -210,7 +210,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->apiResponses->resource($projects);
+        $this->apiResponses->prepareResource($projects);
 
         $response = $this->api->getProjects();
 
@@ -230,7 +230,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->apiResponses->resource($projects);
+        $this->apiResponses->prepareResource($projects);
 
         $queryParams = ['foo' => 'bar'];
 
@@ -255,7 +255,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->apiResponses->resource($collection);
+        $this->apiResponses->prepareResource($collection);
 
         $response = $this->api->get('citations');
 
@@ -268,7 +268,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $accessToken = 'ABC123';
 
         $this->apiResponses->registerWithJwtSession($accessToken, $this->resourceHttpClient);
-        $this->apiResponses->resource();
+        $this->apiResponses->prepareResource();
 
         $this->api->get('url placeholder');
 
@@ -281,7 +281,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $params = ['filter' => 'XYZ'];
 
         $this->apiResponses->registerWithJwtSession($accessToken, $this->resourceHttpClient);
-        $this->apiResponses->resource();
+        $this->apiResponses->prepareResource();
 
         $this->api->get('url placeholder', $params);
 
@@ -293,7 +293,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $accessToken = 'ABC123';
 
         $this->apiResponses->registerWithAuthCodeSession($accessToken, $this->resourceHttpClient);
-        $this->apiResponses->resource();
+        $this->apiResponses->prepareResource();
 
         $this->api->get('url placeholder');
 
@@ -302,7 +302,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
     public function testGetWithExpiredToken()
     {
-        $this->apiResponses->expiredTokenError();
+        $this->apiResponses->prepareExpiredTokenError();
 
         $this->setExpectedException(ExpiredTokenException::class);
 
@@ -414,7 +414,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
      */
     public function testPost(array $citation, array $expectedResponseResource)
     {
-        $this->apiResponses->resource($expectedResponseResource);
+        $this->apiResponses->prepareResource($expectedResponseResource);
 
         $response = $this->api->post('/projects/123/citations', $citation);
 
@@ -429,7 +429,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
      */
     public function testPut(array $citation, array $expectedResponseResource)
     {
-        $this->apiResponses->resource($expectedResponseResource);
+        $this->apiResponses->prepareResource($expectedResponseResource);
 
         $response = $this->api->put('/projects/123/citations/456', $citation);
 
@@ -443,7 +443,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             'data' => [],
         ];
 
-        $this->apiResponses->resource();
+        $this->apiResponses->prepareResource();
 
         $response = $this->api->delete('/projects/123/citations/456');
 
@@ -460,7 +460,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $this->apiResponses->resource($project);
+        $this->apiResponses->prepareResource($project);
 
         $resourcePatch = [
             'href' => 'http://foo.example.com/user/456',
@@ -487,7 +487,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $cache = new ArrayCache();
         $this->api->setCache($cache);
 
-        $this->apiResponses->resource();
+        $this->apiResponses->prepareResource();
 
         $url = '/';
         $arguments = ['jim' => 'bob'];
@@ -507,8 +507,8 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $cache = new ArrayCache();
         $this->api->setCache($cache);
 
-        $this->apiResponses->resource();
-        $this->apiResponses->resource();
+        $this->apiResponses->prepareResource();
+        $this->apiResponses->prepareResource();
 
         $url = '/';
         $arguments = ['jim' => 'bob'];

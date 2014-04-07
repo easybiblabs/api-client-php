@@ -53,7 +53,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->apiResponses = new ApiMockResponses($this->mockResponses);
     }
 
-    public function testGet()
+    public function testGetWithGoodRel()
     {
         $firstResource = $this->getResource();
 
@@ -63,25 +63,31 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->apiResponses->resource($nextResource);
-
-        $this->api = $this->getMockBuilder(ApiTraverser::class)
-            ->setConstructorArgs([$this->httpClient])
-            ->getMock();
-
-        $this->api->expects($this->any())
-            ->method('get');
+        $this->apiResponses->prepareResource($nextResource);
 
         $goodLinkedResource = $firstResource->get('foo rel');
 
         $this->assertInstanceOf(Resource::class, $goodLinkedResource);
         $this->assertEquals('bar', $goodLinkedResource->getData()->foo);
+    }
+
+    public function testGetWithBadRel()
+    {
+        $firstResource = $this->getResource();
+
+        $nextResource = [
+            'data' => [
+                'foo' => 'bar',
+            ]
+        ];
+
+        $this->apiResponses->prepareResource($nextResource);
 
         $this->setExpectedException(ResourceNotFoundException::class);
         $firstResource->get('no such rel');
     }
 
-    public function testPost()
+    public function testPostWithGoodRel()
     {
         $firstResource = $this->getResource();
 
@@ -91,25 +97,15 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->apiResponses->resource($nextResource);
-
-        $this->api = $this->getMockBuilder(ApiTraverser::class)
-            ->setConstructorArgs([$this->httpClient])
-            ->getMock();
-
-        $this->api->expects($this->any())
-            ->method('post');
+        $this->apiResponses->prepareResource($nextResource);
 
         $goodLinkedResource = $firstResource->post('foo rel', $nextResource);
 
         $this->assertInstanceOf(Resource::class, $goodLinkedResource);
         $this->assertEquals('bar', $goodLinkedResource->getData()->foo);
-
-        $this->setExpectedException(ResourceNotFoundException::class);
-        $firstResource->post('no such rel', []);
     }
 
-    public function testPut()
+    public function testPostWithBadRel()
     {
         $firstResource = $this->getResource();
 
@@ -119,39 +115,67 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->apiResponses->resource($nextResource);
+        $this->apiResponses->prepareResource($nextResource);
 
-        $this->api = $this->getMockBuilder(ApiTraverser::class)
-            ->setConstructorArgs([$this->httpClient])
-            ->getMock();
+        $this->setExpectedException(ResourceNotFoundException::class);
+        $firstResource->post('no such rel', []);
+    }
 
-        $this->api->expects($this->any())
-            ->method('put');
+    public function testPutWithGoodRel()
+    {
+        $firstResource = $this->getResource();
+
+        $nextResource = [
+            'data' => [
+                'foo' => 'bar',
+            ]
+        ];
+
+        $this->apiResponses->prepareResource($nextResource);
 
         $goodLinkedResource = $firstResource->put('foo rel', $nextResource);
 
         $this->assertInstanceOf(Resource::class, $goodLinkedResource);
         $this->assertEquals('bar', $goodLinkedResource->getData()->foo);
+    }
+
+    public function testPutWithBadRel()
+    {
+        $firstResource = $this->getResource();
+
+        $nextResource = [
+            'data' => [
+                'foo' => 'bar',
+            ]
+        ];
+
+        $this->apiResponses->prepareResource($nextResource);
 
         $this->setExpectedException(ResourceNotFoundException::class);
         $firstResource->put('no such rel', []);
     }
 
-    public function testDelete()
+    public function testDeleteWithGoodRel()
     {
         $firstResource = $this->getResource();
 
         $nextResource = ['status' => 'ok'];
-        $this->apiResponses->resource($nextResource);
 
-        $this->api = $this->getMockBuilder(ApiTraverser::class)
-            ->setConstructorArgs([$this->httpClient])
-            ->getMock();
+        $this->apiResponses->prepareResource($nextResource);
 
         $firstResource->delete('foo rel', $nextResource);
         $lastRequest = $this->history->getLastRequest();
         $this->assertEquals('DELETE', $lastRequest->getMethod());
         $this->assertEquals('http://foo/', $lastRequest->getUrl());
+    }
+
+    public function testDeleteWithBadRed()
+    {
+        $firstResource = $this->getResource();
+
+        $nextResource = ['status' => 'ok'];
+
+        $this->apiResponses->prepareResource($nextResource);
 
         $this->setExpectedException(ResourceNotFoundException::class);
         $firstResource->delete('no such rel', []);

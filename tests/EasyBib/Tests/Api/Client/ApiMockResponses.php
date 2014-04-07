@@ -39,7 +39,7 @@ class ApiMockResponses
      *     an empty resource by default.
      * @return array
      */
-    public function resource(
+    public function prepareResource(
         array $resource = ['data' => []]
     ) {
         $payload = ['status' => 'ok'] + $resource;
@@ -51,7 +51,7 @@ class ApiMockResponses
         return $resource;
     }
 
-    public function expiredTokenError()
+    public function prepareExpiredTokenError()
     {
         $body = json_encode([
             'error' => 'invalid_grant',
