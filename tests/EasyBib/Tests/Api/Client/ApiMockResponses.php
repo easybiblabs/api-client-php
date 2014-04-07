@@ -39,7 +39,7 @@ class ApiMockResponses
      *     an empty resource by default.
      * @return array
      */
-    public function iAmReadyToRespondWithAResource(
+    public function resource(
         array $resource = ['data' => []]
     ) {
         $payload = ['status' => 'ok'] + $resource;
@@ -51,7 +51,7 @@ class ApiMockResponses
         return $resource;
     }
 
-    public function iAmReadyToRespondWithAnExpiredTokenError()
+    public function expiredTokenError()
     {
         $body = json_encode([
             'error' => 'invalid_grant',
@@ -63,7 +63,7 @@ class ApiMockResponses
         );
     }
 
-    public function iAmReadyToRespondWithAnUnauthorizedTokenError()
+    public function unauthorizedTokenError()
     {
         $body = json_encode([
             'msg' => 'The project you requested is not valid for this token.',
@@ -74,7 +74,7 @@ class ApiMockResponses
         );
     }
 
-    public function iAmReadyToRespondWithInvalidJson()
+    public function invalidJson()
     {
         $body = 'blah';
 
@@ -87,7 +87,7 @@ class ApiMockResponses
      * @param array $error
      * @param int $code
      */
-    public function iAmReadyToRespondWithAnApiError(array $error, $code = 400)
+    public function apiError(array $error, $code = 400)
     {
         $body = json_encode($error);
 
@@ -99,7 +99,7 @@ class ApiMockResponses
     /**
      * @param int $code
      */
-    public function iAmReadyToRespondWithAnInfrastructureError($code)
+    public function infrastructureError($code)
     {
         $headers = ['Content-Type' => 'text/html'];
         $body = '<html><head></head><body>Some error</body></html>';
@@ -112,7 +112,7 @@ class ApiMockResponses
     /**
      * @param string $message
      */
-    public function iAmReadyToRespondWithAnApiMsg($message)
+    public function apiMsg($message)
     {
         $body = json_encode(['msg' => $message]);
 
@@ -125,7 +125,7 @@ class ApiMockResponses
      * @param $accessToken
      * @param ClientInterface $resourceHttpClient
      */
-    public function iHaveRegisteredWithAJwtSession($accessToken, ClientInterface $resourceHttpClient)
+    public function registerWithJwtSession($accessToken, ClientInterface $resourceHttpClient)
     {
         $session = new Session(new MockArraySessionStorage());
         $session->set(TokenStore::KEY_ACCESS_TOKEN, $accessToken);
@@ -160,7 +160,7 @@ class ApiMockResponses
      * @param $accessToken
      * @param ClientInterface $resourceHttpClient
      */
-    public function iHaveRegisteredWithAnAuthCodeSession($accessToken, ClientInterface $resourceHttpClient)
+    public function registerWithAuthCodeSession($accessToken, ClientInterface $resourceHttpClient)
     {
         $session = new Session(new MockArraySessionStorage());
         $session->set(TokenStore::KEY_ACCESS_TOKEN, $accessToken);

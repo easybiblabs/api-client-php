@@ -63,7 +63,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->apiResponses->iAmReadyToRespondWithAResource($nextResource);
+        $this->apiResponses->resource($nextResource);
 
         $this->api = $this->getMockBuilder(ApiTraverser::class)
             ->setConstructorArgs([$this->httpClient])
@@ -91,7 +91,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->apiResponses->iAmReadyToRespondWithAResource($nextResource);
+        $this->apiResponses->resource($nextResource);
 
         $this->api = $this->getMockBuilder(ApiTraverser::class)
             ->setConstructorArgs([$this->httpClient])
@@ -119,7 +119,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->apiResponses->iAmReadyToRespondWithAResource($nextResource);
+        $this->apiResponses->resource($nextResource);
 
         $this->api = $this->getMockBuilder(ApiTraverser::class)
             ->setConstructorArgs([$this->httpClient])
@@ -142,7 +142,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $firstResource = $this->getResource();
 
         $nextResource = ['status' => 'ok'];
-        $this->apiResponses->iAmReadyToRespondWithAResource($nextResource);
+        $this->apiResponses->resource($nextResource);
 
         $this->api = $this->getMockBuilder(ApiTraverser::class)
             ->setConstructorArgs([$this->httpClient])

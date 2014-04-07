@@ -170,7 +170,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $this->apiResponses->iAmReadyToRespondWithAResource($collection);
+        $this->apiResponses->resource($collection);
 
         $response = $this->api->get('url placeholder');
 
@@ -190,7 +190,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->apiResponses->iAmReadyToRespondWithAResource($user);
+        $this->apiResponses->resource($user);
 
         $response = $this->api->getUser();
 
@@ -210,7 +210,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->apiResponses->iAmReadyToRespondWithAResource($projects);
+        $this->apiResponses->resource($projects);
 
         $response = $this->api->getProjects();
 
@@ -230,7 +230,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->apiResponses->iAmReadyToRespondWithAResource($projects);
+        $this->apiResponses->resource($projects);
 
         $queryParams = ['foo' => 'bar'];
 
@@ -255,7 +255,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->apiResponses->iAmReadyToRespondWithAResource($collection);
+        $this->apiResponses->resource($collection);
 
         $response = $this->api->get('citations');
 
@@ -267,8 +267,8 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
     {
         $accessToken = 'ABC123';
 
-        $this->apiResponses->iHaveRegisteredWithAJwtSession($accessToken, $this->resourceHttpClient);
-        $this->apiResponses->iAmReadyToRespondWithAResource();
+        $this->apiResponses->registerWithJwtSession($accessToken, $this->resourceHttpClient);
+        $this->apiResponses->resource();
 
         $this->api->get('url placeholder');
 
@@ -280,8 +280,8 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $accessToken = 'ABC123';
         $params = ['filter' => 'XYZ'];
 
-        $this->apiResponses->iHaveRegisteredWithAJwtSession($accessToken, $this->resourceHttpClient);
-        $this->apiResponses->iAmReadyToRespondWithAResource();
+        $this->apiResponses->registerWithJwtSession($accessToken, $this->resourceHttpClient);
+        $this->apiResponses->resource();
 
         $this->api->get('url placeholder', $params);
 
@@ -292,8 +292,8 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
     {
         $accessToken = 'ABC123';
 
-        $this->apiResponses->iHaveRegisteredWithAnAuthCodeSession($accessToken, $this->resourceHttpClient);
-        $this->apiResponses->iAmReadyToRespondWithAResource();
+        $this->apiResponses->registerWithAuthCodeSession($accessToken, $this->resourceHttpClient);
+        $this->apiResponses->resource();
 
         $this->api->get('url placeholder');
 
@@ -302,7 +302,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
     public function testGetWithExpiredToken()
     {
-        $this->apiResponses->iAmReadyToRespondWithAnExpiredTokenError();
+        $this->apiResponses->expiredTokenError();
 
         $this->setExpectedException(ExpiredTokenException::class);
 
@@ -311,7 +311,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
     public function testGetWithUnauthorizedProject()
     {
-        $this->apiResponses->iAmReadyToRespondWithAnUnauthorizedTokenError();
+        $this->apiResponses->unauthorizedTokenError();
 
         $this->setExpectedException(
             UnauthorizedActionException::class,
@@ -323,7 +323,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
     public function testGetWithInvalidJson()
     {
-        $this->apiResponses->iAmReadyToRespondWithInvalidJson();
+        $this->apiResponses->invalidJson();
 
         $this->setExpectedException(InvalidJsonException::class);
 
@@ -332,7 +332,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
     public function testGetWithInfrastructureError()
     {
-        $this->apiResponses->iAmReadyToRespondWithAnInfrastructureError(504);
+        $this->apiResponses->infrastructureError(504);
 
         $this->setExpectedException(InfrastructureErrorException::class, 504);
 
@@ -346,7 +346,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             'msg' => 'Not Found',
         ];
 
-        $this->apiResponses->iAmReadyToRespondWithAnApiError($response, 404);
+        $this->apiResponses->apiError($response, 404);
 
         $this->setExpectedException(
             ResourceNotFoundException::class,
@@ -364,7 +364,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             'error_description' => 'You done messed up good.',
         ];
 
-        $this->apiResponses->iAmReadyToRespondWithAnApiError($response);
+        $this->apiResponses->apiError($response);
 
         $this->setExpectedException(
             ApiErrorException::class,
@@ -379,7 +379,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
     {
         $message = 'What you done now?';
 
-        $this->apiResponses->iAmReadyToRespondWithAnApiMsg($message);
+        $this->apiResponses->apiMsg($message);
 
         $this->setExpectedException(
             ApiErrorException::class,
@@ -396,7 +396,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             'foo' => 'bar',
         ];
 
-        $this->apiResponses->iAmReadyToRespondWithAnApiError($response);
+        $this->apiResponses->apiError($response);
 
         $this->setExpectedException(
             ApiException::class,
@@ -414,7 +414,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
      */
     public function testPost(array $citation, array $expectedResponseResource)
     {
-        $this->apiResponses->iAmReadyToRespondWithAResource($expectedResponseResource);
+        $this->apiResponses->resource($expectedResponseResource);
 
         $response = $this->api->post('/projects/123/citations', $citation);
 
@@ -429,7 +429,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
      */
     public function testPut(array $citation, array $expectedResponseResource)
     {
-        $this->apiResponses->iAmReadyToRespondWithAResource($expectedResponseResource);
+        $this->apiResponses->resource($expectedResponseResource);
 
         $response = $this->api->put('/projects/123/citations/456', $citation);
 
@@ -443,7 +443,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             'data' => [],
         ];
 
-        $this->apiResponses->iAmReadyToRespondWithAResource();
+        $this->apiResponses->resource();
 
         $response = $this->api->delete('/projects/123/citations/456');
 
@@ -460,7 +460,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $this->apiResponses->iAmReadyToRespondWithAResource($project);
+        $this->apiResponses->resource($project);
 
         $resourcePatch = [
             'href' => 'http://foo.example.com/user/456',
@@ -487,7 +487,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $cache = new ArrayCache();
         $this->api->setCache($cache);
 
-        $this->apiResponses->iAmReadyToRespondWithAResource();
+        $this->apiResponses->resource();
 
         $url = '/';
         $arguments = ['jim' => 'bob'];
@@ -507,8 +507,8 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $cache = new ArrayCache();
         $this->api->setCache($cache);
 
-        $this->apiResponses->iAmReadyToRespondWithAResource();
-        $this->apiResponses->iAmReadyToRespondWithAResource();
+        $this->apiResponses->resource();
+        $this->apiResponses->resource();
 
         $url = '/';
         $arguments = ['jim' => 'bob'];

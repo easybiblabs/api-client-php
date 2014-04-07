@@ -119,7 +119,7 @@ class ApiBuilderTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $this->prepareTokenResponse();
-        $this->apiResponses->iAmReadyToRespondWithAResource(
+        $this->apiResponses->resource(
             ['data' => ['foo' => 'bar']]
         );
 
@@ -139,5 +139,4 @@ class ApiBuilderTest extends \PHPUnit_Framework_TestCase
 
         $this->oauthMockResponses->addResponse($response);
     }
-
 }
