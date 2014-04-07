@@ -5,9 +5,6 @@ namespace EasyBib\Api\Client\Resource;
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Validation\ResourceNotFoundException;
 
-/**
- * @SuppressWarnings(PHPMD.TooManyMethods)
- */
 class Resource
 {
     /**
@@ -112,53 +109,6 @@ class Resource
     public function delete($rel)
     {
         $this->requestRelation('delete', $rel);
-    }
-
-    /**
-     * @deprecated
-     * @return Relation[]
-     */
-    public function getRelations()
-    {
-        return $this->relationsContainer->getAll();
-    }
-
-    /**
-     * @deprecated
-     * @param string $rel
-     * @return Resource
-     */
-    public function findRelation($rel)
-    {
-        return $this->relationsContainer->get($rel);
-    }
-
-    /**
-     * @deprecated
-     * @return string[]
-     */
-    public function listRelations()
-    {
-        return $this->relationsContainer->listAll();
-    }
-
-    /**
-     * @deprecated
-     * @param \stdClass $data
-     */
-    public function addRelation(\stdClass $data)
-    {
-        return $this->relationsContainer->add($data);
-    }
-
-    /**
-     * @deprecated
-     * @param string $rel
-     * @return bool
-     */
-    public function hasRelation($rel)
-    {
-        return $this->relationsContainer->contains($rel);
     }
 
     /**
