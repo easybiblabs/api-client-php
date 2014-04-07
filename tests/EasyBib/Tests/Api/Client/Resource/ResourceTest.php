@@ -3,9 +3,8 @@
 namespace EasyBib\Tests\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiTraverser;
-use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Resource;
-use EasyBib\Api\Client\Resource\ResourceErrorException;
+use EasyBib\Api\Client\Resource\ResourceFactory;
 use EasyBib\Api\Client\Validation\ResourceNotFoundException;
 use EasyBib\Tests\Api\Client\ApiMockResponses;
 use Guzzle\Http\Client;
@@ -226,7 +225,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetId(\stdClass $data, $expectedValue)
     {
-        $resource = Resource::factory($data, $this->api);
+        $resource = (new ResourceFactory($this->api))->fromData($data);
         $this->assertSame($expectedValue, $resource->getId());
     }
 
@@ -261,49 +260,6 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['data' => ['foo' => 'bar']], $resource->toArray());
     }
 
-    public function testFactory()
-    {
-        $listData = json_decode(json_encode([
-            'data' => [
-                [
-                    'foo' => 'bar',
-                ],
-            ],
-            'links' => [],
-        ]));
-
-        $hashData = json_decode(json_encode([
-            'data' => [
-                'foo' => 'bar',
-            ],
-            'links' => [],
-        ]));
-
-        // used with responses to DELETE requests
-        $noData = (object) ['links' => []];
-
-        $this->assertInstanceOf(Collection::class, $this->getResource($listData));
-        $this->assertNotInstanceOf(Collection::class, $this->getResource($hashData));
-        $this->assertNotInstanceOf(Collection::class, $this->getResource($noData));
-    }
-
-    public function testFactoryWithError()
-    {
-        $message = 'somn done messed up';
-
-        $data = (object) [
-            'status' => 'error',
-            'message' => $message,
-        ];
-
-        $this->setExpectedException(
-            ResourceErrorException::class,
-            $message
-        );
-
-        Resource::factory($data, $this->api);
-    }
-
     private function getResource(\stdClass $data = null)
     {
         if (!$data) {
@@ -320,7 +276,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ];
         }
 
-        return Resource::factory($data, $this->api);
+        return (new ResourceFactory($this->api))->fromData($data);
     }
 
     /**
@@ -348,6 +304,6 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $response->setBody($body);
         $response->setHeaders($headers);
 
-        return Resource::fromResponse($response, $this->api);
+        return (new ResourceFactory($this->api))->fromResponse($response);
     }
 }

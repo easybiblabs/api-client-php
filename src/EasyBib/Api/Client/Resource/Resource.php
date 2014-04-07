@@ -4,15 +4,12 @@ namespace EasyBib\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Validation\ResourceNotFoundException;
-use Guzzle\Http\Message\Response;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyMethods)
  */
 class Resource
 {
-    const STATUS_ERROR = 'error';
-
     /**
      * @var \stdClass
      */
@@ -199,57 +196,6 @@ class Resource
     public function toArray()
     {
         return json_decode(json_encode($this->rawData), true);
-    }
-
-    /**
-     * Whether the data contained is an indexed array, as opposed to key-value
-     * pairs, a.k.a. associative array. This mirrors an ambiguity in the API
-     * payloads. The `data` section can contain either a set of key-value
-     * pairs, *or* an array of "child" items.
-     *
-     * @param \stdClass $data
-     * @return bool
-     */
-    public static function isList(\stdClass $data)
-    {
-        return isset($data->data) && is_array($data->data);
-    }
-
-    /**
-     * @param Response $response
-     * @param ApiTraverser $apiTraverser
-     * @return Resource
-     */
-    public static function fromResponse(Response $response, ApiTraverser $apiTraverser)
-    {
-        $data = json_decode($response->getBody(true));
-        $resource = self::factory($data, $apiTraverser);
-
-        if ($locationHeaders = $response->getHeader('Location')) {
-            $resource->setLocation($locationHeaders->toArray()[0]);
-        }
-
-        return $resource;
-    }
-
-    /**
-     * @param \stdClass $data
-     * @param ApiTraverser $apiTraverser
-     * @throws ResourceErrorException
-     * @return Resource
-     */
-    public static function factory(\stdClass $data, ApiTraverser $apiTraverser)
-    {
-        if (isset($data->status) && $data->status == self::STATUS_ERROR) {
-            $message = isset($data->message) ? $data->message : 'Unspecified resource error';
-            throw new ResourceErrorException($message);
-        }
-
-        if (self::isList($data)) {
-            return new Collection($data, $apiTraverser);
-        }
-
-        return new Resource($data, $apiTraverser);
     }
 
     /**

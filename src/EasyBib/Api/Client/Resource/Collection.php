@@ -31,7 +31,7 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
 
         $filtered = array_filter(array_map(function ($resourceData) {
             try {
-                return Resource::factory($resourceData, $this->getApiTraverser());
+                return (new ResourceFactory($this->getApiTraverser()))->fromData($resourceData);
             } catch (ResourceErrorException $e) {
                 return null;
             }
@@ -57,7 +57,7 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
     {
         $childData = $this->getData()[$offset];
 
-        return Resource::factory($childData, $this->getApiTraverser());
+        return (new ResourceFactory($this->getApiTraverser()))->fromData($childData);
     }
 
     /**
@@ -128,7 +128,7 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
 
         return array_reduce($this->rawData->data, function ($carry, $resourceData) {
             try {
-                Resource::factory($resourceData, $this->getApiTraverser());
+                (new ResourceFactory($this->getApiTraverser()))->fromData($resourceData);
                 return $carry;
             } catch (ResourceErrorException $e) {
                 return true;

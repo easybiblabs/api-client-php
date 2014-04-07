@@ -5,6 +5,7 @@ namespace EasyBib\Tests\Api\Client\Resource;
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Resource;
+use EasyBib\Api\Client\Resource\ResourceFactory;
 use Guzzle\Http\Client;
 
 class CollectionTest extends \PHPUnit_Framework_TestCase
@@ -146,9 +147,9 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
      */
     private function getCollection(array $rawData = [])
     {
-        $apiTraverser = new ApiTraverser(new Client());
         $data = json_decode(json_encode($rawData));
+        $apiTraverser = new ApiTraverser(new Client());
 
-        return Resource::factory($data, $apiTraverser);
+        return (new ResourceFactory($apiTraverser))->fromData($data);
     }
 }
