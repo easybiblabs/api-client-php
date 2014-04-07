@@ -8,6 +8,7 @@ use EasyBib\OAuth2\Client\TokenStore;
 use EasyBib\Tests\Mocks\OAuth2\Client\ExceptionMockRedirector;
 use EasyBib\Tests\Mocks\OAuth2\Client\MockRedirectException;
 use Guzzle\Http\Client;
+use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\History\HistoryPlugin;
 use Guzzle\Plugin\Mock\MockPlugin;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -16,9 +17,9 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 class ApiBuilderTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Given
+     * @var ApiMockResponses
      */
-    protected $given;
+    protected $apiResponses;
 
     /**
      * @var string
@@ -74,13 +75,12 @@ class ApiBuilderTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->given = new Given();
-
         $this->apiHttpClient = new Client($this->dataBaseUrl);
         $this->apiMockResponses = new MockPlugin();
         $this->history = new HistoryPlugin();
         $this->apiHttpClient->addSubscriber($this->apiMockResponses);
         $this->apiHttpClient->addSubscriber($this->history);
+        $this->apiResponses = new ApiMockResponses($this->apiMockResponses);
 
         $this->oauthMockResponses = new MockPlugin();
 
@@ -118,12 +118,26 @@ class ApiBuilderTest extends \PHPUnit_Framework_TestCase
             'user_id' => 'user_456',
         ]);
 
-        $this->given->iAmReadyToRespondWithAToken($this->oauthMockResponses);
-        $this->given->iAmReadyToRespondWithAResource(
-            $this->apiMockResponses,
+        $this->prepareTokenResponse();
+        $this->apiResponses->iAmReadyToRespondWithAResource(
             ['data' => ['foo' => 'bar']]
         );
 
         $this->assertInstanceOf(Resource::class, $api->getUser());
     }
+
+    private function prepareTokenResponse()
+    {
+        $response = new Response(
+            200,
+            [],
+            json_encode([
+                'access_token' => 'token_ABC123',
+                'token_type' => 'bearer',
+            ])
+        );
+
+        $this->oauthMockResponses->addResponse($response);
+    }
+
 }

@@ -7,7 +7,7 @@ use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Api\Client\Resource\ResourceErrorException;
 use EasyBib\Api\Client\Validation\ResourceNotFoundException;
-use EasyBib\Tests\Api\Client\Given;
+use EasyBib\Tests\Api\Client\ApiMockResponses;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\History\HistoryPlugin;
@@ -16,9 +16,9 @@ use Guzzle\Plugin\Mock\MockPlugin;
 class ResourceTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Given
+     * @var ApiMockResponses
      */
-    private $given;
+    private $apiResponses;
 
     /**
      * @var HistoryPlugin
@@ -42,8 +42,6 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->given = new Given();
-
         $this->history = new HistoryPlugin();
         $this->mockResponses = new MockPlugin();
 
@@ -52,6 +50,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->httpClient->addSubscriber($this->mockResponses);
 
         $this->api = new ApiTraverser($this->httpClient);
+        $this->apiResponses = new ApiMockResponses($this->mockResponses);
     }
 
     public function testGet()
@@ -64,7 +63,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $nextResource);
+        $this->apiResponses->iAmReadyToRespondWithAResource($nextResource);
 
         $this->api = $this->getMockBuilder(ApiTraverser::class)
             ->setConstructorArgs([$this->httpClient])
@@ -92,7 +91,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $nextResource);
+        $this->apiResponses->iAmReadyToRespondWithAResource($nextResource);
 
         $this->api = $this->getMockBuilder(ApiTraverser::class)
             ->setConstructorArgs([$this->httpClient])
@@ -120,7 +119,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $nextResource);
+        $this->apiResponses->iAmReadyToRespondWithAResource($nextResource);
 
         $this->api = $this->getMockBuilder(ApiTraverser::class)
             ->setConstructorArgs([$this->httpClient])
@@ -143,7 +142,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $firstResource = $this->getResource();
 
         $nextResource = ['status' => 'ok'];
-        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $nextResource);
+        $this->apiResponses->iAmReadyToRespondWithAResource($nextResource);
 
         $this->api = $this->getMockBuilder(ApiTraverser::class)
             ->setConstructorArgs([$this->httpClient])
