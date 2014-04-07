@@ -63,7 +63,7 @@ class ApiMockResponses
         );
     }
 
-    public function unauthorizedTokenError()
+    public function prepareUnauthorizedTokenError()
     {
         $body = json_encode([
             'msg' => 'The project you requested is not valid for this token.',
@@ -74,7 +74,7 @@ class ApiMockResponses
         );
     }
 
-    public function invalidJson()
+    public function prepareInvalidJson()
     {
         $body = 'blah';
 
@@ -87,7 +87,7 @@ class ApiMockResponses
      * @param array $error
      * @param int $code
      */
-    public function apiError(array $error, $code = 400)
+    public function prepareApiError(array $error, $code = 400)
     {
         $body = json_encode($error);
 
@@ -99,7 +99,7 @@ class ApiMockResponses
     /**
      * @param int $code
      */
-    public function infrastructureError($code)
+    public function prepareInfrastructureError($code)
     {
         $headers = ['Content-Type' => 'text/html'];
         $body = '<html><head></head><body>Some error</body></html>';
@@ -112,7 +112,7 @@ class ApiMockResponses
     /**
      * @param string $message
      */
-    public function apiMsg($message)
+    public function prepareApiMsg($message)
     {
         $body = json_encode(['msg' => $message]);
 

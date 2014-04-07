@@ -311,7 +311,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
     public function testGetWithUnauthorizedProject()
     {
-        $this->apiResponses->unauthorizedTokenError();
+        $this->apiResponses->prepareUnauthorizedTokenError();
 
         $this->setExpectedException(
             UnauthorizedActionException::class,
@@ -323,7 +323,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
     public function testGetWithInvalidJson()
     {
-        $this->apiResponses->invalidJson();
+        $this->apiResponses->prepareInvalidJson();
 
         $this->setExpectedException(InvalidJsonException::class);
 
@@ -332,7 +332,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
     public function testGetWithInfrastructureError()
     {
-        $this->apiResponses->infrastructureError(504);
+        $this->apiResponses->prepareInfrastructureError(504);
 
         $this->setExpectedException(InfrastructureErrorException::class, 504);
 
@@ -346,7 +346,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             'msg' => 'Not Found',
         ];
 
-        $this->apiResponses->apiError($response, 404);
+        $this->apiResponses->prepareApiError($response, 404);
 
         $this->setExpectedException(
             ResourceNotFoundException::class,
@@ -364,7 +364,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             'error_description' => 'You done messed up good.',
         ];
 
-        $this->apiResponses->apiError($response);
+        $this->apiResponses->prepareApiError($response);
 
         $this->setExpectedException(
             ApiErrorException::class,
@@ -379,7 +379,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
     {
         $message = 'What you done now?';
 
-        $this->apiResponses->apiMsg($message);
+        $this->apiResponses->prepareApiMsg($message);
 
         $this->setExpectedException(
             ApiErrorException::class,
@@ -396,7 +396,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             'foo' => 'bar',
         ];
 
-        $this->apiResponses->apiError($response);
+        $this->apiResponses->prepareApiError($response);
 
         $this->setExpectedException(
             ApiException::class,
