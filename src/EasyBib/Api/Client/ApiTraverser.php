@@ -50,7 +50,7 @@ class ApiTraverser
             $request = $this->httpClient->get($url);
             $request->getQuery()->replace($queryParams);
 
-            return (new ResourceFactory($this))->fromResponse($this->send($request));
+            return $this->getResourceFactory()->fromResponse($this->send($request));
         }, new CacheKey([$url, $queryParams]));
     }
 
@@ -96,7 +96,7 @@ class ApiTraverser
         $this->cache->clear();
         $request = $this->httpClient->delete($url);
 
-        return (new ResourceFactory($this))->fromResponse($this->send($request));
+        return $this->getResourceFactory()->fromResponse($this->send($request));
     }
 
     /**
@@ -169,6 +169,14 @@ class ApiTraverser
         $payload = json_encode($resource);
         $request = $this->httpClient->$method($url, [], $payload);
 
-        return (new ResourceFactory($this))->fromResponse($this->send($request));
+        return $this->getResourceFactory()->fromResponse($this->send($request));
+    }
+
+    /**
+     * @return ResourceFactory
+     */
+    private function getResourceFactory()
+    {
+        return new ResourceFactory($this);
     }
 }

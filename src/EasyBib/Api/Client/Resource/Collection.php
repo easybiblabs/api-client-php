@@ -31,7 +31,7 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
 
         $filtered = array_filter(array_map(function ($resourceData) {
             try {
-                return (new ResourceFactory($this->getApiTraverser()))->fromData($resourceData);
+                return $this->getResourceFactory()->fromData($resourceData);
             } catch (ResourceErrorException $e) {
                 return null;
             }
@@ -56,8 +56,7 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
     public function offsetGet($offset)
     {
         $childData = $this->getData()[$offset];
-
-        return (new ResourceFactory($this->getApiTraverser()))->fromData($childData);
+        return $this->getResourceFactory()->fromData($childData);
     }
 
     /**
@@ -128,7 +127,7 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
 
         return array_reduce($this->rawData->data, function ($carry, $resourceData) {
             try {
-                (new ResourceFactory($this->getApiTraverser()))->fromData($resourceData);
+                $this->getResourceFactory()->fromData($resourceData);
                 return $carry;
             } catch (ResourceErrorException $e) {
                 return true;
@@ -149,5 +148,13 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
         }
 
         return $output;
+    }
+
+    /**
+     * @return ResourceFactory
+     */
+    private function getResourceFactory()
+    {
+        return new ResourceFactory($this->getApiTraverser());
     }
 }

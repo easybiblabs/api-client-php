@@ -148,8 +148,8 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     private function getCollection(array $rawData = [])
     {
         $data = json_decode(json_encode($rawData));
-        $apiTraverser = new ApiTraverser(new Client());
+        $resourceFactory = new ResourceFactory(new ApiTraverser(new Client()));
 
-        return (new ResourceFactory($apiTraverser))->fromData($data);
+        return $resourceFactory->fromData($data);
     }
 }
