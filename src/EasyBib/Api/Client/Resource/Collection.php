@@ -35,14 +35,7 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
         $this->rawData = $rawData;
         $this->resourceFactory = new ResourceFactory($apiTraverser);
 
-        $filtered = array_filter(array_map(function ($resourceData) {
-            try {
-                return $this->resourceFactory->createFromData($resourceData);
-            } catch (ResourceErrorException $e) {
-                return null;
-            }
-        }, $rawData->data));
-
+        $filtered = array_filter(array_map([$this, 'resourceOrNull'], $rawData->data));
         $this->iterator = new \ArrayIterator($filtered);
     }
 
@@ -125,25 +118,6 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
     }
 
     /**
-     * @deprecated It seems like this was added to support functionality that
-     *             is no longer used
-     * @return bool
-     */
-    public function hasResourceError()
-    {
-        $initial = false;
-
-        return array_reduce($this->rawData->data, function ($carry, $resourceData) {
-            try {
-                $this->resourceFactory->createFromData($resourceData);
-                return $carry;
-            } catch (ResourceErrorException $e) {
-                return true;
-            }
-        }, $initial);
-    }
-
-    /**
      * @param callable $callback
      * @return array
      */
@@ -156,5 +130,19 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
         }
 
         return $output;
+    }
+
+    /**
+     * @param \stdClass $resourceData
+     * @return Resource
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+     */
+    private function resourceOrNull(\stdClass $resourceData)
+    {
+        try {
+            return $this->resourceFactory->createFromData($resourceData);
+        } catch (ResourceErrorException $e) {
+            return null;
+        }
     }
 }

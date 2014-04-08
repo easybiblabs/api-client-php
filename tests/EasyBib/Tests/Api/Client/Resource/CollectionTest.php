@@ -125,7 +125,6 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         });
 
         $this->assertInstanceOf(Collection::class, $collection);
-        $this->assertTrue($collection->hasResourceError());
         $this->assertCount(1, $collection);
     }
 
@@ -136,9 +135,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     public function testNotHavingResourceError(array $data)
     {
         $collection = $this->getCollection($data);
-
         $this->assertInstanceOf(Collection::class, $collection);
-        $this->assertFalse($collection->hasResourceError());
     }
 
     /**
