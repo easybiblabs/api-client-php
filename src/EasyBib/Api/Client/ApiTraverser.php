@@ -5,6 +5,7 @@ namespace EasyBib\Api\Client;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\CacheProvider;
 use EasyBib\Api\Client\Resource\Resource;
+use EasyBib\Api\Client\Resource\ResourceFactory;
 use EasyBib\Api\Client\Validation\ResponseValidator;
 use EasyBib\Guzzle\Plugin\RequestHeader;
 use Guzzle\Http\ClientInterface;
@@ -24,6 +25,11 @@ class ApiTraverser
     private $cache;
 
     /**
+     * @var ResourceFactory
+     */
+    private $resourceFactory;
+
+    /**
      * @param ClientInterface $httpClient
      */
     public function __construct(ClientInterface $httpClient)
@@ -36,6 +42,7 @@ class ApiTraverser
         );
 
         $this->cache = new Cache(new ArrayCache());
+        $this->resourceFactory = new ResourceFactory($this);
     }
 
     /**
@@ -49,7 +56,7 @@ class ApiTraverser
             $request = $this->httpClient->get($url);
             $request->getQuery()->replace($queryParams);
 
-            return Resource::fromResponse($this->send($request), $this);
+            return $this->resourceFactory->createFromResponse($this->send($request));
         }, new CacheKey([$url, $queryParams]));
     }
 
@@ -95,7 +102,7 @@ class ApiTraverser
         $this->cache->clear();
         $request = $this->httpClient->delete($url);
 
-        return Resource::fromResponse($this->send($request), $this);
+        return $this->resourceFactory->createFromResponse($this->send($request));
     }
 
     /**
@@ -168,6 +175,6 @@ class ApiTraverser
         $payload = json_encode($resource);
         $request = $this->httpClient->$method($url, [], $payload);
 
-        return Resource::fromResponse($this->send($request), $this);
+        return $this->resourceFactory->createFromResponse($this->send($request));
     }
 }

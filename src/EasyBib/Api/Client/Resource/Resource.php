@@ -4,15 +4,9 @@ namespace EasyBib\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Validation\ResourceNotFoundException;
-use Guzzle\Http\Message\Response;
 
-/**
- * @SuppressWarnings(PHPMD.TooManyMethods)
- */
 class Resource
 {
-    const STATUS_ERROR = 'error';
-
     /**
      * @var \stdClass
      */
@@ -53,11 +47,11 @@ class Resource
     }
 
     /**
-     * @return RelationsContainer
+     * @return array
      */
-    public function getRelationsContainer()
+    public function toArray()
     {
-        return $this->relationsContainer;
+        return json_decode(json_encode($this->rawData), true);
     }
 
     /**
@@ -81,11 +75,36 @@ class Resource
     }
 
     /**
-     * @return ApiTraverser
+     * @return string
      */
-    public function getApiTraverser()
+    public function getLocation()
     {
-        return $this->apiTraverser;
+        return $this->location;
+    }
+
+    /**
+     * This is a customized location for a resource. In practice it is passed
+     * from the EasyBib API in a Location header. The only current use case
+     * is for the location of created documents on a remote filestore.
+     *
+     * @param string $location
+     * @throws \InvalidArgumentException
+     */
+    public function setLocation($location)
+    {
+        if (!is_string($location)) {
+            throw new \InvalidArgumentException('Location must be a string');
+        }
+
+        $this->location = $location;
+    }
+
+    /**
+     * @return RelationsContainer
+     */
+    public function getRelationsContainer()
+    {
+        return $this->relationsContainer;
     }
 
     /**
@@ -118,130 +137,11 @@ class Resource
     }
 
     /**
-     * @deprecated
-     * @return Relation[]
-     */
-    public function getRelations()
-    {
-        return $this->relationsContainer->getAll();
-    }
-
-    /**
-     * @deprecated
      * @param string $rel
-     * @return Resource
      */
-    public function findRelation($rel)
+    public function delete($rel)
     {
-        return $this->relationsContainer->get($rel);
-    }
-
-    /**
-     * @deprecated
-     * @return string[]
-     */
-    public function listRelations()
-    {
-        return $this->relationsContainer->listAll();
-    }
-
-    /**
-     * @deprecated
-     * @param \stdClass $data
-     */
-    public function addRelation(\stdClass $data)
-    {
-        return $this->relationsContainer->add($data);
-    }
-
-    /**
-     * @deprecated
-     * @param string $rel
-     * @return bool
-     */
-    public function hasRelation($rel)
-    {
-        return $this->relationsContainer->contains($rel);
-    }
-
-    /**
-     * @return string
-     */
-    public function getLocation()
-    {
-        return $this->location;
-    }
-
-    /**
-     * @param string $location
-     * @throws \InvalidArgumentException
-     */
-    public function setLocation($location)
-    {
-        if (!is_string($location)) {
-            throw new \InvalidArgumentException('Location must be a string');
-        }
-
-        $this->location = $location;
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        return json_decode(json_encode($this->rawData), true);
-    }
-
-    /**
-     * Whether the data contained is an indexed array, as opposed to key-value
-     * pairs, a.k.a. associative array. This mirrors an ambiguity in the API
-     * payloads. The `data` section can contain either a set of key-value
-     * pairs, *or* an array of "child" items.
-     *
-     * @param \stdClass $data
-     * @return bool
-     */
-    public static function isList(\stdClass $data)
-    {
-        return isset($data->data) && is_array($data->data);
-    }
-
-    /**
-     * @param Response $response
-     * @param ApiTraverser $apiTraverser
-     * @return Resource
-     */
-    public static function fromResponse(Response $response, ApiTraverser $apiTraverser)
-    {
-        $data = json_decode($response->getBody(true));
-        $resource = self::factory($data, $apiTraverser);
-
-        if ($locationHeaders = $response->getHeader('Location')) {
-            $resource->setLocation($locationHeaders->toArray()[0]);
-        }
-
-        return $resource;
-    }
-
-    /**
-     * @param \stdClass $data
-     * @param ApiTraverser $apiTraverser
-     * @throws ResourceErrorException
-     * @return Resource
-     */
-    public static function factory(\stdClass $data, ApiTraverser $apiTraverser)
-    {
-        if (isset($data->status) && $data->status == self::STATUS_ERROR) {
-            $message = isset($data->message) ? $data->message : 'Unspecified resource error';
-            throw new ResourceErrorException($message);
-        }
-
-        if (self::isList($data)) {
-            return new Collection($data, $apiTraverser);
-        }
-
-        return new Resource($data, $apiTraverser);
+        $this->requestRelation('delete', $rel);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace EasyBib\Tests\Api\Client\Resource;
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Resource;
+use EasyBib\Api\Client\Resource\ResourceFactory;
 use Guzzle\Http\Client;
 
 class CollectionTest extends \PHPUnit_Framework_TestCase
@@ -124,7 +125,6 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         });
 
         $this->assertInstanceOf(Collection::class, $collection);
-        $this->assertTrue($collection->hasResourceError());
         $this->assertCount(1, $collection);
     }
 
@@ -135,9 +135,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     public function testNotHavingResourceError(array $data)
     {
         $collection = $this->getCollection($data);
-
         $this->assertInstanceOf(Collection::class, $collection);
-        $this->assertFalse($collection->hasResourceError());
     }
 
     /**
@@ -146,9 +144,9 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
      */
     private function getCollection(array $rawData = [])
     {
-        $apiTraverser = new ApiTraverser(new Client());
         $data = json_decode(json_encode($rawData));
+        $resourceFactory = new ResourceFactory(new ApiTraverser(new Client()));
 
-        return Resource::factory($data, $apiTraverser);
+        return $resourceFactory->createFromData($data);
     }
 }

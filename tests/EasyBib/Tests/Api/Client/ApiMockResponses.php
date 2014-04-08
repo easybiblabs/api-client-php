@@ -22,122 +22,101 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class Given
+class ApiMockResponses
 {
+    private $mocks;
+
     /**
-     * @param MockPlugin $mockResponses
+     * @param MockPlugin $mocks
+     */
+    public function __construct(MockPlugin $mocks)
+    {
+        $this->mocks = $mocks;
+    }
+
+    /**
      * @param array $resource An array representing the resource to return. Uses
      *     an empty resource by default.
      * @return array
      */
-    public function iAmReadyToRespondWithAResource(
-        MockPlugin $mockResponses,
+    public function prepareResource(
         array $resource = ['data' => []]
     ) {
         $payload = ['status' => 'ok'] + $resource;
 
-        $mockResponses->addResponse(
+        $this->mocks->addResponse(
             new Response(200, [], json_encode($payload))
         );
 
         return $resource;
     }
 
-    /**
-     * @param MockPlugin $mockResponses
-     */
-    public function iAmReadyToRespondWithAToken(MockPlugin $mockResponses)
-    {
-        $response = new Response(
-            200,
-            [],
-            json_encode([
-                'access_token' => 'token_ABC123',
-                'token_type' => 'bearer',
-            ])
-        );
-
-        $mockResponses->addResponse($response);
-    }
-
-    /**
-     * @param MockPlugin $mockResponses
-     */
-    public function iAmReadyToRespondWithAnExpiredTokenError(MockPlugin $mockResponses)
+    public function prepareExpiredTokenError()
     {
         $body = json_encode([
             'error' => 'invalid_grant',
             'error_description' => 'The access token provided has expired',
         ]);
 
-        $mockResponses->addResponse(
+        $this->mocks->addResponse(
             new Response(400, [], $body)
         );
     }
 
-    /**
-     * @param MockPlugin $mockResponses
-     */
-    public function iAmReadyToRespondWithAnUnauthorizedTokenError(MockPlugin $mockResponses)
+    public function prepareUnauthorizedTokenError()
     {
         $body = json_encode([
             'msg' => 'The project you requested is not valid for this token.',
         ]);
 
-        $mockResponses->addResponse(
+        $this->mocks->addResponse(
             new Response(403, [], $body)
         );
     }
 
-    /**
-     * @param MockPlugin $mockResponses
-     */
-    public function iAmReadyToRespondWithInvalidJson(MockPlugin $mockResponses)
+    public function prepareInvalidJson()
     {
         $body = 'blah';
 
-        $mockResponses->addResponse(
+        $this->mocks->addResponse(
             new Response(200, [], $body)
         );
     }
 
     /**
-     * @param MockPlugin $mockResponses
      * @param array $error
      * @param int $code
      */
-    public function iAmReadyToRespondWithAnApiError(MockPlugin $mockResponses, array $error, $code = 400)
+    public function prepareApiError(array $error, $code = 400)
     {
         $body = json_encode($error);
 
-        $mockResponses->addResponse(
+        $this->mocks->addResponse(
             new Response($code, [], $body)
         );
     }
 
     /**
-     * @param MockPlugin $mockResponses
      * @param int $code
      */
-    public function iAmReadyToRespondWithAnInfrastructureError(MockPlugin $mockResponses, $code)
+    public function prepareInfrastructureError($code)
     {
         $headers = ['Content-Type' => 'text/html'];
         $body = '<html><head></head><body>Some error</body></html>';
 
-        $mockResponses->addResponse(
+        $this->mocks->addResponse(
             new Response($code, $headers, $body)
         );
     }
 
     /**
-     * @param MockPlugin $mockResponses
      * @param string $message
      */
-    public function iAmReadyToRespondWithAnApiMsg(MockPlugin $mockResponses, $message)
+    public function prepareApiMsg($message)
     {
         $body = json_encode(['msg' => $message]);
 
-        $mockResponses->addResponse(
+        $this->mocks->addResponse(
             new Response(400, [], $body)
         );
     }
@@ -146,7 +125,7 @@ class Given
      * @param $accessToken
      * @param ClientInterface $resourceHttpClient
      */
-    public function iHaveRegisteredWithAJwtSession($accessToken, ClientInterface $resourceHttpClient)
+    public function registerWithJwtSession($accessToken, ClientInterface $resourceHttpClient)
     {
         $session = new Session(new MockArraySessionStorage());
         $session->set(TokenStore::KEY_ACCESS_TOKEN, $accessToken);
@@ -181,7 +160,7 @@ class Given
      * @param $accessToken
      * @param ClientInterface $resourceHttpClient
      */
-    public function iHaveRegisteredWithAnAuthCodeSession($accessToken, ClientInterface $resourceHttpClient)
+    public function registerWithAuthCodeSession($accessToken, ClientInterface $resourceHttpClient)
     {
         $session = new Session(new MockArraySessionStorage());
         $session->set(TokenStore::KEY_ACCESS_TOKEN, $accessToken);

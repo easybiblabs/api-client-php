@@ -20,6 +20,11 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
     private $rawData;
 
     /**
+     * @var ResourceFactory
+     */
+    private $resourceFactory;
+
+    /**
      * @param \stdClass $rawData
      * @param ApiTraverser $apiTraverser
      */
@@ -28,15 +33,9 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
         parent::__construct($rawData, $apiTraverser);
 
         $this->rawData = $rawData;
+        $this->resourceFactory = new ResourceFactory($apiTraverser);
 
-        $filtered = array_filter(array_map(function ($resourceData) {
-            try {
-                return Resource::factory($resourceData, $this->getApiTraverser());
-            } catch (ResourceErrorException $e) {
-                return null;
-            }
-        }, $rawData->data));
-
+        $filtered = array_filter(array_map([$this, 'resourceOrNull'], $rawData->data));
         $this->iterator = new \ArrayIterator($filtered);
     }
 
@@ -56,8 +55,7 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
     public function offsetGet($offset)
     {
         $childData = $this->getData()[$offset];
-
-        return Resource::factory($childData, $this->getApiTraverser());
+        return $this->resourceFactory->createFromData($childData);
     }
 
     /**
@@ -120,23 +118,6 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
     }
 
     /**
-     * @return bool
-     */
-    public function hasResourceError()
-    {
-        $initial = false;
-
-        return array_reduce($this->rawData->data, function ($carry, $resourceData) {
-            try {
-                Resource::factory($resourceData, $this->getApiTraverser());
-                return $carry;
-            } catch (ResourceErrorException $e) {
-                return true;
-            }
-        }, $initial);
-    }
-
-    /**
      * @param callable $callback
      * @return array
      */
@@ -149,5 +130,19 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
         }
 
         return $output;
+    }
+
+    /**
+     * @param \stdClass $resourceData
+     * @return Resource
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+     */
+    private function resourceOrNull(\stdClass $resourceData)
+    {
+        try {
+            return $this->resourceFactory->createFromData($resourceData);
+        } catch (ResourceErrorException $e) {
+            return null;
+        }
     }
 }

@@ -3,11 +3,10 @@
 namespace EasyBib\Tests\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiTraverser;
-use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Resource;
-use EasyBib\Api\Client\Resource\ResourceErrorException;
+use EasyBib\Api\Client\Resource\ResourceFactory;
 use EasyBib\Api\Client\Validation\ResourceNotFoundException;
-use EasyBib\Tests\Api\Client\Given;
+use EasyBib\Tests\Api\Client\ApiMockResponses;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\History\HistoryPlugin;
@@ -16,9 +15,9 @@ use Guzzle\Plugin\Mock\MockPlugin;
 class ResourceTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Given
+     * @var ApiMockResponses
      */
-    private $given;
+    private $apiResponses;
 
     /**
      * @var HistoryPlugin
@@ -42,8 +41,6 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->given = new Given();
-
         $this->history = new HistoryPlugin();
         $this->mockResponses = new MockPlugin();
 
@@ -52,9 +49,10 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->httpClient->addSubscriber($this->mockResponses);
 
         $this->api = new ApiTraverser($this->httpClient);
+        $this->apiResponses = new ApiMockResponses($this->mockResponses);
     }
 
-    public function testGet()
+    public function testGetWithGoodRel()
     {
         $firstResource = $this->getResource();
 
@@ -64,25 +62,31 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $nextResource);
-
-        $this->api = $this->getMockBuilder(ApiTraverser::class)
-            ->setConstructorArgs([$this->httpClient])
-            ->getMock();
-
-        $this->api->expects($this->any())
-            ->method('get');
+        $this->apiResponses->prepareResource($nextResource);
 
         $goodLinkedResource = $firstResource->get('foo rel');
 
         $this->assertInstanceOf(Resource::class, $goodLinkedResource);
         $this->assertEquals('bar', $goodLinkedResource->getData()->foo);
+    }
+
+    public function testGetWithBadRel()
+    {
+        $firstResource = $this->getResource();
+
+        $nextResource = [
+            'data' => [
+                'foo' => 'bar',
+            ]
+        ];
+
+        $this->apiResponses->prepareResource($nextResource);
 
         $this->setExpectedException(ResourceNotFoundException::class);
         $firstResource->get('no such rel');
     }
 
-    public function testPost()
+    public function testPostWithGoodRel()
     {
         $firstResource = $this->getResource();
 
@@ -92,25 +96,15 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $nextResource);
-
-        $this->api = $this->getMockBuilder(ApiTraverser::class)
-            ->setConstructorArgs([$this->httpClient])
-            ->getMock();
-
-        $this->api->expects($this->any())
-            ->method('post');
+        $this->apiResponses->prepareResource($nextResource);
 
         $goodLinkedResource = $firstResource->post('foo rel', $nextResource);
 
         $this->assertInstanceOf(Resource::class, $goodLinkedResource);
         $this->assertEquals('bar', $goodLinkedResource->getData()->foo);
-
-        $this->setExpectedException(ResourceNotFoundException::class);
-        $firstResource->post('no such rel', []);
     }
 
-    public function testPut()
+    public function testPostWithBadRel()
     {
         $firstResource = $this->getResource();
 
@@ -120,22 +114,70 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->given->iAmReadyToRespondWithAResource($this->mockResponses, $nextResource);
+        $this->apiResponses->prepareResource($nextResource);
 
-        $this->api = $this->getMockBuilder(ApiTraverser::class)
-            ->setConstructorArgs([$this->httpClient])
-            ->getMock();
+        $this->setExpectedException(ResourceNotFoundException::class);
+        $firstResource->post('no such rel', []);
+    }
 
-        $this->api->expects($this->any())
-            ->method('put');
+    public function testPutWithGoodRel()
+    {
+        $firstResource = $this->getResource();
+
+        $nextResource = [
+            'data' => [
+                'foo' => 'bar',
+            ]
+        ];
+
+        $this->apiResponses->prepareResource($nextResource);
 
         $goodLinkedResource = $firstResource->put('foo rel', $nextResource);
 
         $this->assertInstanceOf(Resource::class, $goodLinkedResource);
         $this->assertEquals('bar', $goodLinkedResource->getData()->foo);
+    }
+
+    public function testPutWithBadRel()
+    {
+        $firstResource = $this->getResource();
+
+        $nextResource = [
+            'data' => [
+                'foo' => 'bar',
+            ]
+        ];
+
+        $this->apiResponses->prepareResource($nextResource);
 
         $this->setExpectedException(ResourceNotFoundException::class);
         $firstResource->put('no such rel', []);
+    }
+
+    public function testDeleteWithGoodRel()
+    {
+        $firstResource = $this->getResource();
+
+        $nextResource = ['status' => 'ok'];
+
+        $this->apiResponses->prepareResource($nextResource);
+
+        $firstResource->delete('foo rel', $nextResource);
+        $lastRequest = $this->history->getLastRequest();
+        $this->assertEquals('DELETE', $lastRequest->getMethod());
+        $this->assertEquals('http://foo/', $lastRequest->getUrl());
+    }
+
+    public function testDeleteWithBadRed()
+    {
+        $firstResource = $this->getResource();
+
+        $nextResource = ['status' => 'ok'];
+
+        $this->apiResponses->prepareResource($nextResource);
+
+        $this->setExpectedException(ResourceNotFoundException::class);
+        $firstResource->delete('no such rel', []);
     }
 
     /**
@@ -183,7 +225,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetId(\stdClass $data, $expectedValue)
     {
-        $resource = Resource::factory($data, $this->api);
+        $resource = $this->getResourceFactory()->createFromData($data);
         $this->assertSame($expectedValue, $resource->getId());
     }
 
@@ -218,49 +260,10 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['data' => ['foo' => 'bar']], $resource->toArray());
     }
 
-    public function testFactory()
-    {
-        $listData = json_decode(json_encode([
-            'data' => [
-                [
-                    'foo' => 'bar',
-                ],
-            ],
-            'links' => [],
-        ]));
-
-        $hashData = json_decode(json_encode([
-            'data' => [
-                'foo' => 'bar',
-            ],
-            'links' => [],
-        ]));
-
-        // used with responses to DELETE requests
-        $noData = (object) ['links' => []];
-
-        $this->assertInstanceOf(Collection::class, $this->getResource($listData));
-        $this->assertNotInstanceOf(Collection::class, $this->getResource($hashData));
-        $this->assertNotInstanceOf(Collection::class, $this->getResource($noData));
-    }
-
-    public function testFactoryWithError()
-    {
-        $message = 'somn done messed up';
-
-        $data = (object) [
-            'status' => 'error',
-            'message' => $message,
-        ];
-
-        $this->setExpectedException(
-            ResourceErrorException::class,
-            $message
-        );
-
-        Resource::factory($data, $this->api);
-    }
-
+    /**
+     * @param \stdClass $data
+     * @return Resource
+     */
     private function getResource(\stdClass $data = null)
     {
         if (!$data) {
@@ -277,7 +280,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
             ];
         }
 
-        return Resource::factory($data, $this->api);
+        return $this->getResourceFactory()->createFromData($data);
     }
 
     /**
@@ -305,6 +308,14 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $response->setBody($body);
         $response->setHeaders($headers);
 
-        return Resource::fromResponse($response, $this->api);
+        return $this->getResourceFactory()->createFromResponse($response);
+    }
+
+    /**
+     * @return ResourceFactory
+     */
+    private function getResourceFactory()
+    {
+        return new ResourceFactory($this->api);
     }
 }
