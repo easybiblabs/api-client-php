@@ -240,6 +240,76 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $this->shouldHaveReturnedACollection($projects, $response);
     }
 
+    public function testGetProject()
+    {
+        $project = [
+            'data' => ['foo' => 'bar'],
+            'links' => [],
+        ];
+
+        $projectId = '123';
+
+        $this->apiResponses->prepareResource($project);
+
+        $response = $this->api->getProject($projectId);
+
+        $lastRequest = $this->history->getLastRequest();
+
+        $this->shouldHaveMadeAnApiRequest('GET');
+        $this->assertEquals($this->api->getProjectsBaseUrl() . $projectId, $lastRequest->getUrl());
+        $this->shouldHaveReturnedAResource($project, $response);
+    }
+
+    public function testPostProject()
+    {
+        $project = [
+            'data' => ['foo' => 'bar'],
+            'links' => [],
+        ];
+
+        $this->apiResponses->prepareResource($project);
+
+        $response = $this->api->postProject($project);
+        $lastRequest = $this->history->getLastRequest();
+
+        $this->shouldHaveMadeAnApiRequest('POST');
+        $this->assertEquals($this->api->getProjectsBaseUrl(), $lastRequest->getUrl());
+        $this->shouldHaveReturnedAResource($project, $response);
+    }
+
+    public function testPostToBulkResolver()
+    {
+        $projects = [
+            'data' => [
+                [
+                    'data' => ['foo' => 'bar'],
+                    'links' =>  [
+                        [
+                            'rel' => 'me',
+                            'href' => 'foo',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $links = [
+            [
+                'href' => 'foo',
+            ],
+        ];
+
+        $this->apiResponses->prepareResource($projects);
+
+        $response = $this->api->postToBulkResolver($links);
+        $lastRequest = $this->history->getLastRequest();
+
+        $this->shouldHaveMadeAnApiRequest('POST');
+        $this->assertEquals($this->dataBaseUrl . '/resolve', $lastRequest->getUrl());
+        $this->assertEquals(json_encode(['links' => $links]), $lastRequest->getBody()->__toString());
+        $this->shouldHaveReturnedACollection($projects, $response);
+    }
+
     public function testGetCitationsReturnsCollection()
     {
         $collection = [

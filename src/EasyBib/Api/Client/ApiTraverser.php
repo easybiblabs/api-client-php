@@ -127,6 +127,34 @@ class ApiTraverser
     }
 
     /**
+     * @param string $projectId 
+     * @return Resource
+     */
+    public function getProject($projectId)
+    {
+        return $this->get($this->getProjectsBaseUrl() . $projectId);
+    }
+
+    /**
+     * @param array $projectData
+     * @return Resource
+     */
+    public function postProject(array $projectData)
+    {
+        return $this->post($this->getProjectsBaseUrl(), $projectData);
+    }
+
+    /**
+     * @param array $links 
+     * @return Collection
+     */
+    public function postToBulkResolver(array $links)
+    {
+        $payload = ['links' => $links];
+        return $this->post($this->httpClient->getBaseUrl() . '/resolve', $payload);
+    }
+
+    /**
      * @return string
      */
     public function getUserBaseUrl()
