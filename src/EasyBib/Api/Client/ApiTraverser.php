@@ -126,6 +126,19 @@ class ApiTraverser
         return $this->get($this->getProjectsBaseUrl(), $queryParams);
     }
 
+    /**
+     * @param string $projectId 
+     * @return Resource
+     */
+    public function getProject($projectId)
+    {
+        return $this->get($this->getProjectsBaseUrl() . $projectId);
+    }
+
+    /**
+     * @param array $projectData
+     * @return Resource
+     */
     public function postProject(array $projectData)
     {
         return $this->post($this->getProjectsBaseUrl(), $projectData);
