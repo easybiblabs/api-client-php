@@ -126,6 +126,11 @@ class ApiTraverser
         return $this->get($this->getProjectsBaseUrl(), $queryParams);
     }
 
+    public function postProject(array $projectData)
+    {
+        return $this->post($this->getProjectsBaseUrl(), $projectData);
+    }
+
     /**
      * @return string
      */
