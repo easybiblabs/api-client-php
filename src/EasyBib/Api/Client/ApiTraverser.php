@@ -145,6 +145,16 @@ class ApiTraverser
     }
 
     /**
+     * @param array $links 
+     * @return Collection
+     */
+    public function postToBulkResolver(array $links)
+    {
+        $payload = ['links' => $links];
+        return $this->post($this->httpClient->getBaseUrl() . '/resolve', $payload);
+    }
+
+    /**
      * @return string
      */
     public function getUserBaseUrl()
