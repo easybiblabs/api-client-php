@@ -2,6 +2,6 @@
 
 namespace EasyBib\Api\Client\Validation;
 
-class ResourceNotFoundException extends \RuntimeException
+class ResourceNotFoundException extends ApiException
 {
 }

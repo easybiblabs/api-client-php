@@ -2,6 +2,6 @@
 
 namespace EasyBib\Api\Client\Validation;
 
-class InfrastructureErrorException extends \RuntimeException
+class InfrastructureErrorException extends ApiException
 {
 }
