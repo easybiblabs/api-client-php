@@ -2,6 +2,6 @@
 
 namespace EasyBib\Api\Client\Validation;
 
-class ApiErrorException extends \RuntimeException
+class ApiErrorException extends ApiException
 {
 }
