@@ -47,7 +47,7 @@ class ResourceFactory
             $resource->setLocation($locationHeaders->toArray()[0]);
         }
         $totalRowsHeaders = $response->getHeader('X-EasyBib-TotalRows');
-        if ($totalRowsHeaders) {
+        if ($totalRowsHeaders && method_exists($resource, 'setTotalRows')) {
             $resource->setTotalRows($totalRowsHeaders->toArray()[0]);
         }
 
