@@ -7,6 +7,7 @@ use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Api\Client\Resource\ResourceFactory;
 use Guzzle\Http\Client;
+use Guzzle\Http\Message\Response;
 
 class CollectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -168,6 +169,26 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $collection = $this->getCollection($this->dataProvider()[0][0]);
         $collection->setTotalRows($totalRows);
         $this->assertSame($totalRows, $collection->getTotalRows());
+    }
+
+    public function testTotalRowsCreatedFromResponse()
+    {
+        $collection = $this->createFromResponseWithHeaders(['X-EasyBib-TotalRows' => 42]);
+        $this->assertSame(42, $collection->getTotalRows());
+
+        $collection = $this->createFromResponseWithHeaders([]);
+        $this->assertSame(false, $collection->getTotalRows());
+    }
+
+    private function createFromResponseWithHeaders($headers)
+    {
+        $data = $this->dataProvider()[0][0];
+        $response = new Response(200);
+        $response->setBody(json_encode($data));
+        $response->setHeaders($headers);
+
+        $resourceFactory = new ResourceFactory(new ApiTraverser(new Client()));
+        return $resourceFactory->createFromResponse($response);
     }
 
     /**
