@@ -18,9 +18,9 @@ class Resource
     private $location;
 
     /**
-     * @var int
+     * @var int|false
      */
-    private $totalRows;
+    private $totalRows = false;
 
     /**
      * @var RelationsContainer
@@ -105,7 +105,7 @@ class Resource
     }
 
     /**
-     * @return int
+     * @return int|false
      */
     public function getTotalRows()
     {
