@@ -7,6 +7,7 @@ use EasyBib\Api\Client\Resource\Collection;
 use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\Api\Client\Resource\ResourceFactory;
 use Guzzle\Http\Client;
+use Guzzle\Http\Message\Response;
 
 class CollectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -136,6 +137,58 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     {
         $collection = $this->getCollection($data);
         $this->assertInstanceOf(Collection::class, $collection);
+    }
+
+    public function invalidTotalRowsProvider()
+    {
+        return [['yes'], [null], [true], [false]];
+    }
+
+    /**
+     * @dataProvider invalidTotalRowsProvider
+     * @param mixed $invalidTotalRows
+     */
+    public function testSetTotalRowsWhereInvalid($invalidTotalRows)
+    {
+        $this->setExpectedException(\InvalidArgumentException::class);
+        $collection = $this->getCollection($this->dataProvider()[0][0]);
+        $collection->setTotalRows($invalidTotalRows);
+    }
+
+    public function totalRowsProvider()
+    {
+        return [['123'], [123], ['0'], [0]];
+    }
+
+    /**
+     * @dataProvider totalRowsProvider
+     * @param mixed $totalRows
+     */
+    public function testSetTotalRows($totalRows)
+    {
+        $collection = $this->getCollection($this->dataProvider()[0][0]);
+        $collection->setTotalRows($totalRows);
+        $this->assertSame($totalRows, $collection->getTotalRows());
+    }
+
+    public function testTotalRowsCreatedFromResponse()
+    {
+        $collection = $this->createFromResponseWithHeaders(['X-EasyBib-TotalRows' => 42]);
+        $this->assertSame(42, $collection->getTotalRows());
+
+        $collection = $this->createFromResponseWithHeaders([]);
+        $this->assertNull($collection->getTotalRows());
+    }
+
+    private function createFromResponseWithHeaders($headers)
+    {
+        $data = $this->dataProvider()[0][0];
+        $response = new Response(200);
+        $response->setBody(json_encode($data));
+        $response->setHeaders($headers);
+
+        $resourceFactory = new ResourceFactory(new ApiTraverser(new Client()));
+        return $resourceFactory->createFromResponse($response);
     }
 
     /**

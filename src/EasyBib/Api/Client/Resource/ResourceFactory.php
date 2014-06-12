@@ -42,8 +42,13 @@ class ResourceFactory
         $data = json_decode($response->getBody(true));
         $resource = $this->createFromData($data, $this->apiTraverser);
 
-        if ($locationHeaders = $response->getHeader('Location')) {
+        $locationHeaders = $response->getHeader('Location');
+        if ($locationHeaders) {
             $resource->setLocation($locationHeaders->toArray()[0]);
+        }
+        $totalRowsHeaders = $response->getHeader('X-EasyBib-TotalRows');
+        if ($totalRowsHeaders && method_exists($resource, 'setTotalRows')) {
+            $resource->setTotalRows($totalRowsHeaders->toArray()[0]);
         }
 
         return $resource;
