@@ -138,6 +138,38 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Collection::class, $collection);
     }
 
+    public function invalidTotalRowsProvider()
+    {
+        return [['yes'], [null], [true], [false]];
+    }
+
+    /**
+     * @dataProvider invalidTotalRowsProvider
+     * @param mixed $invalidTotalRows
+     */
+    public function testSetTotalRowsWhereInvalid($invalidTotalRows)
+    {
+        $this->setExpectedException(\InvalidArgumentException::class);
+        $collection = $this->getCollection($this->dataProvider()[0][0]);
+        $collection->setTotalRows($invalidTotalRows);
+    }
+
+    public function totalRowsProvider()
+    {
+        return [['123'], [123], ['0'], [0]];
+    }
+
+    /**
+     * @dataProvider totalRowsProvider
+     * @param mixed $totalRows
+     */
+    public function testSetTotalRows($totalRows)
+    {
+        $collection = $this->getCollection($this->dataProvider()[0][0]);
+        $collection->setTotalRows($totalRows);
+        $this->assertSame($totalRows, $collection->getTotalRows());
+    }
+
     /**
      * @param array $rawData
      * @return Collection
