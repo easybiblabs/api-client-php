@@ -18,6 +18,11 @@ class Resource
     private $location;
 
     /**
+     * @var int
+     */
+    private $totalRows;
+
+    /**
      * @var RelationsContainer
      */
     private $relationsContainer;
@@ -97,6 +102,21 @@ class Resource
         }
 
         $this->location = $location;
+    }
+
+    /**
+     * Total row count - passed by the EasyBib API in the X-EasyBib-TotalRows header.
+     *
+     * @param int $totalRows
+     * @throws \InvalidArgumentException
+     */
+    public function setTotalRows($totalRows)
+    {
+        if (!is_numeric($totalRows)) {
+            throw new \InvalidArgumentException('Total number of rows must totally be a number');
+        }
+
+        $this->totalRows = $totalRows;
     }
 
     /**
