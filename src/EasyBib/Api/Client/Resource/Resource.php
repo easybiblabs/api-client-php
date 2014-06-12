@@ -105,6 +105,14 @@ class Resource
     }
 
     /**
+     * @return int
+     */
+    public function getTotalRows()
+    {
+        return $this->totalRows;
+    }
+
+    /**
      * Total row count - passed by the EasyBib API in the X-EasyBib-TotalRows header.
      *
      * @param int $totalRows
