@@ -20,9 +20,9 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
     private $rawData;
 
     /**
-     * @var int|false
+     * @var int|null
      */
-    private $totalRows = false;
+    private $totalRows;
 
     /**
      * @var ResourceFactory
@@ -138,7 +138,7 @@ class Collection extends Resource implements \ArrayAccess, \Iterator
     }
 
     /**
-     * @return int|false
+     * @return int|null - the over-all total rows, or null
      */
     public function getTotalRows()
     {

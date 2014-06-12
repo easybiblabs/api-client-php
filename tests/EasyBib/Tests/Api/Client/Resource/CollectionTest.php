@@ -177,7 +177,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(42, $collection->getTotalRows());
 
         $collection = $this->createFromResponseWithHeaders([]);
-        $this->assertSame(false, $collection->getTotalRows());
+        $this->assertNull($collection->getTotalRows());
     }
 
     private function createFromResponseWithHeaders($headers)
