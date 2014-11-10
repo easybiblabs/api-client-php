@@ -50,11 +50,13 @@ class ApiTraverser
      * @param array $queryParams
      * @return Resource
      */
-    public function get($url, array $queryParams = [])
+    public function get($url, array $queryParams = null)
     {
         return $this->cache->cacheAndReturn(function () use ($url, $queryParams) {
             $request = $this->httpClient->get($url);
-            $request->getQuery()->replace($queryParams);
+            if (null !== $queryParams) {
+                $request->getQuery()->replace($queryParams);
+            }
 
             return $this->resourceFactory->createFromResponse($this->send($request));
         }, new CacheKey([$url, $queryParams]));

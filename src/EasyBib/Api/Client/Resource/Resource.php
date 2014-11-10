@@ -151,7 +151,7 @@ class Resource
      * @throws ResourceNotFoundException
      * @return Resource
      */
-    private function requestRelation($method, $rel, array $data = [])
+    private function requestRelation($method, $rel, array $data = null)
     {
         $relation = $this->relationsContainer->get($rel);
 
