@@ -108,6 +108,26 @@ class ApiTraverser
     }
 
     /**
+     * This bootstraps the session by returning the public subject Collection
+     *
+     * @param array $queryParams
+     * @return Collection
+     */
+    public function getSubjects(array $queryParams = [])
+    {
+        return $this->get($this->getSubjectsBaseUrl(), $queryParams);
+    }
+
+    /**
+     * @param string $subjectId
+     * @return Resource
+     */
+    public function getSubject($subjectId)
+    {
+        return $this->get($this->getSubjectsBaseUrl() . $subjectId);
+    }
+
+    /**
      * This bootstraps the session by returning the user's "root" Resource
      *
      * @return Resource
@@ -129,7 +149,7 @@ class ApiTraverser
     }
 
     /**
-     * @param string $projectId 
+     * @param string $projectId
      * @return Resource
      */
     public function getProject($projectId)
@@ -147,7 +167,7 @@ class ApiTraverser
     }
 
     /**
-     * @param array $links 
+     * @param array $links
      * @return Collection
      */
     public function postToBulkResolver(array $links)
@@ -170,6 +190,14 @@ class ApiTraverser
     public function getProjectsBaseUrl()
     {
         return $this->httpClient->getBaseUrl() . '/projects/';
+    }
+
+    /**
+     * @return string
+     */
+    public function getSubjectsBaseUrl()
+    {
+        return $this->httpClient->getBaseUrl() . '/subjects/';
     }
 
     /**
