@@ -48,7 +48,7 @@ class RelationsContainer
 
     /**
      * @param string $rel
-     * @return Resource
+     * @return Relation
      */
     public function get($rel)
     {

@@ -145,6 +145,19 @@ class Resource
     }
 
     /**
+     * @return bool
+     */
+    public function isCurrentUserAuthor()
+    {
+        $relation = $this->relationsContainer->get('author');
+        if (!$relation) {
+            return false;
+        }
+
+        return $relation->getHref() === $this->apiTraverser->getUserBaseUrl();
+    }
+
+    /**
      * @param string $method
      * @param string $rel
      * @param array $data
