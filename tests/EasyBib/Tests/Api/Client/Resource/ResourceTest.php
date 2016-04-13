@@ -260,6 +260,28 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['data' => ['foo' => 'bar']], $resource->toArray());
     }
 
+    public function testIsCurrentUserAuthor()
+    {
+        $resource = $this->getResource((object) ['data' => (object) ['foo' => 'bar']]);
+        $this->assertFalse($resource->isCurrentUserAuthor());
+    }
+
+    public function testIsCurrentUserAuthorNoAuthorRelation()
+    {
+        $resource = $this->getResource((object) [
+            'data' => (object) ['foo' => 'bar'],
+            'links' => [
+                (object) [
+                    'href' => '/user/',
+                    'rel' => 'author',
+                    'type' => 'application/vnd.com.easybib.data+json',
+                    'title' => 'user@example.com',
+                ]
+            ]
+        ]);
+        $this->assertTrue($resource->isCurrentUserAuthor());
+    }
+
     /**
      * @param \stdClass $data
      * @return Resource
