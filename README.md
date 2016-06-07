@@ -140,10 +140,3 @@ not return resources cached during the original session.
 By default, `ApiTraverser` uses a PHP-array-based cache, so unless you have
 implemented a different caching backend, you can simply instantiate a new
 `ApiTraverser`, either directly or via the `ApiBuilder`.
-
-## License
-
-This library is licensed under the BSD 2-Clause License. Enjoy!
-
-You can find more about this
-license at http://opensource.org/licenses/BSD-2-Clause
