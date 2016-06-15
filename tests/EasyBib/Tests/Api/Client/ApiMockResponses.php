@@ -2,7 +2,6 @@
 
 namespace EasyBib\Tests\Api\Client;
 
-use EasyBib\Api\Client\Resource\Resource;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\AuthorizationCodeSession;
 use EasyBib\OAuth2\Client\JsonWebTokenGrant;

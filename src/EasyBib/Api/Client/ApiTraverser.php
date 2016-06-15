@@ -4,9 +4,9 @@ namespace EasyBib\Api\Client;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\CacheProvider;
-use EasyBib\Api\Client\Resource\Collection;
-use EasyBib\Api\Client\Resource\Resource;
-use EasyBib\Api\Client\Resource\ResourceFactory;
+use EasyBib\Api\Client\ApiResource\Collection;
+use EasyBib\Api\Client\ApiResource\ApiResource;
+use EasyBib\Api\Client\ApiResource\ResourceFactory;
 use EasyBib\Api\Client\Validation\ResponseValidator;
 use EasyBib\Guzzle\Plugin\RequestHeader;
 use Guzzle\Http\ClientInterface;

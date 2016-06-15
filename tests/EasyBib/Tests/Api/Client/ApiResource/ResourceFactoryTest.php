@@ -3,9 +3,9 @@
 namespace EasyBib\Tests\Api\Client\Resource;
 
 use EasyBib\Api\Client\ApiTraverser;
-use EasyBib\Api\Client\Resource\Collection;
-use EasyBib\Api\Client\Resource\ResourceErrorException;
-use EasyBib\Api\Client\Resource\ResourceFactory;
+use EasyBib\Api\Client\ApiResource\Collection;
+use EasyBib\Api\Client\ApiResource\ResourceErrorException;
+use EasyBib\Api\Client\ApiResource\ResourceFactory;
 use Guzzle\Http\Client;
 
 class ResourceFactoryTest extends \PHPUnit_Framework_TestCase

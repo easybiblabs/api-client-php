@@ -3,7 +3,7 @@
 namespace EasyBib\Tests\Api\Client;
 
 use EasyBib\Api\Client\ApiBuilder;
-use EasyBib\Api\Client\Resource\Resource;
+use EasyBib\Api\Client\ApiResource\ApiResource;
 use EasyBib\OAuth2\Client\TokenStore;
 use EasyBib\Tests\Mocks\OAuth2\Client\ExceptionMockRedirector;
 use EasyBib\Tests\Mocks\OAuth2\Client\MockRedirectException;
@@ -123,7 +123,7 @@ class ApiBuilderTest extends \PHPUnit_Framework_TestCase
             ['data' => ['foo' => 'bar']]
         );
 
-        $this->assertInstanceOf(Resource::class, $api->getUser());
+        $this->assertInstanceOf(ApiResource::class, $api->getUser());
     }
 
     private function prepareTokenResponse()

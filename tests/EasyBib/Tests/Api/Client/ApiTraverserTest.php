@@ -5,9 +5,9 @@ namespace EasyBib\Tests\Api\Client;
 use Doctrine\Common\Cache\ArrayCache;
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\CacheKey;
-use EasyBib\Api\Client\Resource\Collection;
-use EasyBib\Api\Client\Resource\Relation;
-use EasyBib\Api\Client\Resource\Resource;
+use EasyBib\Api\Client\ApiResource\Collection;
+use EasyBib\Api\Client\ApiResource\Relation;
+use EasyBib\Api\Client\ApiResource\ApiResource;
 use EasyBib\Api\Client\Validation\ApiErrorException;
 use EasyBib\Api\Client\Validation\ExpiredTokenException;
 use EasyBib\Api\Client\Validation\InfrastructureErrorException;
@@ -574,7 +574,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
         $this->api->get($url, $arguments);
         $this->assertTrue($cache->contains($key));
-        $this->assertInstanceOf(Resource::class, $cache->fetch($key));
+        $this->assertInstanceOf(ApiResource::class, $cache->fetch($key));
     }
 
     /**
@@ -627,11 +627,11 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param array $expectedResponseArray
-     * @param Resource $resource
+     * @param ApiResource $resource
      */
     private function shouldHaveReturnedAResource(
         array $expectedResponseArray,
-        Resource $resource
+        ApiResource $resource
     ) {
         $this->assertSameData($expectedResponseArray, $resource);
 
@@ -643,11 +643,11 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param array $expectedResponseArray
-     * @param Resource $resource
+     * @param ApiResource $resource
      */
     private function shouldHaveReturnedADeletedResource(
         array $expectedResponseArray,
-        Resource $resource
+        ApiResource $resource
     ) {
         $this->assertSameData($expectedResponseArray, $resource);
     }
@@ -665,9 +665,9 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param array $expectedResponseArray
-     * @param Resource $resource
+     * @param ApiResource $resource
      */
-    private function assertSameData(array $expectedResponseArray, Resource $resource)
+    private function assertSameData(array $expectedResponseArray, ApiResource $resource)
     {
         $this->assertEquals(
             $this->recursiveCastObject($expectedResponseArray['data']),

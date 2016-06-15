@@ -2,7 +2,7 @@
 
 namespace EasyBib\Tests\Api\Client\Resource;
 
-use EasyBib\Api\Client\Resource\Relation;
+use EasyBib\Api\Client\ApiResource\Relation;
 use EasyBib\Tests\Mocks\Api\Client\LinkTransformer\MockLinkTransformer;
 
 /**
@@ -135,7 +135,7 @@ class RelationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \EasyBib\Api\Client\Resource\InvalidResourceLinkException
+     * @expectedException \EasyBib\Api\Client\ApiResource\InvalidResourceLinkException
      * @param string $data
      * @dataProvider dataProviderInvalid
      */
