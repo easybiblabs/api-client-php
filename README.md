@@ -82,16 +82,16 @@ $api = $apiBuilder->createWithAuthorizationCodeGrant([
     'redirect_url' => 'http://myapp.example.com/handle-token-response',
 ]);
 
-$user = $api->getUser();  // user serves as the entry point for traversing resources
+$user = $api->getUser();  // user serves as the entry point for traversing api resources
 ```
 
-### Retrieving resources
+### Retrieving api resources
 
 Once you have an API object, you can use it to traverse the API.
 The two entry points are `$api->getUser()` and `$api->getProjects()`.
 
-`getUser()` will return a `Resource` representing the user; calling
-`getResourceData()->getRelations()` on the user resource will return a set
+`getUser()` will return a `ApiResource` representing the user; calling
+`getResourceData()->getRelations()` on the user api resource will return a set
 of available references which can be called from the user. So the call chain
 for a particular project's citations might be
 
@@ -135,7 +135,7 @@ a guest user registers or logs in, and needs a new token which will be
 associated with the permanent user account. In this case, the application
 consuming the API **must** instantiate a new `ApiTraverser` or call `setCache()`,
 with a new cache or cache namespace, to ensure that the `ApiTraverser` will
-not return resources cached during the original session.
+not return api resources cached during the original session.
 
 By default, `ApiTraverser` uses a PHP-array-based cache, so unless you have
 implemented a different caching backend, you can simply instantiate a new
