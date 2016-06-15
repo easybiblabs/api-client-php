@@ -1,11 +1,11 @@
 <?php
 
-namespace EasyBib\Tests\Api\Client\Resource;
+namespace EasyBib\Tests\Api\Client\ApiResource;
 
 use EasyBib\Api\Client\ApiTraverser;
-use EasyBib\Api\Client\Resource\Collection;
-use EasyBib\Api\Client\Resource\Resource;
-use EasyBib\Api\Client\Resource\ResourceFactory;
+use EasyBib\Api\Client\ApiResource\Collection;
+use EasyBib\Api\Client\ApiResource\ApiResource;
+use EasyBib\Api\Client\ApiResource\ResourceFactory;
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\Response;
 
@@ -51,7 +51,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     public function testOffsetGet(array $data)
     {
         $collection = $this->getCollection($data);
-        $this->assertInstanceOf(Resource::class, $collection[0]);
+        $this->assertInstanceOf(ApiResource::class, $collection[0]);
     }
 
     /**

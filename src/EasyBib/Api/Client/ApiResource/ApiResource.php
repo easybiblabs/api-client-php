@@ -1,11 +1,11 @@
 <?php
 
-namespace EasyBib\Api\Client\Resource;
+namespace EasyBib\Api\Client\ApiResource;
 
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\Validation\ResourceNotFoundException;
 
-class Resource
+class ApiResource
 {
     /**
      * @var \stdClass

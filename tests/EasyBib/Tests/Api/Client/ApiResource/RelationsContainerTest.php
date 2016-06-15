@@ -2,8 +2,8 @@
 
 namespace EasyBib\Tests\Api\Client\Resource;
 
-use EasyBib\Api\Client\Resource\Relation;
-use EasyBib\Api\Client\Resource\RelationsContainer;
+use EasyBib\Api\Client\ApiResource\Relation;
+use EasyBib\Api\Client\ApiResource\RelationsContainer;
 
 class RelationsContainerTest extends \PHPUnit_Framework_TestCase
 {

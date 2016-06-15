@@ -1,13 +1,13 @@
 <?php
 
-namespace EasyBib\Api\Client\Resource;
+namespace EasyBib\Api\Client\ApiResource;
 
 use EasyBib\Api\Client\ApiTraverser;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyMethods)
  */
-class Collection extends Resource implements \ArrayAccess, \Iterator
+class Collection extends ApiResource implements \ArrayAccess, \Iterator
 {
     /**
      * @var \ArrayIterator

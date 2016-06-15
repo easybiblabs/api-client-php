@@ -1,6 +1,6 @@
 <?php
 
-namespace EasyBib\Api\Client\Resource;
+namespace EasyBib\Api\Client\ApiResource;
 
 use EasyBib\Api\Client\ApiTraverser;
 use Guzzle\Http\Message\Response;
@@ -30,7 +30,7 @@ class ResourceFactory
             return new Collection($data, $this->apiTraverser);
         }
 
-        return new Resource($data, $this->apiTraverser);
+        return new ApiResource($data, $this->apiTraverser);
     }
 
     /**

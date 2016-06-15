@@ -1,6 +1,6 @@
 <?php
 
-namespace EasyBib\Api\Client\Resource;
+namespace EasyBib\Api\Client\ApiResource;
 
 use EasyBib\Api\Client\LinkTransformer\LinkTransformerInterface;
 use EasyBib\Api\Client\LinkTransformer\NullLinkTransformer;

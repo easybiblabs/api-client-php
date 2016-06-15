@@ -1,10 +1,10 @@
 <?php
 
-namespace EasyBib\Tests\Api\Client\Resource;
+namespace EasyBib\Tests\Api\Client\ApiResource;
 
 use EasyBib\Api\Client\ApiTraverser;
-use EasyBib\Api\Client\Resource\Resource;
-use EasyBib\Api\Client\Resource\ResourceFactory;
+use EasyBib\Api\Client\ApiResource\ApiResource;
+use EasyBib\Api\Client\ApiResource\ResourceFactory;
 use EasyBib\Api\Client\Validation\ResourceNotFoundException;
 use EasyBib\Tests\Api\Client\ApiMockResponses;
 use Guzzle\Http\Client;
@@ -12,7 +12,7 @@ use Guzzle\Http\Message\Response;
 use Guzzle\Plugin\History\HistoryPlugin;
 use Guzzle\Plugin\Mock\MockPlugin;
 
-class ResourceTest extends \PHPUnit_Framework_TestCase
+class ApiResourceTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var ApiMockResponses
@@ -66,7 +66,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
         $goodLinkedResource = $firstResource->get('foo rel');
 
-        $this->assertInstanceOf(Resource::class, $goodLinkedResource);
+        $this->assertInstanceOf(ApiResource::class, $goodLinkedResource);
         $this->assertEquals('bar', $goodLinkedResource->getData()->foo);
     }
 
@@ -100,7 +100,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
         $goodLinkedResource = $firstResource->post('foo rel', $nextResource);
 
-        $this->assertInstanceOf(Resource::class, $goodLinkedResource);
+        $this->assertInstanceOf(ApiResource::class, $goodLinkedResource);
         $this->assertEquals('bar', $goodLinkedResource->getData()->foo);
     }
 
@@ -134,7 +134,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 
         $goodLinkedResource = $firstResource->put('foo rel', $nextResource);
 
-        $this->assertInstanceOf(Resource::class, $goodLinkedResource);
+        $this->assertInstanceOf(ApiResource::class, $goodLinkedResource);
         $this->assertEquals('bar', $goodLinkedResource->getData()->foo);
     }
 
@@ -250,7 +250,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     public function testSetLocationWhereInvalid()
     {
         $this->setExpectedException(\InvalidArgumentException::class);
-        $resource = new Resource(new \stdClass(), $this->api);
+        $resource = new ApiResource(new \stdClass(), $this->api);
         $resource->setLocation([]);
     }
 
