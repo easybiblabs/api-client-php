@@ -109,7 +109,7 @@ class ApiResource
 
     /**
      * @param string $rel
-     * @return Resource
+     * @return ApiResource
      */
     public function get($rel)
     {
@@ -119,7 +119,7 @@ class ApiResource
     /**
      * @param string $rel
      * @param array $data
-     * @return Resource
+     * @return ApiResource
      */
     public function post($rel, array $data)
     {
@@ -129,7 +129,7 @@ class ApiResource
     /**
      * @param string $rel
      * @param array $data
-     * @return Resource
+     * @return ApiResource
      */
     public function put($rel, array $data)
     {

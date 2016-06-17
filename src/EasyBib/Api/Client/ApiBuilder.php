@@ -2,6 +2,7 @@
 
 namespace EasyBib\Api\Client;
 
+use EasyBib\Guzzle\BearerAuthMiddleware;
 use EasyBib\OAuth2\Client\AbstractSession;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\AuthorizationCodeSession;
@@ -13,8 +14,8 @@ use EasyBib\OAuth2\Client\Scope;
 use EasyBib\OAuth2\Client\ServerConfig;
 use EasyBib\OAuth2\Client\SimpleSession;
 use EasyBib\OAuth2\Client\TokenStore;
-use Guzzle\Http\Client;
-use Guzzle\Http\ClientInterface;
+use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
@@ -61,7 +62,7 @@ class ApiBuilder
     ) {
         $clientConfig = new AuthorizationCodeGrant\ClientConfig([
             'client_id' => $params['client_id'],
-            'redirect_url' => $params['redirect_url'],
+            'redirect_uri' => $params['redirect_uri'],
         ]);
 
         $serverConfig = new AuthorizationCodeGrant\ServerConfig([
@@ -156,7 +157,11 @@ class ApiBuilder
     {
         $oauthSession->setTokenStore($this->getTokenStore());
         $apiHttpClient = $this->getApiHttpClient($url);
-        $oauthSession->addResourceClient($apiHttpClient);
+
+        $handler = $apiHttpClient->getConfig('handler');
+        $handler->push(function ($callable) use ($oauthSession) {
+            return new BearerAuthMiddleware($callable, $oauthSession);
+        });
 
         return new ApiTraverser($apiHttpClient);
     }
@@ -168,8 +173,7 @@ class ApiBuilder
     private function getOauthHttpClient($url)
     {
         // if none has been provided for testing, instantiate a blank Client()
-        $oauthHttpClient = $this->oauthHttpClient ?: new Client();
-        $oauthHttpClient->setBaseUrl($url);
+        $oauthHttpClient = $this->oauthHttpClient ?: new Client(['base_uri' => $url]);
 
         return $oauthHttpClient;
     }
@@ -181,8 +185,7 @@ class ApiBuilder
     private function getApiHttpClient($url)
     {
         // if none has been provided for testing, instantiate a blank Client()
-        $apiHttpClient = $this->apiHttpClient ?: new Client();
-        $apiHttpClient->setBaseUrl($url);
+        $apiHttpClient = $this->apiHttpClient ?: new Client(['base_uri' => $url]);
 
         return $apiHttpClient;
     }
