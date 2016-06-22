@@ -4,13 +4,14 @@ namespace EasyBib\Tests\Api\Client;
 
 use EasyBib\Api\Client\ApiBuilder;
 use EasyBib\Api\Client\ApiResource\ApiResource;
+use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\OAuth2\Client\TokenStore;
-use EasyBib\Tests\Mocks\OAuth2\Client\ExceptionMockRedirector;
-use EasyBib\Tests\Mocks\OAuth2\Client\MockRedirectException;
-use Guzzle\Http\Client;
-use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\History\HistoryPlugin;
-use Guzzle\Plugin\Mock\MockPlugin;
+use EasyBib\Tests\Mocks\Api\Client\ExceptionMockRedirector;
+use EasyBib\Tests\Mocks\Api\Client\MockRedirectException;
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
@@ -30,12 +31,6 @@ class ApiBuilderTest extends \PHPUnit_Framework_TestCase
      * @var string
      */
     protected $dataBaseUrl = 'http://data.easybib.example.com';
-
-    /**
-     * @var HistoryPlugin
-     */
-    protected $history;
-
     /**
      * @var Client
      */
@@ -52,12 +47,12 @@ class ApiBuilderTest extends \PHPUnit_Framework_TestCase
     protected $api;
 
     /**
-     * @var MockPlugin
+     * @var MockHandler
      */
     protected $apiMockResponses;
 
     /**
-     * @var MockPlugin
+     * @var MockHandler
      */
     protected $oauthMockResponses;
 
@@ -75,18 +70,12 @@ class ApiBuilderTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->apiHttpClient = new Client($this->dataBaseUrl);
-        $this->apiMockResponses = new MockPlugin();
-        $this->history = new HistoryPlugin();
-        $this->apiHttpClient->addSubscriber($this->apiMockResponses);
-        $this->apiHttpClient->addSubscriber($this->history);
+        $this->apiMockResponses = new MockHandler();
+        $this->apiHttpClient = new Client(['base_uri' => $this->dataBaseUrl, 'handler' => HandlerStack::create($this->apiMockResponses)]);
         $this->apiResponses = new ApiMockResponses($this->apiMockResponses);
 
-        $this->oauthMockResponses = new MockPlugin();
-
-        $this->oauthHttpClient = new Client($this->idBaseUrl);
-        $this->oauthHttpClient->addSubscriber(new HistoryPlugin());
-        $this->oauthHttpClient->addSubscriber($this->oauthMockResponses);
+        $this->oauthMockResponses = new MockHandler();
+        $this->oauthHttpClient = new Client(['base_uri' => $this->idBaseUrl, 'handler' => HandlerStack::create($this->oauthMockResponses)]);
 
         $session = new Session(new MockArraySessionStorage());
         $this->tokenStore = new TokenStore($session);
@@ -102,7 +91,7 @@ class ApiBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $api = $this->builder->createWithAuthorizationCodeGrant([
             'client_id' => 'ABC123',
-            'redirect_url' => 'http://foo.example.com/handle-auth-code',
+            'redirect_uri' => 'http://foo.example.com/handle-auth-code',
         ]);
 
         $this->setExpectedException(MockRedirectException::class);
@@ -137,6 +126,6 @@ class ApiBuilderTest extends \PHPUnit_Framework_TestCase
             ])
         );
 
-        $this->oauthMockResponses->addResponse($response);
+        $this->oauthMockResponses->append($response);
     }
 }

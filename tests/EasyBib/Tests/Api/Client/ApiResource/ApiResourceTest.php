@@ -7,27 +7,20 @@ use EasyBib\Api\Client\ApiResource\ApiResource;
 use EasyBib\Api\Client\ApiResource\ResourceFactory;
 use EasyBib\Api\Client\Validation\ResourceNotFoundException;
 use EasyBib\Tests\Api\Client\ApiMockResponses;
-use Guzzle\Http\Client;
-use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\History\HistoryPlugin;
-use Guzzle\Plugin\Mock\MockPlugin;
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 
 class ApiResourceTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var MockHandler */
+    protected $mockHandler;
+
     /**
      * @var ApiMockResponses
      */
     private $apiResponses;
-
-    /**
-     * @var HistoryPlugin
-     */
-    private $history;
-
-    /**
-     * @var MockPlugin
-     */
-    private $mockResponses;
 
     /**
      * @var Client
@@ -41,15 +34,11 @@ class ApiResourceTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->history = new HistoryPlugin();
-        $this->mockResponses = new MockPlugin();
-
-        $this->httpClient = new Client();
-        $this->httpClient->addSubscriber($this->history);
-        $this->httpClient->addSubscriber($this->mockResponses);
+        $this->mockHandler = new MockHandler();
+        $this->httpClient = new Client(['handler' => HandlerStack::create($this->mockHandler)]);
 
         $this->api = new ApiTraverser($this->httpClient);
-        $this->apiResponses = new ApiMockResponses($this->mockResponses);
+        $this->apiResponses = new ApiMockResponses($this->mockHandler);
     }
 
     public function testGetWithGoodRel()
@@ -162,10 +151,10 @@ class ApiResourceTest extends \PHPUnit_Framework_TestCase
 
         $this->apiResponses->prepareResource($nextResource);
 
-        $firstResource->delete('foo rel', $nextResource);
-        $lastRequest = $this->history->getLastRequest();
+        $firstResource->delete('foo rel');
+        $lastRequest = $this->mockHandler->getLastRequest();
         $this->assertEquals('DELETE', $lastRequest->getMethod());
-        $this->assertEquals('http://foo/', $lastRequest->getUrl());
+        $this->assertEquals('http://foo/', $lastRequest->getUri());
     }
 
     public function testDeleteWithBadRed()
@@ -177,7 +166,7 @@ class ApiResourceTest extends \PHPUnit_Framework_TestCase
         $this->apiResponses->prepareResource($nextResource);
 
         $this->setExpectedException(ResourceNotFoundException::class);
-        $firstResource->delete('no such rel', []);
+        $firstResource->delete('no such rel');
     }
 
     /**
@@ -284,7 +273,7 @@ class ApiResourceTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param \stdClass $data
-     * @return Resource
+     * @return ApiResource
      */
     private function getResource(\stdClass $data = null)
     {
@@ -326,11 +315,7 @@ class ApiResourceTest extends \PHPUnit_Framework_TestCase
             ]);
         }
 
-        $response = new Response(200);
-        $response->setBody($body);
-        $response->setHeaders($headers);
-
-        return $this->getResourceFactory()->createFromResponse($response);
+        return $this->getResourceFactory()->createFromResponse(new Response(200, $headers, $body));
     }
 
     /**

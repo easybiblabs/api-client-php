@@ -6,7 +6,7 @@ use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\ApiResource\Collection;
 use EasyBib\Api\Client\ApiResource\ResourceErrorException;
 use EasyBib\Api\Client\ApiResource\ResourceFactory;
-use Guzzle\Http\Client;
+use GuzzleHttp\Client;
 
 class ResourceFactoryTest extends \PHPUnit_Framework_TestCase
 {

@@ -2,6 +2,7 @@
 
 namespace EasyBib\Tests\Api\Client;
 
+use EasyBib\Guzzle\BearerAuthMiddleware;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\AuthorizationCodeSession;
 use EasyBib\OAuth2\Client\JsonWebTokenGrant;
@@ -10,11 +11,12 @@ use EasyBib\OAuth2\Client\Scope;
 use EasyBib\OAuth2\Client\ServerConfig;
 use EasyBib\OAuth2\Client\SimpleSession;
 use EasyBib\OAuth2\Client\TokenStore;
-use EasyBib\Tests\Mocks\OAuth2\Client\ExceptionMockRedirector;
-use Guzzle\Http\Client;
-use Guzzle\Http\ClientInterface;
-use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\Mock\MockPlugin;
+use EasyBib\Tests\Mocks\Api\Client\ExceptionMockRedirector;
+use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
@@ -26,9 +28,9 @@ class ApiMockResponses
     private $mocks;
 
     /**
-     * @param MockPlugin $mocks
+     * @param MockHandler $mocks
      */
-    public function __construct(MockPlugin $mocks)
+    public function __construct(MockHandler $mocks)
     {
         $this->mocks = $mocks;
     }
@@ -43,7 +45,7 @@ class ApiMockResponses
     ) {
         $payload = ['status' => 'ok'] + $resource;
 
-        $this->mocks->addResponse(
+        $this->mocks->append(
             new Response(200, [], json_encode($payload))
         );
 
@@ -57,7 +59,7 @@ class ApiMockResponses
             'error_description' => 'The access token provided has expired',
         ]);
 
-        $this->mocks->addResponse(
+        $this->mocks->append(
             new Response(400, [], $body)
         );
     }
@@ -68,7 +70,7 @@ class ApiMockResponses
             'msg' => 'The project you requested is not valid for this token.',
         ]);
 
-        $this->mocks->addResponse(
+        $this->mocks->append(
             new Response(403, [], $body)
         );
     }
@@ -77,7 +79,7 @@ class ApiMockResponses
     {
         $body = 'blah';
 
-        $this->mocks->addResponse(
+        $this->mocks->append(
             new Response(200, [], $body)
         );
     }
@@ -90,7 +92,7 @@ class ApiMockResponses
     {
         $body = json_encode($error);
 
-        $this->mocks->addResponse(
+        $this->mocks->append(
             new Response($code, [], $body)
         );
     }
@@ -103,7 +105,7 @@ class ApiMockResponses
         $headers = ['Content-Type' => 'text/html'];
         $body = '<html><head></head><body>Some error</body></html>';
 
-        $this->mocks->addResponse(
+        $this->mocks->append(
             new Response($code, $headers, $body)
         );
     }
@@ -115,7 +117,7 @@ class ApiMockResponses
     {
         $body = json_encode(['msg' => $message]);
 
-        $this->mocks->addResponse(
+        $this->mocks->append(
             new Response(400, [], $body)
         );
     }
@@ -139,7 +141,7 @@ class ApiMockResponses
             'token_endpoint' => '/oauth/token',
         ]);
 
-        $oauthHttpClient = new Client('http://id.easybib.example.com');
+        $oauthHttpClient = new Client(['base_uri' => 'http://id.easybib.example.com']);
 
         $tokenRequestFactory = new TokenRequestFactory(
             $clientConfig,
@@ -152,7 +154,12 @@ class ApiMockResponses
 
         $oauthSession = new SimpleSession($tokenRequestFactory);
         $oauthSession->setTokenStore($tokenStore);
-        $oauthSession->addResourceClient($resourceHttpClient);
+
+        /** @var HandlerStack $handler */
+        $handler = $resourceHttpClient->getConfig('handler');
+        $handler->push(function ($callable) use ($oauthSession) {
+            return new BearerAuthMiddleware($callable, $oauthSession);
+        });
     }
 
     /**
@@ -175,7 +182,7 @@ class ApiMockResponses
             'token_endpoint' => '/oauth/token',
         ]);
 
-        $oauthHttpClient = new Client('http://id.easybib.example.com');
+        $oauthHttpClient = new Client(['base_uri' => 'http://id.easybib.example.com']);
 
         $oauthSession = new AuthorizationCodeSession(
             $oauthHttpClient,
@@ -186,6 +193,11 @@ class ApiMockResponses
 
         $oauthSession->setTokenStore($tokenStore);
         $oauthSession->setScope(new Scope(['USER_READ', 'DATA_READ_WRITE']));
-        $oauthSession->addResourceClient($resourceHttpClient);
+
+        /** @var HandlerStack $handler */
+        $handler = $resourceHttpClient->getConfig('handler');
+        $handler->push(function ($callable) use ($oauthSession) {
+            return new BearerAuthMiddleware($callable, $oauthSession);
+        });
     }
 }

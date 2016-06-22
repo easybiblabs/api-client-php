@@ -19,10 +19,10 @@ use EasyBib\OAuth2\Client\AuthorizationCodeGrant\Authorization\AuthorizationResp
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant\ClientConfig;
 use EasyBib\OAuth2\Client\ServerConfig;
 use EasyBib\OAuth2\Client\TokenStore;
-use Guzzle\Http\Client;
-use Guzzle\Http\Message\Response;
-use Guzzle\Plugin\History\HistoryPlugin;
-use Guzzle\Plugin\Mock\MockPlugin;
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
@@ -39,11 +39,6 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
     protected $dataBaseUrl = 'http://data.easybib.example.com';
 
     /**
-     * @var HistoryPlugin
-     */
-    protected $history;
-
-    /**
      * @var Client
      */
     protected $resourceHttpClient;
@@ -52,11 +47,6 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
      * @var ApiTraverser
      */
     protected $api;
-
-    /**
-     * @var MockPlugin
-     */
-    protected $mockResponses;
 
     /**
      * @var TokenStore
@@ -78,26 +68,26 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
      */
     protected $authorization;
 
+    /** @var MockHandler */
+    private $mockHandler;
+
     public function setUp()
     {
         parent::setUp();
 
         $this->clientConfig = new ClientConfig([
             'client_id' => 'client_123',
-            'redirect_url' => 'http://myapp.example.com/',
+            'redirect_uri' => 'http://myapp.example.com/',
         ]);
 
-        $this->resourceHttpClient = new Client($this->dataBaseUrl);
-        $this->mockResponses = new MockPlugin();
-        $this->history = new HistoryPlugin();
-        $this->resourceHttpClient->addSubscriber($this->mockResponses);
-        $this->resourceHttpClient->addSubscriber($this->history);
+        $this->mockHandler = new MockHandler();
+        $this->resourceHttpClient = new Client(['base_uri' => $this->dataBaseUrl, 'handler' => HandlerStack::create($this->mockHandler)]);
 
         $this->tokenStore = new TokenStore(new Session(new MockArraySessionStorage()));
         $this->authorization = new AuthorizationResponse(['code' => 'ABC123']);
 
         $this->api = new ApiTraverser($this->resourceHttpClient);
-        $this->apiResponses = new ApiMockResponses($this->mockResponses);
+        $this->apiResponses = new ApiMockResponses($this->mockHandler);
     }
 
     /**
@@ -262,10 +252,10 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
         $response = $this->api->getProject($projectId);
 
-        $lastRequest = $this->history->getLastRequest();
+        $lastRequest = $this->mockHandler->getLastRequest();
 
         $this->shouldHaveMadeAnApiRequest('GET');
-        $this->assertEquals($this->api->getProjectsBaseUrl() . $projectId, $lastRequest->getUrl());
+        $this->assertEquals($this->api->getProjectsBaseUrl() . $projectId, $lastRequest->getUri());
         $this->shouldHaveReturnedAResource($project, $response);
     }
 
@@ -279,10 +269,10 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $this->apiResponses->prepareResource($project);
 
         $response = $this->api->postProject($project);
-        $lastRequest = $this->history->getLastRequest();
+        $lastRequest = $this->mockHandler->getLastRequest();
 
         $this->shouldHaveMadeAnApiRequest('POST');
-        $this->assertEquals($this->api->getProjectsBaseUrl(), $lastRequest->getUrl());
+        $this->assertEquals($this->api->getProjectsBaseUrl(), $lastRequest->getUri());
         $this->shouldHaveReturnedAResource($project, $response);
     }
 
@@ -311,11 +301,11 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $this->apiResponses->prepareResource($projects);
 
         $response = $this->api->postToBulkResolver($links);
-        $lastRequest = $this->history->getLastRequest();
+        $lastRequest = $this->mockHandler->getLastRequest();
 
         $this->shouldHaveMadeAnApiRequest('POST');
-        $this->assertEquals($this->dataBaseUrl . '/resolve', $lastRequest->getUrl());
-        $this->assertEquals(json_encode(['links' => $links]), $lastRequest->getBody()->__toString());
+        $this->assertEquals($this->dataBaseUrl . '/resolve', $lastRequest->getUri());
+        $this->assertEquals(json_encode(['links' => $links]), (string)$lastRequest->getBody());
         $this->shouldHaveReturnedACollection($projects, $response);
     }
 
@@ -413,7 +403,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
     {
         $this->apiResponses->prepareInfrastructureError(504);
 
-        $this->setExpectedException(InfrastructureErrorException::class, 504);
+        $this->setExpectedException(InfrastructureErrorException::class, (string)504);
 
         $this->api->get('url placeholder');
     }
@@ -553,12 +543,12 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
     public function testGetDoesNotFollowRedirects()
     {
-        $this->mockResponses->addResponse(new Response(302, ['Location' => 'http://foo.example.com/'], '{}'));
-        $this->mockResponses->addResponse(new Response(200, [], '{}'));
+        $this->mockHandler->append(new Response(302, ['Location' => 'http://foo.example.com/'], '{}'));
+        $this->mockHandler->append(new Response(200, [], '{}'));
 
         $this->api->getUser();
 
-        $this->assertEquals(1, count($this->history));
+        $this->assertEquals(1, count($this->mockHandler->count()));
     }
 
     public function testGetWritesToCache()
@@ -614,14 +604,14 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
      */
     private function shouldHaveMadeAnApiRequest($httpMethod, array $queryParams = [])
     {
-        $lastRequest = $this->history->getLastRequest();
+        $lastRequest = $this->mockHandler->getLastRequest();
 
         $this->assertEquals($httpMethod, $lastRequest->getMethod());
-        $this->assertEquals($queryParams, $lastRequest->getQuery()->toArray());
+        $parsedQuery = \GuzzleHttp\Psr7\parse_query($lastRequest->getUri()->getQuery());
+        $this->assertEquals($queryParams, $parsedQuery);
 
         $this->assertTrue(
-            $lastRequest->getHeader('Accept')
-                ->hasValue('application/vnd.com.easybib.data+json')
+            in_array('application/vnd.com.easybib.data+json', $lastRequest->getHeader('Accept'))
         );
     }
 
@@ -680,10 +670,10 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
      */
     private function shouldHaveHadATokenWithLastRequest($accessToken)
     {
-        $this->assertTrue(
-            $this->history->getLastRequest()->getHeader('Authorization')
-                ->hasValue('Bearer ' . $accessToken)
-        );
+        $this->assertTrue(in_array(
+            'Bearer ' . $accessToken,
+            $this->mockHandler->getLastRequest()->getHeader('Authorization')
+        ));
     }
 
     /**
