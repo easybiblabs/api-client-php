@@ -14,6 +14,9 @@ use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Uri;
 use Psr\Http\Message\RequestInterface;
 
+/**
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods, PHPMD.CouplingBetweenObjects)
+ */
 class ApiTraverser
 {
     /**
