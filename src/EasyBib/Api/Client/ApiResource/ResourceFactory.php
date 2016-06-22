@@ -3,7 +3,7 @@
 namespace EasyBib\Api\Client\ApiResource;
 
 use EasyBib\Api\Client\ApiTraverser;
-use Guzzle\Http\Message\Response;
+use Psr\Http\Message\ResponseInterface;
 
 class ResourceFactory
 {
@@ -34,21 +34,21 @@ class ResourceFactory
     }
 
     /**
-     * @param Response $response
+     * @param ResponseInterface $response
      * @return Resource
      */
-    public function createFromResponse(Response $response)
+    public function createFromResponse(ResponseInterface $response)
     {
-        $data = json_decode($response->getBody(true));
-        $resource = $this->createFromData($data, $this->apiTraverser);
+        $data = json_decode($response->getBody());
+        $resource = $this->createFromData($data);
 
         $locationHeaders = $response->getHeader('Location');
         if ($locationHeaders) {
-            $resource->setLocation($locationHeaders->toArray()[0]);
+            $resource->setLocation($locationHeaders[0]);
         }
         $totalRowsHeaders = $response->getHeader('X-EasyBib-TotalRows');
         if ($totalRowsHeaders && method_exists($resource, 'setTotalRows')) {
-            $resource->setTotalRows($totalRowsHeaders->toArray()[0]);
+            $resource->setTotalRows($totalRowsHeaders[0]);
         }
 
         return $resource;

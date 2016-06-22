@@ -2,12 +2,13 @@
 
 namespace EasyBib\Tests\Api\Client\ApiResource;
 
+use Doctrine\Common\Cache\ArrayCache;
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\ApiResource\Collection;
 use EasyBib\Api\Client\ApiResource\ApiResource;
 use EasyBib\Api\Client\ApiResource\ResourceFactory;
-use Guzzle\Http\Client;
-use Guzzle\Http\Message\Response;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Response;
 
 class CollectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -174,7 +175,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     public function testTotalRowsCreatedFromResponse()
     {
         $collection = $this->createFromResponseWithHeaders(['X-EasyBib-TotalRows' => 42]);
-        $this->assertSame(42, $collection->getTotalRows());
+        $this->assertSame(42, (int)$collection->getTotalRows());
 
         $collection = $this->createFromResponseWithHeaders([]);
         $this->assertNull($collection->getTotalRows());
@@ -183,11 +184,9 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     private function createFromResponseWithHeaders($headers)
     {
         $data = $this->dataProvider()[0][0];
-        $response = new Response(200);
-        $response->setBody(json_encode($data));
-        $response->setHeaders($headers);
+        $response = new Response(200, $headers, json_encode($data));
 
-        $resourceFactory = new ResourceFactory(new ApiTraverser(new Client()));
+        $resourceFactory = new ResourceFactory(new ApiTraverser(new Client(), new ArrayCache()));
         return $resourceFactory->createFromResponse($response);
     }
 
@@ -198,7 +197,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     private function getCollection(array $rawData = [])
     {
         $data = json_decode(json_encode($rawData));
-        $resourceFactory = new ResourceFactory(new ApiTraverser(new Client()));
+        $resourceFactory = new ResourceFactory(new ApiTraverser(new Client(), new ArrayCache()));
 
         return $resourceFactory->createFromData($data);
     }

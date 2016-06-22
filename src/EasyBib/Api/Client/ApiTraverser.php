@@ -2,16 +2,16 @@
 
 namespace EasyBib\Api\Client;
 
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\CacheProvider;
-use EasyBib\Api\Client\ApiResource\Collection;
 use EasyBib\Api\Client\ApiResource\ApiResource;
+use EasyBib\Api\Client\ApiResource\Collection;
 use EasyBib\Api\Client\ApiResource\ResourceFactory;
-use EasyBib\Api\Client\Validation\ResponseValidator;
-use EasyBib\Guzzle\Plugin\RequestHeader;
-use Guzzle\Http\ClientInterface;
-use Guzzle\Http\Message\RequestInterface;
-use Guzzle\Http\Message\Response;
+use EasyBib\Api\Client\Validation\ResponseValidatorMiddleware;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\Psr7\Uri;
+use Psr\Http\Message\RequestInterface;
 
 class ApiTraverser
 {
@@ -32,41 +32,47 @@ class ApiTraverser
 
     /**
      * @param ClientInterface $httpClient
+     * @param CacheProvider $cacheProvider
      */
-    public function __construct(ClientInterface $httpClient)
+    public function __construct(ClientInterface $httpClient, CacheProvider $cacheProvider)
     {
-        $this->httpClient = $httpClient;
-        $this->httpClient->setDefaultOption('exceptions', false);
-        $this->httpClient->setDefaultOption('allow_redirects', false);
-        $this->httpClient->addSubscriber(
-            new RequestHeader('Accept', 'application/vnd.com.easybib.data+json')
-        );
+        $this->setCache($cacheProvider);
 
-        $this->cache = new Cache(new ArrayCache());
+        $this->httpClient = $httpClient;
         $this->resourceFactory = new ResourceFactory($this);
+
+        /** @var HandlerStack $handler */
+        $handler = $httpClient->getConfig('handler');
+        $handler->remove('http_errors');
+        $handler->remove('allow_redirects');
+        $handler->push(Middleware::mapRequest(function (RequestInterface $request) {
+            return $request->withHeader('Accept', 'application/vnd.com.easybib.data+json');
+        }));
+        $handler->push(Middleware::mapResponse(new ResponseValidatorMiddleware()));
     }
 
     /**
-     * @param string $url
+     * @param string|Uri $url
      * @param array $queryParams
-     * @return Resource
+     * @return ApiResource
      */
     public function get($url, array $queryParams = null)
     {
         return $this->cache->cacheAndReturn(function () use ($url, $queryParams) {
-            $request = $this->httpClient->get($url);
+            $uri = new Uri($url);
             if (null !== $queryParams) {
-                $request->getQuery()->replace($queryParams);
+                $uri = $uri->withQuery(http_build_query($queryParams));
             }
+            $response = $this->httpClient->request('GET', $uri);
 
-            return $this->resourceFactory->createFromResponse($this->send($request));
+            return $this->resourceFactory->createFromResponse($response);
         }, new CacheKey([$url, $queryParams]));
     }
 
     /**
-     * @param string $url
+     * @param string|Uri $url
      * @param array $resource
-     * @return Resource
+     * @return ApiResource
      */
     public function post($url, array $resource)
     {
@@ -75,9 +81,9 @@ class ApiTraverser
     }
 
     /**
-     * @param string $url
+     * @param string|Uri $url
      * @param array $resource
-     * @return Resource
+     * @return ApiResource
      */
     public function put($url, array $resource)
     {
@@ -86,9 +92,9 @@ class ApiTraverser
     }
 
     /**
-     * @param $url
+     * @param string|Uri $url
      * @param array $resource
-     * @return Resource
+     * @return ApiResource
      */
     public function patch($url, array $resource)
     {
@@ -97,15 +103,15 @@ class ApiTraverser
     }
 
     /**
-     * @param $url
-     * @return Resource
+     * @param string|Uri $url
+     * @return ApiResource
      */
     public function delete($url)
     {
         $this->cache->clear();
-        $request = $this->httpClient->delete($url);
+        $response = $this->httpClient->request('delete', $url);
 
-        return $this->resourceFactory->createFromResponse($this->send($request));
+        return $this->resourceFactory->createFromResponse($response);
     }
 
     /**
@@ -121,7 +127,7 @@ class ApiTraverser
 
     /**
      * @param string $subjectId
-     * @return Resource
+     * @return ApiResource
      */
     public function getSubject($subjectId)
     {
@@ -131,7 +137,7 @@ class ApiTraverser
     /**
      * This bootstraps the session by returning the user's "root" Resource
      *
-     * @return Resource
+     * @return ApiResource
      */
     public function getUser()
     {
@@ -151,7 +157,7 @@ class ApiTraverser
 
     /**
      * @param string $projectId
-     * @return Resource
+     * @return ApiResource
      */
     public function getProject($projectId)
     {
@@ -160,7 +166,7 @@ class ApiTraverser
 
     /**
      * @param array $projectData
-     * @return Resource
+     * @return ApiResource
      */
     public function postProject(array $projectData)
     {
@@ -174,7 +180,7 @@ class ApiTraverser
     public function postToBulkResolver(array $links)
     {
         $payload = ['links' => $links];
-        return $this->post($this->httpClient->getBaseUrl() . '/resolve', $payload);
+        return $this->post($this->httpClient->getConfig('base_uri') . '/resolve', $payload);
     }
 
     /**
@@ -182,7 +188,7 @@ class ApiTraverser
      */
     public function getUserBaseUrl()
     {
-        return $this->httpClient->getBaseUrl() . '/user/';
+        return $this->httpClient->getConfig('base_uri') . '/user/';
     }
 
     /**
@@ -190,7 +196,7 @@ class ApiTraverser
      */
     public function getProjectsBaseUrl()
     {
-        return $this->httpClient->getBaseUrl() . '/projects/';
+        return $this->httpClient->getConfig('base_uri') . '/projects/';
     }
 
     /**
@@ -198,7 +204,7 @@ class ApiTraverser
      */
     public function getSubjectsBaseUrl()
     {
-        return $this->httpClient->getBaseUrl() . '/subjects/';
+        return $this->httpClient->getConfig('base_uri') . '/subjects/';
     }
 
     /**
@@ -210,30 +216,16 @@ class ApiTraverser
     }
 
     /**
-     * @param RequestInterface $request
-     * @return Response
-     */
-    private function send(RequestInterface $request)
-    {
-        $response = $request->send();
-
-        $validator = new ResponseValidator($response);
-        $validator->validate();
-
-        return $response;
-    }
-
-    /**
      * @param string $method
      * @param string $url
      * @param array $resource
-     * @return Resource
+     * @return ApiResource
      */
     private function sendResource($method, $url, array $resource)
     {
         $payload = json_encode($resource);
-        $request = $this->httpClient->$method($url, [], $payload);
+        $response = $this->httpClient->request($method, $url, ['body' => $payload]);
 
-        return $this->resourceFactory->createFromResponse($this->send($request));
+        return $this->resourceFactory->createFromResponse($response);
     }
 }
