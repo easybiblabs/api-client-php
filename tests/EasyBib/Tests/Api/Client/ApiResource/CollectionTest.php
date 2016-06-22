@@ -2,6 +2,7 @@
 
 namespace EasyBib\Tests\Api\Client\ApiResource;
 
+use Doctrine\Common\Cache\ArrayCache;
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\ApiResource\Collection;
 use EasyBib\Api\Client\ApiResource\ApiResource;
@@ -185,7 +186,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
         $data = $this->dataProvider()[0][0];
         $response = new Response(200, $headers, json_encode($data));
 
-        $resourceFactory = new ResourceFactory(new ApiTraverser(new Client()));
+        $resourceFactory = new ResourceFactory(new ApiTraverser(new Client(), new ArrayCache()));
         return $resourceFactory->createFromResponse($response);
     }
 
@@ -196,7 +197,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     private function getCollection(array $rawData = [])
     {
         $data = json_decode(json_encode($rawData));
-        $resourceFactory = new ResourceFactory(new ApiTraverser(new Client()));
+        $resourceFactory = new ResourceFactory(new ApiTraverser(new Client(), new ArrayCache()));
 
         return $resourceFactory->createFromData($data);
     }

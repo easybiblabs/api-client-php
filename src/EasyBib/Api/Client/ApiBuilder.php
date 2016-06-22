@@ -2,6 +2,7 @@
 
 namespace EasyBib\Api\Client;
 
+use Doctrine\Common\Cache\ArrayCache;
 use EasyBib\Guzzle\BearerAuthMiddleware;
 use EasyBib\OAuth2\Client\AbstractSession;
 use EasyBib\OAuth2\Client\AuthorizationCodeGrant;
@@ -163,7 +164,7 @@ class ApiBuilder
             return new BearerAuthMiddleware($callable, $oauthSession);
         });
 
-        return new ApiTraverser($apiHttpClient);
+        return new ApiTraverser($apiHttpClient, new ArrayCache());
     }
 
     /**

@@ -71,11 +71,17 @@ class ApiBuilderTest extends \PHPUnit_Framework_TestCase
         parent::setUp();
 
         $this->apiMockResponses = new MockHandler();
-        $this->apiHttpClient = new Client(['base_uri' => $this->dataBaseUrl, 'handler' => HandlerStack::create($this->apiMockResponses)]);
+        $this->apiHttpClient = new Client([
+            'base_uri' => $this->dataBaseUrl,
+            'handler' => HandlerStack::create($this->apiMockResponses),
+        ]);
         $this->apiResponses = new ApiMockResponses($this->apiMockResponses);
 
         $this->oauthMockResponses = new MockHandler();
-        $this->oauthHttpClient = new Client(['base_uri' => $this->idBaseUrl, 'handler' => HandlerStack::create($this->oauthMockResponses)]);
+        $this->oauthHttpClient = new Client([
+            'base_uri' => $this->idBaseUrl,
+            'handler' => HandlerStack::create($this->oauthMockResponses),
+        ]);
 
         $session = new Session(new MockArraySessionStorage());
         $this->tokenStore = new TokenStore($session);

@@ -2,6 +2,7 @@
 
 namespace EasyBib\Tests\Api\Client\ApiResource;
 
+use Doctrine\Common\Cache\ArrayCache;
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\ApiResource\ApiResource;
 use EasyBib\Api\Client\ApiResource\ResourceFactory;
@@ -37,7 +38,7 @@ class ApiResourceTest extends \PHPUnit_Framework_TestCase
         $this->mockHandler = new MockHandler();
         $this->httpClient = new Client(['handler' => HandlerStack::create($this->mockHandler)]);
 
-        $this->api = new ApiTraverser($this->httpClient);
+        $this->api = new ApiTraverser($this->httpClient, new ArrayCache());
         $this->apiResponses = new ApiMockResponses($this->mockHandler);
     }
 

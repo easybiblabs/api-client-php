@@ -2,7 +2,6 @@
 
 namespace EasyBib\Api\Client;
 
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\CacheProvider;
 use EasyBib\Api\Client\ApiResource\ApiResource;
 use EasyBib\Api\Client\ApiResource\Collection;
@@ -33,12 +32,13 @@ class ApiTraverser
 
     /**
      * @param ClientInterface $httpClient
+     * @param CacheProvider $cacheProvider
      */
-    public function __construct(ClientInterface $httpClient)
+    public function __construct(ClientInterface $httpClient, CacheProvider $cacheProvider)
     {
-        $this->httpClient = $httpClient;
+        $this->setCache($cacheProvider);
 
-        $this->cache = new Cache(new ArrayCache());
+        $this->httpClient = $httpClient;
         $this->resourceFactory = new ResourceFactory($this);
 
         /** @var HandlerStack $handler */

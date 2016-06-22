@@ -81,12 +81,15 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $this->mockHandler = new MockHandler();
-        $this->resourceHttpClient = new Client(['base_uri' => $this->dataBaseUrl, 'handler' => HandlerStack::create($this->mockHandler)]);
+        $this->resourceHttpClient = new Client([
+            'base_uri' => $this->dataBaseUrl,
+            'handler' => HandlerStack::create($this->mockHandler),
+        ]);
 
         $this->tokenStore = new TokenStore(new Session(new MockArraySessionStorage()));
         $this->authorization = new AuthorizationResponse(['code' => 'ABC123']);
 
-        $this->api = new ApiTraverser($this->resourceHttpClient);
+        $this->api = new ApiTraverser($this->resourceHttpClient, new ArrayCache());
         $this->apiResponses = new ApiMockResponses($this->mockHandler);
     }
 
@@ -548,7 +551,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 
         $this->api->getUser();
 
-        $this->assertEquals(1, count($this->mockHandler->count()));
+        $this->assertEquals(1, $this->mockHandler->count());
     }
 
     public function testGetWritesToCache()

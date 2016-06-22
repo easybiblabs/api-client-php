@@ -2,6 +2,7 @@
 
 namespace EasyBib\Tests\Api\Client\Resource;
 
+use Doctrine\Common\Cache\ArrayCache;
 use EasyBib\Api\Client\ApiTraverser;
 use EasyBib\Api\Client\ApiResource\Collection;
 use EasyBib\Api\Client\ApiResource\ResourceErrorException;
@@ -18,7 +19,7 @@ class ResourceFactoryTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->factory = new ResourceFactory(new ApiTraverser(new Client()));
+        $this->factory = new ResourceFactory(new ApiTraverser(new Client(), new ArrayCache()));
     }
 
     public function testFromData()

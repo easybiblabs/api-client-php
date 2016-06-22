@@ -3,7 +3,6 @@
 namespace EasyBib\Api\Client\ApiResource;
 
 use EasyBib\Api\Client\ApiTraverser;
-use Guzzle\Http\Message\Response;
 use Psr\Http\Message\ResponseInterface;
 
 class ResourceFactory
