@@ -3,6 +3,7 @@
 namespace EasyBib\Api\Client;
 
 use Doctrine\Common\Cache\CacheProvider;
+use EasyBib\Api\Client\ApiResource\ApiPromise;
 use EasyBib\Api\Client\ApiResource\ApiResource;
 use EasyBib\Api\Client\ApiResource\Collection;
 use EasyBib\Api\Client\ApiResource\ResourceFactory;
@@ -112,6 +113,69 @@ class ApiTraverser
         $response = $this->httpClient->request('delete', $url);
 
         return $this->resourceFactory->createFromResponse($response);
+    }
+
+    /**
+     * @param string|Uri $url
+     * @param array $queryParams
+     * @return ApiPromise
+     */
+    public function getAsync($url, array $queryParams = null)
+    {
+        return $this->cache->cacheAndReturn(function () use ($url, $queryParams) {
+            $uri = new Uri($url);
+            if (null !== $queryParams) {
+                $uri = $uri->withQuery(http_build_query($queryParams));
+            }
+            $responsePromise = $this->httpClient->requestAsync('GET', $uri);
+
+            return new ApiPromise($responsePromise, $this->resourceFactory);
+        }, new CacheKey([$url, $queryParams]));
+    }
+
+    /**
+     * @param string|Uri $url
+     * @param array $resource
+     * @return ApiPromise
+     */
+    public function postAsync($url, array $resource)
+    {
+        $this->cache->clear();
+        return $this->sendResourceAsync('post', $url, $resource);
+    }
+
+    /**
+     * @param string|Uri $url
+     * @param array $resource
+     * @return ApiPromise
+     */
+    public function putAsync($url, array $resource)
+    {
+        $this->cache->clear();
+        return $this->sendResourceAsync('put', $url, $resource);
+    }
+
+    /**
+     * @param string|Uri $url
+     * @param array $resource
+     * @return ApiPromise
+     */
+    public function patchAsync($url, array $resource)
+    {
+        $this->cache->clear();
+        return $this->sendResourceAsync('patch', $url, $resource);
+    }
+
+    /**
+     * @param string|Uri $url
+     * @return ApiPromise
+     */
+    public function deleteAsync($url)
+    {
+        $this->cache->clear();
+        $responsePromise = $this->httpClient->requestAsync('delete', $url);
+
+        return new ApiPromise($responsePromise, $this->resourceFactory);
     }
 
     /**
@@ -227,5 +291,19 @@ class ApiTraverser
         $response = $this->httpClient->request($method, $url, ['body' => $payload]);
 
         return $this->resourceFactory->createFromResponse($response);
+    }
+
+    /**
+     * @param string $method
+     * @param string $url
+     * @param array $resource
+     * @return ApiPromise
+     */
+    private function sendResourceAsync($method, $url, array $resource)
+    {
+        $payload = json_encode($resource);
+        $responsePromise = $this->httpClient->requestAsync($method, $url, ['body' => $payload]);
+
+        return new ApiPromise($responsePromise, $this->resourceFactory);
     }
 }
