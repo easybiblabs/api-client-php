@@ -601,6 +601,85 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($this->dataBaseUrl . '/projects/', $this->api->getProjectsBaseUrl());
     }
 
+    public function testAsyncGet()
+    {
+        $this->apiResponses->prepareResource([]);
+
+        $apiPromise = $this->api->getAsync('foo/', ['x' => 'y']);
+        $apiPromise->wait();
+
+        $this->shouldHaveMadeAnApiRequest('GET', ['x' => 'y']);
+    }
+
+    /**
+     * @dataProvider getValidCitations
+     * @param array $citation
+     * @param array $expectedResponseResource
+     */
+    public function testAsyncPost(array $citation, array $expectedResponseResource)
+    {
+        $this->apiResponses->prepareResource($expectedResponseResource);
+
+        $apiPromise = $this->api->postAsync('/projects/123/citations', $citation);
+        $response = $apiPromise->wait();
+
+        $this->shouldHaveMadeAnApiRequest('POST');
+        $this->shouldHaveReturnedAResource($expectedResponseResource, $response);
+    }
+
+    /**
+     * @dataProvider getValidCitations
+     * @param array $citation
+     * @param array $expectedResponseResource
+     */
+    public function testAsyncPut(array $citation, array $expectedResponseResource)
+    {
+        $this->apiResponses->prepareResource($expectedResponseResource);
+
+        $apiPromise = $this->api->putAsync('/projects/123/citations/456', $citation);
+        $response = $apiPromise->wait();
+
+        $this->shouldHaveMadeAnApiRequest('PUT');
+        $this->shouldHaveReturnedAResource($expectedResponseResource, $response);
+    }
+
+    public function testDeleteAsync()
+    {
+        $expectedResource = [
+            'data' => [],
+        ];
+
+        $this->apiResponses->prepareResource();
+
+        $apiPromise = $this->api->deleteAsync('/projects/123/citations/456');
+        $response = $apiPromise->wait();
+
+        $this->shouldHaveMadeAnApiRequest('DELETE');
+        $this->shouldHaveReturnedADeletedResource($expectedResource, $response);
+    }
+
+    public function testPatchAsync()
+    {
+        $project = [
+            'links' => [],
+            'data' => [
+                'name' => 'Some project',
+            ],
+        ];
+
+        $this->apiResponses->prepareResource($project);
+
+        $resourcePatch = [
+            'href' => 'http://foo.example.com/user/456',
+            'rel' => 'author',
+        ];
+
+        $apiPromise = $this->api->patchAsync('/projects/123', $resourcePatch);
+        $apiPromise->wait();
+
+        $this->shouldHaveMadeAnApiRequest('PATCH');
+    }
+
     /**
      * @param string $httpMethod
      * @param array $queryParams
