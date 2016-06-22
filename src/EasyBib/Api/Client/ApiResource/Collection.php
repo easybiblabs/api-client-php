@@ -5,7 +5,7 @@ namespace EasyBib\Api\Client\ApiResource;
 use EasyBib\Api\Client\ApiTraverser;
 
 /**
- * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyMethods, PHPMD.TooManyPublicMethods)
  */
 class Collection extends ApiResource implements \ArrayAccess, \Iterator
 {

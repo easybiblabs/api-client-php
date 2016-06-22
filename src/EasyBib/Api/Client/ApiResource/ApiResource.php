@@ -145,6 +145,43 @@ class ApiResource
     }
 
     /**
+     * @param string $rel
+     * @return ApiPromise
+     */
+    public function getAsync($rel)
+    {
+        return $this->requestRelation('getAsync', $rel);
+    }
+
+    /**
+     * @param string $rel
+     * @param array $data
+     * @return ApiPromise
+     */
+    public function postAsync($rel, array $data)
+    {
+        return $this->requestRelation('postAsync', $rel, $data);
+    }
+
+    /**
+     * @param string $rel
+     * @param array $data
+     * @return ApiPromise
+     */
+    public function putAsync($rel, array $data)
+    {
+        return $this->requestRelation('putAsync', $rel, $data);
+    }
+
+    /**
+     * @param string $rel
+     */
+    public function deleteAsync($rel)
+    {
+        $this->requestRelation('deleteAsync', $rel);
+    }
+
+    /**
      * @return bool
      */
     public function isCurrentUserAuthor()
@@ -162,7 +199,7 @@ class ApiResource
      * @param string $rel
      * @param array $data
      * @throws ResourceNotFoundException
-     * @return Resource
+     * @return ApiResource|ApiPromise|Collection
      */
     private function requestRelation($method, $rel, array $data = null)
     {
