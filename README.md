@@ -96,7 +96,7 @@ of available references which can be called from the user. So the call chain
 for a particular project's citations might be
 
 ```php
-$api->getProjects()->get('project 123')->get('citations');
+$api->get('project 123')->get('citations');
 ```
 
 which would return a `Collection` of citations. Some more examples:
