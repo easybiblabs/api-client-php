@@ -17,8 +17,8 @@
     "require": {
         "php": ">=5.5",
         "doctrine/cache": "~1.3",
-        "easybiblabs/oauth2-client-php": "^3.0.0",
-        "guzzlehttp/guzzle": "^6.0"
+        "guzzlehttp/guzzle": "^6.0",
+        "easybiblabs/oauth2-client-php": "^4.0"
     },
     "require-dev": {
         "phpunit/phpunit": ">=3.7",
