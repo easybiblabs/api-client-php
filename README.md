@@ -23,8 +23,8 @@ dependencies.
         }
     ],
     "require": {
-        "php":">=5.5.0 | <7.1",
-        "easybib/api-client-php": "^2.3"
+        "php":">=5.5.0",
+        "easybib/api-client-php": "^2.4"
     }
 }
 ```
