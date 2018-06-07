@@ -49,10 +49,21 @@ class ApiTraverser
         $handler = $httpClient->getConfig('handler');
         $handler->remove('http_errors');
         $handler->remove('allow_redirects');
-        $handler->push(Middleware::mapRequest(function (RequestInterface $request) {
-            return $request->withHeader('Accept', 'application/vnd.com.easybib.data+json');
-        }));
+        $this->addHeader('Accept', 'application/vnd.com.easybib.data+json');
         $handler->push(Middleware::mapResponse(new ResponseValidatorMiddleware()));
+    }
+
+    /**
+     * @param string $header
+     * @param string $value
+     */
+    public function addHeader($header, $value)
+    {
+        /** @var HandlerStack $handler */
+        $handler = $this->httpClient->getConfig('handler');
+        $handler->push(Middleware::mapRequest(function (RequestInterface $request) use ($header, $value) {
+            return $request->withHeader($header, $value);
+        }));
     }
 
     /**

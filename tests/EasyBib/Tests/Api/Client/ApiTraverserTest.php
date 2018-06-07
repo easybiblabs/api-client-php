@@ -632,6 +632,29 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
      * @param array $citation
      * @param array $expectedResponseResource
      */
+    public function testRequestHeaderIsAdded(array $citation, array $expectedResponseResource)
+    {
+        $this->apiResponses->prepareResource($expectedResponseResource);
+
+        $this->api->addHeader('X-AlCell', 'test-value');
+        $this->api->postAsync('/projects/123/citations', $citation);
+
+        $lastRequest = $this->mockHandler->getLastRequest();
+
+        $this->assertTrue(
+            in_array('application/vnd.com.easybib.data+json', $lastRequest->getHeader('Accept'))
+        );
+
+        $this->assertTrue(
+            in_array('test-value', $lastRequest->getHeader('X-AlCell'))
+        );
+    }
+
+    /**
+     * @dataProvider getValidCitations
+     * @param array $citation
+     * @param array $expectedResponseResource
+     */
     public function testAsyncPut(array $citation, array $expectedResponseResource)
     {
         $this->apiResponses->prepareResource($expectedResponseResource);
