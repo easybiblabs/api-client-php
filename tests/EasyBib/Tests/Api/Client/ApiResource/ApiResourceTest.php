@@ -13,6 +13,10 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 
+/**
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ * @SuppressWarnings("PHPMD.TooManyPublicMethods")
+ */
 class ApiResourceTest extends \PHPUnit_Framework_TestCase
 {
     /** @var MockHandler */

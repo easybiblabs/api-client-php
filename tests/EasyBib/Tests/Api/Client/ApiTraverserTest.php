@@ -26,6 +26,11 @@ use GuzzleHttp\Psr7\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
+/**
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ * @SuppressWarnings("PHPMD.TooManyPublicMethods")
+ * @SuppressWarnings("PHPMD.TooManyMethods")
+ */
 class ApiTraverserTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -115,7 +120,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $expectedResponseResource = [
+        $expectedResource = [
             'links' => [
                 [
                     'href' => 'http://example.org/projects/123/citations/456',
@@ -128,7 +133,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
         ];
 
         return [
-            [$citation, $expectedResponseResource],
+            [$citation, $expectedResource],
         ];
     }
 
@@ -237,7 +242,7 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
     {
         $this->apiResponses->prepareResource([]);
 
-        $response = $this->api->get('foo/?x=y');
+        $this->api->get('foo/?x=y');
 
         $this->shouldHaveMadeAnApiRequest('GET', ['x' => 'y']);
     }
@@ -482,31 +487,31 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getValidCitations
      * @param array $citation
-     * @param array $expectedResponseResource
+     * @param array $expectedResource
      */
-    public function testPost(array $citation, array $expectedResponseResource)
+    public function testPost(array $citation, array $expectedResource)
     {
-        $this->apiResponses->prepareResource($expectedResponseResource);
+        $this->apiResponses->prepareResource($expectedResource);
 
         $response = $this->api->post('/projects/123/citations', $citation);
 
         $this->shouldHaveMadeAnApiRequest('POST');
-        $this->shouldHaveReturnedAResource($expectedResponseResource, $response);
+        $this->shouldHaveReturnedAResource($expectedResource, $response);
     }
 
     /**
      * @dataProvider getValidCitations
      * @param array $citation
-     * @param array $expectedResponseResource
+     * @param array $expectedResource
      */
-    public function testPut(array $citation, array $expectedResponseResource)
+    public function testPut(array $citation, array $expectedResource)
     {
-        $this->apiResponses->prepareResource($expectedResponseResource);
+        $this->apiResponses->prepareResource($expectedResource);
 
         $response = $this->api->put('/projects/123/citations/456', $citation);
 
         $this->shouldHaveMadeAnApiRequest('PUT');
-        $this->shouldHaveReturnedAResource($expectedResponseResource, $response);
+        $this->shouldHaveReturnedAResource($expectedResource, $response);
     }
 
     public function testDelete()
@@ -614,27 +619,27 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getValidCitations
      * @param array $citation
-     * @param array $expectedResponseResource
+     * @param array $expectedResource
      */
-    public function testAsyncPost(array $citation, array $expectedResponseResource)
+    public function testAsyncPost(array $citation, array $expectedResource)
     {
-        $this->apiResponses->prepareResource($expectedResponseResource);
+        $this->apiResponses->prepareResource($expectedResource);
 
         $apiPromise = $this->api->postAsync('/projects/123/citations', $citation);
         $response = $apiPromise->wait();
 
         $this->shouldHaveMadeAnApiRequest('POST');
-        $this->shouldHaveReturnedAResource($expectedResponseResource, $response);
+        $this->shouldHaveReturnedAResource($expectedResource, $response);
     }
 
     /**
      * @dataProvider getValidCitations
      * @param array $citation
-     * @param array $expectedResponseResource
+     * @param array $expectedResource
      */
-    public function testRequestHeaderIsAdded(array $citation, array $expectedResponseResource)
+    public function testRequestHeaderIsAdded(array $citation, array $expectedResource)
     {
-        $this->apiResponses->prepareResource($expectedResponseResource);
+        $this->apiResponses->prepareResource($expectedResource);
 
         $this->api->addHeader('X-AlCell', 'test-value');
         $this->api->postAsync('/projects/123/citations', $citation);
@@ -653,17 +658,17 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getValidCitations
      * @param array $citation
-     * @param array $expectedResponseResource
+     * @param array $expectedResource
      */
-    public function testAsyncPut(array $citation, array $expectedResponseResource)
+    public function testAsyncPut(array $citation, array $expectedResource)
     {
-        $this->apiResponses->prepareResource($expectedResponseResource);
+        $this->apiResponses->prepareResource($expectedResource);
 
         $apiPromise = $this->api->putAsync('/projects/123/citations/456', $citation);
         $response = $apiPromise->wait();
 
         $this->shouldHaveMadeAnApiRequest('PUT');
-        $this->shouldHaveReturnedAResource($expectedResponseResource, $response);
+        $this->shouldHaveReturnedAResource($expectedResource, $response);
     }
 
     public function testDeleteAsync()
@@ -721,51 +726,45 @@ class ApiTraverserTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param array $expectedResponseArray
+     * @param array $expectedResponse
      * @param ApiResource $resource
      */
-    private function shouldHaveReturnedAResource(
-        array $expectedResponseArray,
-        ApiResource $resource
-    ) {
-        $this->assertSameData($expectedResponseArray, $resource);
+    private function shouldHaveReturnedAResource(array $expectedResponse, ApiResource $resource)
+    {
+        $this->assertSameData($expectedResponse, $resource);
 
         $this->assertEquals(
-            $this->extractRelations($expectedResponseArray['links']),
+            $this->extractRelations($expectedResponse['links']),
             $resource->getRelationsContainer()->getAll()
         );
     }
 
     /**
-     * @param array $expectedResponseArray
+     * @param array $expectedResponse
      * @param ApiResource $resource
      */
-    private function shouldHaveReturnedADeletedResource(
-        array $expectedResponseArray,
-        ApiResource $resource
-    ) {
-        $this->assertSameData($expectedResponseArray, $resource);
+    private function shouldHaveReturnedADeletedResource(array $expectedResponse, ApiResource $resource)
+    {
+        $this->assertSameData($expectedResponse, $resource);
     }
 
     /**
-     * @param array $expectedResponseArray
+     * @param array $expectedResponse
      * @param Collection $collection
      */
-    private function shouldHaveReturnedACollection(
-        array $expectedResponseArray,
-        Collection $collection
-    ) {
-        $this->assertEquals(count($expectedResponseArray['data']), count($collection));
+    private function shouldHaveReturnedACollection(array $expectedResponse, Collection $collection)
+    {
+        $this->assertEquals(count($expectedResponse['data']), count($collection));
     }
 
     /**
-     * @param array $expectedResponseArray
+     * @param array $expectedResponse
      * @param ApiResource $resource
      */
-    private function assertSameData(array $expectedResponseArray, ApiResource $resource)
+    private function assertSameData(array $expectedResponse, ApiResource $resource)
     {
         $this->assertEquals(
-            $this->recursiveCastObject($expectedResponseArray['data']),
+            $this->recursiveCastObject($expectedResponse['data']),
             $resource->getData()
         );
     }
