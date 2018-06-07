@@ -10,6 +10,9 @@ use EasyBib\Api\Client\ApiResource\ResourceFactory;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 
+/**
+ * @SuppressWarnings("PHPMD.TooManyPublicMethods")
+ */
 class CollectionTest extends \PHPUnit_Framework_TestCase
 {
     public function dataProvider()
@@ -98,7 +101,7 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
     {
         $collection = $this->getCollection(['data' => []]);
         $this->assertEquals([], $collection->map(function ($item) {
-            throw new \Exception('This should never get called');
+            throw new \Exception('This should never get called. $item: ' . json_encode($item));
         }));
     }
 

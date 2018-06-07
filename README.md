@@ -15,15 +15,17 @@ dependencies.
 
 
 ```json
-"repositories":[
-    {
-        "type": "vcs",
-        "url": "git@github.com:easybiblabs/api-client-php.git"
+{
+    "repositories":[
+        {
+            "type": "vcs",
+            "url": "git@github.com:easybiblabs/api-client-php.git"
+        }
+    ],
+    "require": {
+        "php":">=5.5.0",
+        "easybib/api-client-php": "^2.4"
     }
-],
-"require": {
-    "php":">=5.5.0",
-    "easybib/api-client-php": "~0.2"
 }
 ```
 
@@ -32,6 +34,12 @@ Once your JSON is set, this will install the package
 ```
 composer.phar install
 ```
+
+### Run tests
+
+Run `make install && make ci` to run all tests.
+
+If you do not have the right environment you can run `make docker-run-test`. It will build an image and run tests inside a container instance.
 
 ## Usage
 

@@ -7,6 +7,7 @@ use EasyBib\Tests\Mocks\Api\Client\LinkTransformer\MockLinkTransformer;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings("PHPMD.TooManyPublicMethods")
  */
 class RelationTest extends \PHPUnit_Framework_TestCase
 {
